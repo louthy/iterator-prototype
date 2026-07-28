@@ -1,24 +1,21 @@
 ﻿using System.Diagnostics;
 using IteratorTest;
 using IteratorTest.Traits;
-using LanguageExt.Traits;
 using I = IteratorTest;
 using static LanguageExt.Prelude;
+using Array = System.Array;
+
+TestSuite.Run();
 
 const int count = 1_000_000;
 
-var iter1 = IterableK.fromIterable<I.Array, ArrayState, int>(I.Array.create(..count));
 var items = I.Array.create(..count);
 
 Warmup();
 Warmup();
 Warmup();
-Warmup();
-Warmup();
 
 RunForReal();
-
-TestSuite.Run();
 
 return;
 
@@ -27,30 +24,34 @@ return;
     var (t1, e1) = CSharpVersion(items);
     WriteOutput(t1, e1, $"Foreach C# array ({count:N0} items)");
 
-    var (t2, e2) = IteratorVersion(items);
-    WriteOutput(t2, e2, $"Iterator while TryGetValue ({count:N0} items)");
+    var (t2, e2) = CurrentLanguageExtArrVersion(items);
+    WriteOutput(t2, e2, $"Foreach current LanguageExt Arr<A> ({count:N0} items)");
 
-    var (t3, e3) = ForeachVersion(items);
-    WriteOutput(t3, e3, $"Foreach Array<A> ({count:N0} items)");
+    var (t3, e3) = IterableKVersion(items);
+    WriteOutput(t3, e3, $"IterableK trait stepping ({count:N0} items)");
 
-    var (t4, e4) = IterableKVersion(items);
-    WriteOutput(t4, e4, $"IterableK trait stepping ({count:N0} items)");
+    var (t4, e4) = ForeachVersion(items);
+    WriteOutput(t4, e4, $"Foreach Array<A> ({count:N0} items)");
 
-    var (t5, e5) = CurrentLanguageExtArrVersion(items);
-    WriteOutput(t5, e5, $"Foreach current LanguageExt Arr<A> ({count:N0} items)");
-    
-    return (t1 + t2 + t3 + t4 + t5, e1 + e2 + e3 + e4 + e5);
+    var (t5, e5) = StrongIteratorVersion(items);
+    WriteOutput(t5, e5, $"Strong Iterator while TryGetValue ({count:N0} items)");
+
+    var (t6, e6) = WeakIteratorVersion(items);
+    WriteOutput(t6, e6, $"Weak Iterator while TryGetValue ({count:N0} items)");
+
+    return (t1 + t2 + t3 + t4 + t5 + t6, e1 + e2 + e3 + e4 + e5 + e6);
 }
 
 (int, TimeSpan) Warmup()
 {
     var (t1, e1) = CSharpVersion(items);
-    var (t2, e2) = IteratorVersion(items);
-    var (t3, e3) = ForeachVersion(items);
-    var (t4, e4) = IterableKVersion(items);
-    var (t5, e5) = CurrentLanguageExtArrVersion(items);
-
-    return (t1 + t2 + t3 + t4 + t5, e1 + e2 + e3 + e4 + e5);
+    var (t2, e2) = CurrentLanguageExtArrVersion(items);
+    var (t3, e3) = IterableKVersion(items);
+    var (t4, e4) = ForeachVersion(items);
+    var (t5, e5) = StrongIteratorVersion(items);
+    var (t6, e6) = WeakIteratorVersion(items);
+    
+    return (t1 + t2 + t3 + t4 + t5 + t6, e1 + e2 + e3 + e4 + e5 + e6);
 }
 
 void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
@@ -63,7 +64,7 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 (int Total, TimeSpan Elapsed) CSharpVersion(Array<int> array)
 {
-    var carr = array.ToArray();
+    var carr = array.AsSpan();
 
     var total = 0;
     var sw    = Stopwatch.StartNew();
@@ -81,10 +82,29 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  This tests the performance of a generalised Iterator 
 //
-(int Total, TimeSpan Elapsed) IteratorVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) StrongIteratorVersion(Array<int> array)
 {
     var total = 0;
     var iter  = array.Forward();
+
+    var sw = Stopwatch.StartNew();
+    while (iter.TryGetValue(out var x, out iter))
+    {
+        total += x;
+    }
+
+    sw.Stop();
+    return (total, sw.Elapsed);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//  This tests the performance of a generalised Iterator 
+//
+(int Total, TimeSpan Elapsed) WeakIteratorVersion(Array<int> array)
+{
+    var total = 0;
+    var iter  = IterableK.fromIterable<I.Array, ArrayState, int>(array);
 
     var sw = Stopwatch.StartNew();
     while (iter.TryGetValue(out var x, out iter))
@@ -139,7 +159,7 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 (int Total, TimeSpan Elapsed) CurrentLanguageExtArrVersion(Array<int> array)
 {
-    var arr   = toArray(array.ToArray());
+    var arr   = toArray(array.AsSpan());
     var total = 0;
 
     var sw = Stopwatch.StartNew();

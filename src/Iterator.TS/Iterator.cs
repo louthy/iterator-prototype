@@ -29,7 +29,7 @@ public readonly struct Iterator<T, TS, A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A head, Func<Iterator<T, TS, A>> tail)
+    internal Iterator(in A head, Func<Iterator<T, TS, A>> tail)
     {
         tag = 2;
         this.head = head;
@@ -37,7 +37,7 @@ public readonly struct Iterator<T, TS, A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A head, in Iterator<T, TS, A> tail)
+    internal Iterator(in A head, in Iterator<T, TS, A> tail)
     {
         tag = 3;
         this.head = head;

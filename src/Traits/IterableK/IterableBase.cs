@@ -13,7 +13,7 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
     where TA : IterableBase<T, TS, TA, A>
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public virtual Iterator<T, TS, A> Forward()
+    Iterator<T, TS, A> Forward()
     {
         var     ta = this;
         var     i1 = T.Forward(ta);
@@ -22,11 +22,11 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public virtual IterableKEnumerator<T, TS, A> GetEnumerator() =>
+    IterableKEnumerator<T, TS, A> GetEnumerator() =>
         new (this);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public virtual ReadOnlySpan<A> ToArray()
+    ReadOnlySpan<A> AsSpan()
     {
         var ta = this;
         var w  = ArrayWriter<A>.Init();
@@ -39,7 +39,6 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
     }
         
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public virtual IEnumerable<A> AsEnumerable() =>
+    IEnumerable<A> AsEnumerable() =>
         new IteratorEnumerable<T, TS, A>(this);
-    
 }

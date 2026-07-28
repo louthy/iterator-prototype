@@ -5,31 +5,46 @@ public class TestSuite
     public static void Run()
     {
         Console.WriteLine();
-        Console.WriteLine();
         Console.WriteLine("Test suite");
-        InOrder();
-        Prepend();
+        
+        Test(InOrder, "Show that the items iterate in the order they were added");
+        Test(Prepend, "Show that the an item can be prepended (cons'd)");
+        Test(PrependLazy, "Show that the an item can be prepended (cons'd) lazily");
+        
+        Console.WriteLine();
     }
-    
-    public static void InOrder()
+
+    static void Test(Action action, string desc)
     {
-        Console.WriteLine("Show that the items iterate in the order they were added");
+        Console.WriteLine(desc);
+        action();
+        Console.WriteLine();
+    }
+
+    static void InOrder()
+    {
         var arr = Array.create(1, 2, 3, 4, 5);
         foreach (var x in arr)
         {
             Console.Write($"{x} ");
         }
-        Console.WriteLine();
     }
-        
-    public static void Prepend()
+
+    static void Prepend()
     {
-        Console.WriteLine("Show that the an item can be prepended (cons'd)");
         var iter = 1 + (2 + (3 + Array.create(4, 5).Forward()));
         foreach (var x in iter)
         {
             Console.Write($"{x} ");
         }
-        Console.WriteLine();
+    }
+
+    static void PrependLazy()
+    {
+        var iter = 1.Cons(() => 2.Cons(() => 3.Cons(() => Array.create(4, 5).Forward())));
+        foreach (var x in iter)
+        {
+            Console.Write($"{x} ");
+        }
     }
 }

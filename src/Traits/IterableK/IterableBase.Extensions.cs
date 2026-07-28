@@ -15,8 +15,8 @@ public static partial class IterableBaseExtensions
             ta.Forward();
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<A> ToArray() =>
-            ta.ToArray();
+        public ReadOnlySpan<A> AsSpan() =>
+            ta.AsSpan();
         
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
         public IterableKEnumerator<T, TS, A> GetEnumerator() =>
