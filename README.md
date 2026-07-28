@@ -642,4 +642,11 @@ Rules:
 * Whilst using `Unsafe` is allowed, don't throw caution to the wind too much! 
   * The end code must be robust, reliable, and fast!
 
+By the way, I realise that even the slowest benchmark here can iterate over 27 million items per second. Which for many
+use cases is amazing. And when this technique is paired with other data-types like trees and hash-maps, the iteration 
+part will start to disappear. But still, it feels so damn close to having an allocation free iterator that is guaranteed
+to be fast.
+
+And I want it! :D
+
 Paul

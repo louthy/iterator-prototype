@@ -3,7 +3,6 @@ using IteratorTest;
 using IteratorTest.Traits;
 using I = IteratorTest;
 using static LanguageExt.Prelude;
-using Array = System.Array;
 
 TestSuite.Run();
 
