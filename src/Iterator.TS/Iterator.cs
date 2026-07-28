@@ -1,0 +1,172 @@
+using System.Runtime.CompilerServices;
+using IteratorTest.Traits;
+
+namespace IteratorTest;
+
+[Union]
+public readonly struct Iterator<T, TS, A> : IUnion
+    where T : IterableK<T, TS>
+    where TS : struct
+{
+    readonly int tag;
+    readonly A head;
+    readonly object? obj1;
+    readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    readonly TS space;
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(in Nil nil)
+    {
+        tag = 0;
+        head = default!;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(in A one)
+    {
+        tag = 1;
+        head = one;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(in A head, Func<Iterator<T, TS, A>> tail)
+    {
+        tag = 2;
+        this.head = head;
+        obj1 = tail;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(in A head, in Iterator<T, TS, A> tail)
+    {
+        tag = 3;
+        this.head = head;
+        obj1 = tail;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(Func<Iterator<T, TS, A>> lazy)
+    {
+        tag = 4;
+        head = default!;
+        obj1 = lazy;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    internal Iterator(in A head, object source, in TS state)
+    {
+        tag = 5;
+        this.head = head;
+        obj1 = source;
+        vt = VirtualTableCache<T, TS, A>.Cache;
+        space = state;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    Iterator(in Iterator<T, TS, A> first, in A then)
+    {
+        tag = 6;
+        head = then;
+        obj1 = first;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public bool TryGetValue(out Nil nil)
+    {
+        nil = default;
+        return tag == 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public bool TryGetValue(out Cons<T, TS, A> cons)
+    {
+        if(TryGetValue(out var h, out var t))
+        {
+            cons = new Cons<T, TS, A>(in h, in t);
+            return true;
+        }
+        else
+        {
+            cons = default!;
+            return false;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public bool TryGetValue(out A h, out Iterator<T, TS, A> t)
+    {
+        switch (tag)
+        {
+            case 1:
+                h = head;
+                t = default;
+                return true;
+            
+            case 2:
+                h = head;
+                t = ((Func<Iterator<T, TS, A>>)obj1!)();
+                return true;
+            
+            case 3:
+                h = head;
+                t = (Iterator<T, TS, A>)obj1!;
+                return true;
+
+            case 4:
+                return ((Func<Iterator<T, TS, A>>)obj1!)().TryGetValue(out h, out t);
+
+            case 5:
+                var s = space;
+                h = head;
+                
+                if (T.Step<A>(ref s, out var nh))
+                {
+                    t = new Iterator<T, TS, A>(in nh, obj1!, in s);
+                    return true;
+                }
+                else
+                {
+                    t = default;
+                    return true;
+                }
+            
+            case 6:
+                var first = (Iterator<T, TS, A>)obj1!;
+                if (first.TryGetValue(out h, out var nt))
+                {
+                    t = new Iterator<T, TS, A>(nt, head);
+                }
+                else
+                {
+                    h = head;
+                    t = default;
+                }
+                return true;            
+
+            default:
+                h = default!;
+                t = default!;
+                return false;
+        }
+    }
+
+    public bool HasValue
+    {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        get => tag is >= 0 and <= 5;
+    }
+
+    public object? Value =>
+        TryGetValue(out Cons<T, TS, A> cons)
+            ? cons
+            : new Nil();
+    
+    public IteratorEnumerator<T, TS, A> GetEnumerator() => 
+        new(this);
+
+    public static Iterator<T, TS, A> operator +(in A head, in Iterator<T, TS, A> tail) =>
+        new (head, tail);
+
+    public static Iterator<T, TS, A> operator +(in Iterator<T, TS, A> first, in A next) =>
+        new (first, next);
+}
