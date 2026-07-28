@@ -1,4 +1,4 @@
- `Iterator<A>` prototype
+# `Iterator<A>` prototype
 
 _Prototyping ideas around `IterableK` trait and an allocation free `Iterator`..._
 
