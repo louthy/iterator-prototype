@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorTest.Traits;
+using LanguageExt.Traits;
 
 namespace IteratorTest;
 
@@ -8,12 +9,19 @@ public readonly struct Iterator<T, TS, A> : IUnion
     where T : IterableK<T, TS>
     where TS : struct
 {
-    readonly int tag;
+    readonly IteratorTag tag;
     readonly A head;
-    readonly object? obj1;
+    readonly K<T, A>? ta;
+    readonly Func<Iterator<T, TS, A>>? lazy;
     readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     readonly TS space;
 
+    public bool IsEmpty
+    {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        get => tag == IteratorTag.Empty;
+    }
+    
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in Nil nil)
     {
@@ -24,52 +32,65 @@ public readonly struct Iterator<T, TS, A> : IUnion
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in A one)
     {
-        tag = 1;
+        tag = IteratorTag.Singleton;
         head = one;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     internal Iterator(in A head, Func<Iterator<T, TS, A>> tail)
     {
-        tag = 2;
+        tag = IteratorTag.Cons;
         this.head = head;
-        obj1 = tail;
+        lazy = tail;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    internal Iterator(in A head, in Iterator<T, TS, A> tail)
+    internal Iterator(in A head, Iterator<T, TS, A> tail)
     {
-        tag = 3;
+        tag = IteratorTag.Cons;
         this.head = head;
-        obj1 = tail;
+        lazy = () => tail;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(Func<Iterator<T, TS, A>> lazy)
     {
-        tag = 4;
+        tag = IteratorTag.Lazy;
         head = default!;
-        obj1 = lazy;
+        this.lazy = lazy;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    internal Iterator(in A head, object source, in TS state)
+    internal Iterator(in A head, K<T, A> source, in TS state)
     {
-        tag = 5;
+        tag = IteratorTag.IterableK;
         this.head = head;
-        obj1 = source;
+        ta = source;
         vt = VirtualTableCache<T, TS, A>.Cache;
         space = state;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in Iterator<T, TS, A> first, in A then)
+    Iterator(Iterator<T, TS, A> first, in A then)
     {
-        tag = 6;
+        tag = IteratorTag.Add;
         head = then;
-        obj1 = first;
+        lazy = () => first;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    internal Iterator(K<T, A> src, in TS state, out IteratorTag tag)
+    {
+        ta = src;
+        space = state;
+        vt = VirtualTableCache<T, TS, A>.Cache;
+        tag = T.Step(ta, ref space, out head)
+                  ? IteratorTag.IterableK
+                  : IteratorTag.Empty;
+        this.tag = tag;
+    }
+    
+    
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool TryGetValue(out Nil nil)
     {
@@ -97,31 +118,16 @@ public readonly struct Iterator<T, TS, A> : IUnion
     {
         switch (tag)
         {
-            case 1:
+            case IteratorTag.IterableK:
+                ref readonly var s = ref space;
                 h = head;
-                t = default;
-                return true;
-            
-            case 2:
-                h = head;
-                t = ((Func<Iterator<T, TS, A>>)obj1!)();
-                return true;
-            
-            case 3:
-                h = head;
-                t = (Iterator<T, TS, A>)obj1!;
-                return true;
+                t = new Iterator<T, TS, A>(ta!, in s, out var tg);
+                return tg == IteratorTag.IterableK;
 
-            case 4:
-                return ((Func<Iterator<T, TS, A>>)obj1!)().TryGetValue(out h, out t);
-
-            case 5:
-                var s = space;
-                h = head;
-                
-                if (T.Step<A>(ref s, out var nh))
+                /*
+                if (T.Step(ta!, ref s, out var nh))
                 {
-                    t = new Iterator<T, TS, A>(in nh, obj1!, in s);
+                    t = new Iterator<T, TS, A>(in nh, ta!, in s);
                     return true;
                 }
                 else
@@ -129,9 +135,28 @@ public readonly struct Iterator<T, TS, A> : IUnion
                     t = default;
                     return true;
                 }
+                */
             
-            case 6:
-                var first = (Iterator<T, TS, A>)obj1!;
+            case IteratorTag.Empty:
+                h = default!;
+                t = default!;
+                return false;
+            
+            case IteratorTag.Singleton:
+                h = head;
+                t = default;
+                return true;
+            
+            case IteratorTag.Cons:
+                h = head;
+                t = lazy!();
+                return true;
+            
+            case IteratorTag.Lazy:
+                return lazy!().TryGetValue(out h, out t);
+            
+            case IteratorTag.Add:
+                var first = lazy!();
                 if (first.TryGetValue(out h, out var nt))
                 {
                     t = new Iterator<T, TS, A>(nt, head);
@@ -153,7 +178,7 @@ public readonly struct Iterator<T, TS, A> : IUnion
     public bool HasValue
     {
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        get => tag is >= 0 and <= 5;
+        get => tag is >= IteratorTag.Empty and < IteratorTag.MaxValue;
     }
 
     public object? Value =>

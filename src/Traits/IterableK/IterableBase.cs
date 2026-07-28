@@ -31,7 +31,7 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
         var ta = this;
         var w  = ArrayWriter<A>.Init();
         var s  = T.Setup(ta);
-        while (T.Step(ref s, out A x))
+        while (T.Step(ta, ref s, out var x))
         {
             ArrayWriter<A>.Add(ref w, x);
         }

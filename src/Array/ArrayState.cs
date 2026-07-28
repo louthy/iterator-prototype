@@ -1,3 +1,8 @@
 namespace IteratorTest;
 
-public readonly record struct ArrayState(object Items, long Index, long Count);
+public readonly struct ArrayState(object items, int index, int count)
+{
+    public readonly object Items = items;
+    public readonly int Index = index;
+    public readonly int Count = count;
+}

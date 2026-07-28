@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using IteratorTest;
 using IteratorTest.Traits;
+using LanguageExt;
 using I = IteratorTest;
 using static LanguageExt.Prelude;
 
@@ -8,47 +9,49 @@ TestSuite.Run();
 
 const int count = 1_000_000;
 
-var items = I.Array.create(..count);
-
-Warmup();
-Warmup();
-Warmup();
-
-RunForReal();
+Bench(CSharpVersion,                $"Foreach C# array ({count:N0} items)");
+Bench(CurrentLanguageExtArrVersion, $"Foreach current LanguageExt Arr<A> ({count:N0} items)");
+Bench(IterableKVersion,             $"IterableK trait stepping ({count:N0} items)");
+Bench(ForeachVersion,               $"Foreach Array<A> ({count:N0} items)");
+Bench(StrongIteratorVersion,        $"Strong Iterator while TryGetValue ({count:N0} items)");
+Bench(WeakIteratorVersion,          $"Weak Iterator while TryGetValue ({count:N0} items)");
 
 return;
 
-(int, TimeSpan) RunForReal()
+(A Output, TimeSpan Elapses) Bench<A>(Func<(A Output, TimeSpan Elapsed)> fun, string desc)
 {
-    var (t1, e1) = CSharpVersion(items);
-    WriteOutput(t1, e1, $"Foreach C# array ({count:N0} items)");
+    var (wu_t1, wu_e1) = fun();
+    var (wu_t2, wu_e2) = fun();
+    var (wu_t3, wu_e3) = fun();
+    var (wu_t4, wu_e4) = fun();
+    var (wu_t5, wu_e5) = fun();
 
-    var (t2, e2) = CurrentLanguageExtArrVersion(items);
-    WriteOutput(t2, e2, $"Foreach current LanguageExt Arr<A> ({count:N0} items)");
+    var (t1, e1) = fun();
+    var (t2, e2) = fun();
+    var (t3, e3) = fun();
+    var (t4, e4) = fun();
+    var (t5, e5) = fun();
 
-    var (t3, e3) = IterableKVersion(items);
-    WriteOutput(t3, e3, $"IterableK trait stepping ({count:N0} items)");
+    var e = (e1 + e2 + e3 + e4 + e5) / 5;
+    if (!eq(t1, t2) || !eq(t1, t3) || !eq(t1, t4) || !eq(t1, t5))
+    {
+        Console.WriteLine($"Different outputs for: {desc}");
+    }
+    WriteOutput(t1, e, desc);
+    return (t1, e);
 
-    var (t4, e4) = ForeachVersion(items);
-    WriteOutput(t4, e4, $"Foreach Array<A> ({count:N0} items)");
-
-    var (t5, e5) = StrongIteratorVersion(items);
-    WriteOutput(t5, e5, $"Strong Iterator while TryGetValue ({count:N0} items)");
-
-    var (t6, e6) = WeakIteratorVersion(items);
-    WriteOutput(t6, e6, $"Weak Iterator while TryGetValue ({count:N0} items)");
-
-    return (t1 + t2 + t3 + t4 + t5 + t6, e1 + e2 + e3 + e4 + e5 + e6);
+    static bool eq(A lhs, A rhs) =>
+        lhs?.Equals(rhs) ?? false;
 }
 
 (int, TimeSpan) Warmup()
 {
-    var (t1, e1) = CSharpVersion(items);
-    var (t2, e2) = CurrentLanguageExtArrVersion(items);
-    var (t3, e3) = IterableKVersion(items);
-    var (t4, e4) = ForeachVersion(items);
-    var (t5, e5) = StrongIteratorVersion(items);
-    var (t6, e6) = WeakIteratorVersion(items);
+    var (t1, e1) = CSharpVersion();
+    var (t2, e2) = CurrentLanguageExtArrVersion();
+    var (t3, e3) = IterableKVersion();
+    var (t4, e4) = ForeachVersion();
+    var (t5, e5) = StrongIteratorVersion();
+    var (t6, e6) = WeakIteratorVersion();
     
     return (t1 + t2 + t3 + t4 + t5 + t6, e1 + e2 + e3 + e4 + e5 + e6);
 }
@@ -61,8 +64,9 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //  This tests the C# array performance 
 //  It is the baseline to compare everything else against.
 //
-(int Total, TimeSpan Elapsed) CSharpVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) CSharpVersion()
 {
+    var array = I.Array.create(..count);
     var carr = array.AsSpan();
 
     var total = 0;
@@ -81,8 +85,9 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  This tests the performance of a generalised Iterator 
 //
-(int Total, TimeSpan Elapsed) StrongIteratorVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) StrongIteratorVersion()
 {
+    var array = I.Array.create(..count);
     var total = 0;
     var iter  = array.Forward();
 
@@ -100,8 +105,9 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  This tests the performance of a generalised Iterator 
 //
-(int Total, TimeSpan Elapsed) WeakIteratorVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) WeakIteratorVersion()
 {
+    var array = I.Array.create(..count);
     var total = 0;
     var iter  = IterableK.fromIterable<I.Array, ArrayState, int>(array);
 
@@ -119,8 +125,9 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  This tests the performance of a generalised foreach using the IteratorEnumerator 
 //
-(int Total, TimeSpan Elapsed) ForeachVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) ForeachVersion()
 {
+    var array = I.Array.create(..count);
     var total = 0;
     
     var sw = Stopwatch.StartNew();
@@ -137,13 +144,15 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  This tests the IterableK trait performance 
 //
-(int Total, TimeSpan Elapsed) IterableKVersion(Array<int> array1)
+(int Total, TimeSpan Elapsed) IterableKVersion()
 {
+    var array = I.Array.create(..count);
+    var karr  = array.Kind();
     var total = 0;
-    var state = IterableK.setup<I.Array, ArrayState, int>(array1);
+    var state = IterableK.setup<I.Array, ArrayState, int>(karr);
 
-    var sw = Stopwatch.StartNew();
-    while (IterableK.step<I.Array, ArrayState, int>(ref state, out var x))
+    var sw  = Stopwatch.StartNew();
+    while (IterableK.step(karr, ref state, out var x))
     {
         total += x;
     }
@@ -156,8 +165,9 @@ void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
 //
 //  Current LanguageExt Arr<A> foreach version 
 //
-(int Total, TimeSpan Elapsed) CurrentLanguageExtArrVersion(Array<int> array)
+(int Total, TimeSpan Elapsed) CurrentLanguageExtArrVersion()
 {
+    var array = I.Array.create(..count);
     var arr   = toArray(array.AsSpan());
     var total = 0;
 

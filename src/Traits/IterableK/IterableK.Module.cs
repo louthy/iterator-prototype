@@ -12,10 +12,10 @@ public static class IterableK
         T.Setup(ta);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static bool step<T, TS, A>(ref TS ts, out A value) 
+    public static bool step<T, TS, A>(K<T, A> ta, ref TS ts, out A value) 
         where T : IterableK<T, TS>
         where TS : struct =>
-        T.Step(ref ts, out value);
+        T.Step(ta, ref ts, out value);
     
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public static Iterator<A> fromIterable<T, TS, A>(K<T, A> ta)
@@ -23,7 +23,7 @@ public static class IterableK
         where TS : struct
     {
         var s = T.Setup(ta);
-        if (T.Step(ref s, out A h))
+        if (T.Step(ta, ref s, out var h))
         {
             var     i1 = new Iterator<T, TS, A>(in h, ta, in s);
             ref var i2 = ref Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref i1);

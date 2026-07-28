@@ -5,65 +5,66 @@ namespace IteratorTest;
 [Union]
 public readonly struct Iterator<A> : IUnion
 {
-    readonly int tag;
+    readonly IteratorTag tag;
     readonly A head;
-    readonly object? obj1;
+    readonly object? ta;
+    readonly Func<Iterator<A>>? lazy;
     readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     readonly Space128 space;
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in Nil nil)
     {
-        tag = 0;
+        tag = IteratorTag.Empty;
         head = default!;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in A one)
     {
-        tag = 1;
+        tag = IteratorTag.Singleton;
         head = one;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in A head, Func<Iterator<A>> tail)
     {
-        tag = 2;
+        tag = IteratorTag.Cons;
         this.head = head;
-        obj1 = tail;
+        lazy = tail;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A head, in Iterator<A> tail)
+    Iterator(in A head, Iterator<A> tail)
     {
-        tag = 3;
+        tag = IteratorTag.Cons;
         this.head = head;
-        obj1 = tail;
+        lazy = () => tail;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(Func<Iterator<A>> lazy)
     {
-        tag = 4;
+        tag = IteratorTag.Lazy;
         head = default!;
-        obj1 = lazy;
+        this.lazy = lazy;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in A one, object? ta, VirtualTable<A>? vt, in Space128 state)
     {
-        tag = 5;
+        tag = IteratorTag.IterableK;
         head = default!;
-        obj1 = ta;
+        this.ta = ta;
         space = state;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in Iterator<A> first, in A then)
+    Iterator(Iterator<A> first, in A then)
     {
-        tag = 6;
+        tag = IteratorTag.Add;
         head = then;
-        obj1 = first;
+        lazy = () => first;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
@@ -93,28 +94,10 @@ public readonly struct Iterator<A> : IUnion
     {
         switch (tag)
         {
-            case 1:
+            case IteratorTag.IterableK:
+                ref readonly var s = ref space;
                 h = head;
-                t = default;
-                return true;
-            
-            case 2:
-                h = head;
-                t = ((Func<Iterator<A>>)obj1!)();
-                return true;
-            
-            case 3:
-                h = head;
-                t = (Iterator<A>)obj1!;
-                return true;
-
-            case 4:
-                return ((Func<Iterator<A>>)obj1!)().TryGetValue(out h, out t);
-
-            case 5:
-                var s = space;
-                h = head;
-                if (vt!.Step(obj1!, ref s, out t))
+                if (vt!.Step(ta!, in s, out t))
                 {
                     return true;
                 }
@@ -124,8 +107,26 @@ public readonly struct Iterator<A> : IUnion
                     return true;
                 }                
 
-            case 6:
-                var first = (Iterator<A>)obj1!;
+            case IteratorTag.Empty:
+                h = default!;
+                t = default!;
+                return false;
+            
+            case IteratorTag.Singleton:
+                h = head;
+                t = default;
+                return true;
+            
+            case IteratorTag.Cons:
+                h = head;
+                t = lazy!();
+                return true;
+
+            case IteratorTag.Lazy:
+                return lazy!().TryGetValue(out h, out t);
+
+            case IteratorTag.Add:
+                var first = lazy!();
                 if (first.TryGetValue(out h, out var nt))
                 {
                     t = new Iterator<A>(nt, head);
@@ -147,7 +148,7 @@ public readonly struct Iterator<A> : IUnion
     public bool HasValue
     {
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        get => tag is >= 0 and <= 5;
+        get => tag is >= IteratorTag.Empty and < IteratorTag.MaxValue;
     }
 
     public object? Value =>

@@ -12,7 +12,7 @@ public struct IterableKEnumerator<T, TS, A>(K<T, A> ta)
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool MoveNext() =>
-        T.Step(ref foldState, out current);
+        T.Step(ta, ref foldState, out current);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public void Reset() =>
