@@ -97,7 +97,8 @@ public readonly struct Iterator<A> : IUnion
             case IteratorTag.IterableK:
                 h = head;
                 ref readonly var s = ref space;
-                return vt!.Step(ta!, in s, out t);
+                vt!.Step(ta!, in s, out t);
+                return true;
 
             case IteratorTag.Empty:
                 h = default!;

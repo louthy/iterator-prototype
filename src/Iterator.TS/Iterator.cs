@@ -107,7 +107,8 @@ public readonly struct Iterator<T, TS, A> : IUnion
         {
             case IteratorTag.IterableK:
                 head = this.head;
-                return T.StepImmutable(ta!, in space, out tail);
+                T.StepImmutable(ta!, in space, out tail);
+                return true;
             
             case IteratorTag.Empty:
                 head = default!;
