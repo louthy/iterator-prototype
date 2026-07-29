@@ -117,55 +117,48 @@ public readonly struct Iterator<T, TS, A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public bool TryGetValue(out A h, out Iterator<T, TS, A> t)
+    public bool TryGetValue(out A head, out Iterator<T, TS, A> tail)
     {
         switch (tag)
         {
             case IteratorTag.IterableK:
-                h = head;
-                return T.StepImmutable(ta!, in space, out t);
-                
-                /*
-                ref readonly var s = ref space;
-                h = head;
-                t = new Iterator<T, TS, A>(ta!, in s, out var tg);
-                return tg == IteratorTag.IterableK;
-                */
+                head = this.head;
+                return T.StepImmutable(ta!, in space, out tail);
             
             case IteratorTag.Empty:
-                h = default!;
-                t = default!;
+                head = default!;
+                tail = default!;
                 return false;
             
             case IteratorTag.Singleton:
-                h = head;
-                t = default;
+                head = this.head;
+                tail = default;
                 return true;
             
             case IteratorTag.Cons:
-                h = head;
-                t = lazy!();
+                head = this.head;
+                tail = lazy!();
                 return true;
             
             case IteratorTag.Lazy:
-                return lazy!().TryGetValue(out h, out t);
+                return lazy!().TryGetValue(out head, out tail);
             
             case IteratorTag.Add:
                 var first = lazy!();
-                if (first.TryGetValue(out h, out var nt))
+                if (first.TryGetValue(out head, out var nt))
                 {
-                    t = new Iterator<T, TS, A>(nt, head);
+                    tail = new Iterator<T, TS, A>(nt, this.head);
                 }
                 else
                 {
-                    h = head;
-                    t = default;
+                    head = this.head;
+                    tail = default;
                 }
                 return true;            
 
             default:
-                h = default!;
-                t = default!;
+                head = default!;
+                tail = default!;
                 return false;
         }
     }

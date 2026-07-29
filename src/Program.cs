@@ -44,18 +44,6 @@ return;
         lhs?.Equals(rhs) ?? false;
 }
 
-(int, TimeSpan) Warmup()
-{
-    var (t1, e1) = CSharpVersion();
-    var (t2, e2) = CurrentLanguageExtArrVersion();
-    var (t3, e3) = IterableKVersion();
-    var (t4, e4) = ForeachVersion();
-    var (t5, e5) = StrongIteratorVersion();
-    var (t6, e6) = WeakIteratorVersion();
-    
-    return (t1 + t2 + t3 + t4 + t5 + t6, e1 + e2 + e3 + e4 + e5 + e6);
-}
-
 void WriteOutput<A>(A output, TimeSpan elapsed, string explain) =>
     Console.WriteLine($"Output: {output}\tElapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / count:F3} ns \t{explain}");
 
