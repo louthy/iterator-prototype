@@ -81,10 +81,13 @@ public readonly struct Iterator<T, TS, A> : IUnion
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     internal Iterator(K<T, A> src, in TS state, out IteratorTag tag)
     {
+        // This constructor is a bit of a hack, so we can write directly into the state
+        // space using T.Step
+        
         ta = src;
         space = state;
         vt = VirtualTableCache<T, TS, A>.Cache;
-        tag = T.Step(ta, ref space, out head)
+        tag = T.StepMutable(ta, ref space, out head)
                   ? IteratorTag.IterableK
                   : IteratorTag.Empty;
         this.tag = tag;
@@ -119,22 +122,14 @@ public readonly struct Iterator<T, TS, A> : IUnion
         switch (tag)
         {
             case IteratorTag.IterableK:
+                h = head;
+                return T.StepImmutable(ta!, in space, out t);
+                
+                /*
                 ref readonly var s = ref space;
                 h = head;
                 t = new Iterator<T, TS, A>(ta!, in s, out var tg);
                 return tg == IteratorTag.IterableK;
-
-                /*
-                if (T.Step(ta!, ref s, out var nh))
-                {
-                    t = new Iterator<T, TS, A>(in nh, ta!, in s);
-                    return true;
-                }
-                else
-                {
-                    t = default;
-                    return true;
-                }
                 */
             
             case IteratorTag.Empty:
