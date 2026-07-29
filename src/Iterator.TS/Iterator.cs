@@ -77,22 +77,6 @@ public readonly struct Iterator<T, TS, A> : IUnion
         head = then;
         lazy = () => first;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    internal Iterator(K<T, A> src, in TS state, out IteratorTag tag)
-    {
-        // This constructor is a bit of a hack, so we can write directly into the state
-        // space using T.Step
-        
-        ta = src;
-        space = state;
-        vt = VirtualTableCache<T, TS, A>.Cache;
-        tag = T.StepMutable(ta, ref space, out head)
-                  ? IteratorTag.IterableK
-                  : IteratorTag.Empty;
-        this.tag = tag;
-    }
-    
     
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool TryGetValue(out Nil nil)

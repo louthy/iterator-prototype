@@ -21,6 +21,19 @@ public record VirtualTable<T, TS, A> : VirtualTable<A>
     {
         ref var          ta    = ref Unsafe.As<object, K<T, A>>(ref src);
         ref readonly var state = ref Unsafe.As<Space128, TS>(ref Unsafe.AsRef(in space));
+        if (T.StepImmutable(ta, in state, out var tail1))
+        {
+            tail = Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref tail1);
+            return true;
+        }
+        else
+        {
+            tail = default!;
+            return false;
+        }
+                    
+
+        /*
         if (Step(ta, in state, out var nt))
         {
             tail = Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref nt);
@@ -31,13 +44,7 @@ public record VirtualTable<T, TS, A> : VirtualTable<A>
             tail = default!;
             return false;
         }
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    bool Step(K<T, A> ta, in TS state, out Iterator<T, TS, A> tail)
-    {
-        tail = new Iterator<T, TS, A>(ta, in state, out IteratorTag tg);
-        return tg == IteratorTag.IterableK;
+        */
     }
 }
 

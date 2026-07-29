@@ -95,17 +95,9 @@ public readonly struct Iterator<A> : IUnion
         switch (tag)
         {
             case IteratorTag.IterableK:
-                ref readonly var s = ref space;
                 h = head;
-                if (vt!.Step(ta!, in s, out t))
-                {
-                    return true;
-                }
-                else
-                {
-                    t = default;
-                    return true;
-                }                
+                ref readonly var s = ref space;
+                return vt!.Step(ta!, in s, out t);
 
             case IteratorTag.Empty:
                 h = default!;
