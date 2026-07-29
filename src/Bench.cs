@@ -25,17 +25,27 @@ public abstract class Bench<A>
         }
 
         var elapsed = TimeSpan.Zero;
+        var memory  = 0L;
+        
         for (var i = 0; i < runs; i++)
         {
-            var sw      = Stopwatch.StartNew();
+            var ms = GC.GetTotalAllocatedBytes(true);
+            
+            // Inner timer begin
+            var sw = Stopwatch.StartNew();
             Main();
             sw.Stop();
+            // Inner timer end
+
+            memory += Math.Max(0, GC.GetTotalAllocatedBytes(true) - ms - 40 /* stopwatch size */);
+            
             elapsed += sw.Elapsed;
         }
     
         elapsed /= runs;
+        memory /= runs;
     
-        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t{Explain}");
+        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t{Explain}\t Memory: {memory} bytes");
         return elapsed;
     }
 }

@@ -3,6 +3,7 @@ using IteratorPrototype;
 using IteratorTest;
 using IteratorTest.Traits;
 using LanguageExt;
+using LanguageExt.Traits;
 using I = IteratorTest;
 using static LanguageExt.Prelude;
 
@@ -11,13 +12,11 @@ TestSuite.Run();
 const int COUNT = 1_000_000;
 
 Bench<CSharpVersion>.Mark();
-Bench< CurrentLanguageExtArrVersion>.Mark();
+Bench<CurrentLanguageExtArrVersion>.Mark();
 Bench<IterableKVersion>.Mark();
-Bench<ForeachVersion >.Mark();
+Bench<ForeachVersion>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
-
-return;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -72,18 +71,24 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 //
 public class IterableKVersion : Bench<IterableKVersion>
 {
-    readonly Array<int> array = I.Array.create(..Count);
+    readonly K<I.Array, int> array;
+    readonly ArrayState initial;
 
+    public IterableKVersion()
+    {
+        array = I.Array.create(..Count);
+        initial = IterableK.setup<I.Array, ArrayState, int>(I.Array.create(..Count));
+    }
+    
     protected override string Explain =>
         $"IterableK trait stepping ({Count:N0} items)";
 
     protected override void Main()
     {
-        var karr  = array.Kind();
-        var state = IterableK.setup<I.Array, ArrayState, int>(karr);
+        var state = initial;
         var total = 0;
         
-        while (IterableK.step(karr, ref state, out var x))
+        while (IterableK.step(array, ref state, out var x))
         {
             total += x;
         }
