@@ -94,7 +94,7 @@ public class IterableKVersion : Bench<IterableKVersion>
         var state = initial;
         var total = 0;
         
-        while (IterableK.step(array, ref state, out var x))
+        while (IterableK.stepMutable(array, ref state, out var x))
         {
             total += x;
         }

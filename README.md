@@ -271,19 +271,19 @@ internal Iterator(in A head, object source, in TS state)
 So, what's the problem? This is the output of the benchmarks from this console app...
 
 ```
-[Benchmark 1] Elapsed: 409 µs    Each: 0.409 ns    Foreach C# array (1,000,000 items)
-[Benchmark 2] Elapsed: 392 µs    Each: 0.392 ns    Foreach current LanguageExt Arr<A> (1,000,000 items)
-[Benchmark 3] Elapsed: 520 µs    Each: 0.520 ns    IterableK trait stepping (1,000,000 items)
-[Benchmark 4] Elapsed: 374 µs    Each: 0.374 ns    Foreach Array<A> (1,000,000 items)
-[Benchmark 5] Elapsed: 3996 µs   Each: 3.995 ns    Strong Iterator while TryGetValue (1,000,000 items)
-[Benchmark 6] Elapsed: 36665 µs  Each: 36.665 ns   Weak Iterator while TryGetValue (1,000,000 items)
+[Benchmark 1] Elapsed: 46520 µs       Each: 0.465 ns           Memory: 0 bytes        Foreach C# array (100,000,000 items)
+[Benchmark 2] Elapsed: 43644 µs       Each: 0.436 ns           Memory: 0 bytes        Foreach current LanguageExt Arr<A> (100,000,000 items)
+[Benchmark 3] Elapsed: 24453 µs       Each: 0.245 ns           Memory: 0 bytes        IterableK trait stepping (100,000,000 items)
+[Benchmark 4] Elapsed: 24268 µs       Each: 0.243 ns           Memory: 0 bytes        Foreach Array<A> (100,000,000 items)
+[Benchmark 5] Elapsed: 488311 µs      Each: 4.883 ns           Memory: 0 bytes        Strong Iterator while TryGetValue (100,000,000 items)
+[Benchmark 6] Elapsed: 2343849 µs     Each: 23.438 ns          Memory: 0 bytes        Weak Iterator while TryGetValue (100,000,000 items)
 ```
-Each test iterates over 1,000,000 items, summing a total value. The `Elapsed` value is the total time 
-taken for 1,000,000 additions and the machinery of the iteration (in microseconds). The `Each` value is 
+Each test iterates over 1,000,000,000 items, summing a total value. The `Elapsed` value is the total time 
+taken for 1,000,000,000 addition ops and the machinery of the iteration (in microseconds). The `Each` value is 
 how many nanoseconds it takes to iterate one value and add to the total.
 
-> I'm using basic benchmarking here, but it's good enough to test the concepts before breaking out 
-> more advanced benchmarking tools. There are warm-up runs before a final run, which is enough when
+> I'm using basic benchmarking here, but it's good enough to test the concepts before breaking out more advanced 
+> benchmarking tools. There are warm-up runs before several final runs that are averaged, which is enough when 
 > prototyping.
 
 ### Benchmark 1
@@ -299,13 +299,16 @@ foreach (var x in arr)
 ```
 
 > _I'm using arrays for the benchmarks because arrays are highly optimised in C#, they have very little boilerplate or fat. 
-> So, a generalised immutable-array type that supports `IterableK` going head-to-head with C#'s built-in arrays and 
-> mutable enumerators is the ultimate test._
+> So, a generalised immutable-array type that supports `IterableK`, going head-to-head with C#'s built-in arrays and 
+> mutable enumerators, is the ultimate test._
 
 ### Benchmark 2
 
-The second one is a bespoke `struct` enumerator from the currently released language-ext (`v5.0.0-beta-77`). It is fast, 
-but it is mutable and doesn't generalise the concept of iterables. It should always be around the speed of `int[]` enumeration:
+The second benchmark is the bespoke `struct` enumerator from the currently released language-ext (`v5.0.0-beta-77`). It shows 
+that bespoke enumeration solutions on immutable data-types can get close to the built-in types.  It is fast, but it uses
+the `GetEnumerator` machinery of C#, which means the enumerator must be mutable.
+
+This benchmark is here to show the maximum performance we might expect from enumeration of an immutable data-type.
 
 ```c#
 Arr<int> arr = ...
@@ -337,7 +340,7 @@ public partial class Array : IterableK<Array, ArrayState>
             ? new ArrayState(arr.Items, 0, arr.Items.Length)
             : throw new InvalidCastException();
 
-    static bool IterableK<Array, ArrayState>.Step<A>(ref ArrayState ts, out A value)
+    static bool IterableK<Array, ArrayState>.StepMutable<A>(K<Array, A> ta, ref ArrayState ts, out A value)
     {
         var index = ts.Index;
         var count = ts.Count;
@@ -348,10 +351,31 @@ public partial class Array : IterableK<Array, ArrayState>
             return false;
         }
         
-        var items = ts.Items;
-        var array = Unsafe.As<object, A[]>(ref items);
+        var     items = ts.Items;
+        ref var array = ref Unsafe.As<object, A[]>(ref items);
         ts = new ArrayState(items, index + 1, count);
         value = array[index];
+        
+        return true;
+    }
+    
+    static bool IterableK<Array, ArrayState>.StepImmutable<A>(K<Array, A> ta, in ArrayState ts, out Iterator<Array, ArrayState, A> next)
+    {
+        var index = ts.Index;
+        var count = ts.Count;
+        
+        if(index >= count)
+        {
+            next = default!;
+            return false;
+        }
+        
+        var              items = ts.Items;
+        ref var          array = ref Unsafe.As<object, A[]>(ref items);
+        var              ts1   = new ArrayState(items, index + 1, count);
+        ref readonly var value = ref array[index];
+        
+        next = new Iterator<Array, ArrayState, A>(in value, ta, in ts1);
         
         return true;
     }
@@ -393,12 +417,12 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
         new IteratorEnumerable<T, TS, A>(this);
 }
 ````
-So, we can easily get a strongly-typed `Iterator<T, TS, A>` from `Forward()`; a struct-based enumerator
+So, we can easily get a strongly-typed _immutable_ `Iterator<T, TS, A>` from `Forward()`; a _mutable_ struct-based enumerator
 from `GetEnumerator()`; and bounce the collection to a `ReadOnlySpan<A>` at speed. None of this is difficult for the
-collection-author (other than the efficient implementation of `Step`).
+collection-author (other than the efficient implementation of `StepMutable` and `StepImmutable`).
 
-Benchmark `3` uses the `IterableK` trait module-methods. Benchmarks `4` and `5` use the generalised methods from 
-`IterableBase`. So, from this point on, these are all benchmarks for the prototype code...   
+> _Benchmark `3` uses the `IterableK` trait module-methods. Benchmarks `4` and `5` use the generalised methods from 
+`IterableBase`. So, from this point on, these are all benchmarks for the prototype code..._   
 
 ### Benchmark 3
 
@@ -408,24 +432,25 @@ The third benchmark is manually using the `IterableK` trait methods using the `A
 var array = Array.create(..count);
 var state = IterableK.setup<Array, ArrayState, int>(array);
 
-while (IterableK.step<Array, ArrayState, int>(ref state, out var x))
+while (IterableK.stepMutable<Array, ArrayState, int>(ref state, out var x))
 {
     total += x;
 }
 ```
 
-It has similar performance to C# array iteration, but completely generalised over the `IterableK` trait.  Generalised
-code usually loses performane. But here, we're only slightly down, but as the numbers vary on each run, sometimes it's
-faster.  So, let's say Benchmark `1`, `2`, and `3` are of similar magnitude.
+It is about twice as fast as the built-in C# array enumerator, but completely generalised over the `IterableK` trait!  
 
-> We can also take the `state` value and clone it (standard `struct` allocation copy). That means we can use `ref` to 
-> mutate our `state` in-place (like existing enumerators in C#), or we can use struct-copying to pass the `state` value 
-> somewhere else.  So, as long as the `ArrayState` carries enough information to continue the iteration from the current
-> iteration-step, this finally enables us to build immutable iterators! 
+Generalised code usually loses performance. The numbers do vary run-to-run, but usually this lands somewhere between two
+times faster and the same speed as C# arrays. That's pretty huge!
+
+As is obvious from the name `stepMutable`, this uses a mutation of the reference to the state (`ref state`) to continue 
+each step of the iteration.  And so, this isn't a million miles away from the approach used in `IEnumerator`. This just 
+leverages new C# language features, like `ref` to gain performance.
 
 ### Benchmark 4
 
-The fourth benchmark uses `GetEnumerator()` from `Array<A>` (which is a default-implementation from `IterableBase`).  
+The fourth benchmark uses `GetEnumerator()` from `Array<A>` (which in turn uses a default-implementation from 
+`IterableBase`).  
 
 ```c#
 var array = Array.create(..count);
@@ -435,10 +460,12 @@ foreach(var x in array)
 }
 ```
 
-> _This is always faster than the C# array iteration, for reasons I don't fully understand, because the code within the 
-enumerator is the same as the previous benchmark which tends to vary +/- 50µs or so._ 
+Internally, the returned enumerator, `IterableKEnumerator`, uses the same `StepMutable` approach as the previous 
+benchmark but within a standard `Enumerator` contract.  That allows `foreach` to be used an other standard enumeration
+techniques.
 
-The returned enumerator is a completely generalised `struct` enumerator, that never needs to be manually written:
+The returned enumerator is a completely generalised `struct` enumerator, that never needs to be manually written. So, 
+that means we get the high-performance of the mutable `ref` approach without any need to build enumerators ourselves. 
 ```c#
 public struct IterableKEnumerator<T, TS, A>(K<T, A> ta)
     where T : IterableK<T, TS>
@@ -448,7 +475,7 @@ public struct IterableKEnumerator<T, TS, A>(K<T, A> ta)
     A? current;
 
     public bool MoveNext() =>
-        T.Step(ref foldState, out current);
+        T.StepMutable(ref foldState, out current);
 
     public void Reset() =>
         foldState = T.Setup(ta);
@@ -460,9 +487,9 @@ public struct IterableKEnumerator<T, TS, A>(K<T, A> ta)
 
 ### Benchmark 5
 
-This uses an `Iterator<T, TS, A>` which is returned from `Forward()` (again, a default-implementation from 
-`IterableBase`). It is a completely generalised iterator, if slightly more awkward to use because of the additional 
-type-parameters, but it is also immutable and will produce the same results for the same underlying data structure, every 
+This uses an `Iterator<T, TS, A>` which is returned from `Forward()` (again, leveraging the default-implementation from 
+`IterableBase`). It is a completely general iterator, if slightly more awkward to use because of the additional 
+type-parameters. It it is also immutable and will produce the same results, for the same underlying data structure, every 
 time. It can be truly treated as a value.
 
 ```c#
@@ -514,79 +541,69 @@ the slowest out of all of the iteration approaches (well, so far anyway)!
 If we look at `TryGetValue` you can see each possible case being handled by a switch on the `tag`:
 
 ```c#
-    public bool TryGetValue(out A h, out Iterator<T, TS, A> t)
+public bool TryGetValue(out A head, out Iterator<T, TS, A> tail)
+{
+    switch (tag)
     {
-        switch (tag)
-        {
-            case 1:
-                h = head;
-                t = default;
-                return true;
-            
-            case 2:
-                h = head;
-                t = ((Func<Iterator<T, TS, A>>)obj1!)();
-                return true;
-            
-            case 3:
-                h = head;
-                t = (Iterator<T, TS, A>)obj1!;
-                return true;
+        case IteratorTag.IterableK:
+            head = this.head;
+            T.StepImmutable(ta!, in space, out tail);
+            return true;
+        
+        case IteratorTag.Empty:
+            head = default!;
+            tail = default!;
+            return false;
+        
+        case IteratorTag.Singleton:
+            head = this.head;
+            tail = default;
+            return true;
+        
+        case IteratorTag.Cons:
+            head = this.head;
+            tail = lazy!();
+            return true;
+        
+        case IteratorTag.Lazy:
+            return lazy!().TryGetValue(out head, out tail);
+        
+        case IteratorTag.Add:
+            var first = lazy!();
+            if (first.TryGetValue(out head, out var nt))
+            {
+                tail = new Iterator<T, TS, A>(nt, this.head);
+            }
+            else
+            {
+                head = this.head;
+                tail = default;
+            }
+            return true;            
 
-            case 4:
-                return ((Func<Iterator<T, TS, A>>)obj1!)().TryGetValue(out h, out t);
-
-            case 5:
-                var s = space;
-                h = head;
-                
-                if (T.Step<A>(ref s, out var nh))
-                {
-                    t = new Iterator<T, TS, A>(in nh, obj1!, in s);
-                    return true;
-                }
-                else
-                {
-                    t = default;
-                    return true;
-                }
-            
-            case 6:
-                var first = (Iterator<T, TS, A>)obj1!;
-                if (first.TryGetValue(out h, out var nt))
-                {
-                    t = new Iterator<T, TS, A>(nt, head);
-                }
-                else
-                {
-                    h = head;
-                    t = default;
-                }
-                return true;            
-
-            default:
-                h = default!;
-                t = default!;
-                return false;
-        }
+        default:
+            head = default!;
+            tail = default!;
+            return false;
     }
+}
+
 ```
 
-* `0` is an empty iterator.
-* `1` is a singleton iterator.
-* `2` is where the tail is a lazy function that evaluates on-demand (standard `Cons` case).
-* `3` is where the tail is a boxed `Iterator<T, TS, A>` (unboxed is impossible, it would make the type recursive).
-* `4` is where the entire iterator is lazy and it needs to be acquired before running `TryGetValue` on the result.
-* `5` is the `IterableK` trait case that acquires the tail by calling `IterableK.Step` like other benchmarks here.
-* `6` is where the head is an `Iterator` and the `tail` is a singleton value (standard `Add` case).
+* `IteratorTag.IterableK` is the `IterableK` trait case that acquires the tail by calling `IterableK.StepImmutable` like other benchmarks here.
+* `IteratorTag.Empty` is an empty iterator.
+* `IteratorTag.Singleton` is a singleton iterator.
+* `IteratorTag.Cons` is where the tail is a lazy function that evaluates on-demand (standard `Cons` case).
+* `IteratorTag.Lazy` is where the entire iterator is lazy and it needs to be acquired before running `TryGetValue` on the result.
+* `IteratorTag.Add` is where the head is an `Iterator` and the `tail` is a singleton value (standard `Add` case).
 
-The key area where the performance needs to improve is case `5`. It is up to 10 times slower and it's unclear exactly why...
+The key area where the performance needs to improve is case `IteratorTag.IterableK`. It is up to 10 times slower and it's unclear exactly why...
 
 There are things that will be slower:
 
 * The switch statement itself can cause branch-prediction problems.
-* `var s = space` clones the old state to the new because `s` is going to be passed by-ref to `Step`. We can't overwrite this immutable field, so the copy is required and doesn't exist in other benchmarks.
-* `t = new Iterator<T, TS, A>(in nh, obj1!, in s)` is a new struct constructor that doesn't exist in other benchmarks. 
+* The old state needs to be cloned to the new because it's an immutable type.
+* A new `Iterator<T, TS, A>` needs to be constructed.  
 
 It doesn't feel like these should be a problem, but they seemingy increase the cost of iteration by a factor of 10. It 
 may well be the cost of immutability and for supporting the `TryGetValue` union-access pattern. 
@@ -614,26 +631,18 @@ public static Iterator<A> fromIterable<T, TS, A>(K<T, A> ta)
     where TS : struct
 {
     var s = T.Setup(ta);
-    if (T.Step(ref s, out A h))
-    {
-        var     i1 = new Iterator<T, TS, A>(in h, ta, in s);
-        ref var i2 = ref Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref i1);
-        return i2;
-    }
-    else
-    {
-        return default;
-    }
+    return T.StepImmutable(ta, in s, out var i1) 
+               ? Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref i1) 
+               : default;
 }
 ```
 
-This uses the `VirtualTable` to support the casting to `Iterator<T, TS, A>`. So, those virtual-calls may be where the 
-overhead lies, or the `Unsafe.As` casts.
+This uses the `VirtualTable` to support the casting to `Iterator<T, TS, A>`. The virtual-calls may be where the overhead lies, that or the `Unsafe.As` casts.
 
 ## Conclusion
 
-I've run out of steam a little with this, so if anyone wants to be a hero to try an make `Iterator<T, TS, A>` more 
-efficient for `case 5` that would be great. And if anyone wants to be a mega-hero to get `Iterator<A>` into the same 
+I've run out of steam a little with this, so if anyone wants to be a hero and make `Iterator<T, TS, A>` more efficient for 
+`case IteratorTag.IterableK` that would be great. And if anyone wants to be a mega-hero to get `Iterator<A>` into the same 
 magnitude as `Iterator<T, TS, A>`, that would be awesome!
 
 Rules:
@@ -642,7 +651,7 @@ Rules:
 * Whilst using `Unsafe` is allowed, don't throw caution to the wind too much! 
   * The end code must be robust, reliable, and fast!
 
-By the way, I realise that even the slowest benchmark here can iterate over 27 million items per second. Which for many
+By the way, I realise that even the slowest benchmark here can iterate over 42 million items per second. Which for many
 use cases is amazing. And when this technique is paired with other data-types like trees and hash-maps, the iteration 
 part will start to disappear. But still, it feels so damn close to having an allocation free iterator that is guaranteed
 to be fast.
