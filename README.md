@@ -88,7 +88,12 @@ public interface IterableK<out T, TS> : IterableK<T>
     where TS : struct
 {
     static abstract TS Setup<A>(K<T, A> ta);
-    static abstract bool Step<A>(ref TS ts, out A value);
+    static abstract bool StepMutable<A>(K<T, A> ta, ref TS ts, out A value);
+    static abstract bool StepImmutable<A>(K<T, A> ta, in TS ts, out Iterator<T, TS, A> value);
+
+    // Default implementation
+    static Iterator<A> IterableK<T>.Forward<A>(K<T, A> ta) =>
+        IterableK.fromIterable<T, TS, A>(ta);    
 }
 ```
 
@@ -98,20 +103,21 @@ public interface IterableK<out T, TS> : IterableK<T>
 
  ## `Iterator<A>`
 
+One thing that has been bothering me for a long time is `IEnumerator<T>` and the general enumerator
+pattern of C#. We have no control over the fact enumerators **mutate** their members.
+
+> It is impossible to create an immutable `IEnumerator<T>` derived type and have it work with C#.
+
 Just separating out `IterableK` from `Foldable` doesn't fundamentally change anything.  The critical thing will 
 be the capability of the `Iterator<A>` value that is returned from `IterableK.Forward()` and `IterableBackK.Backward()`.
-It will somehow have to leverage the underlyng `IterableK<F, FS>.Step` technique whilst being flexible,
+It will somehow have to leverage the underlyng `IterableK<F, FS>.Step*` functions whilst being flexible,
 immutable, pure, allocation-free and fast ... a tall order!
 
-One thing that's been bothering me for a long time is `IEnumerator` and the general enumerator 
-pattern of C#. We have no control over the fact enumerators mutate their members.  
-
-> It is impossible to create an immutable `IEnumerator` and have it work with C#.  
-
-Currently `Iterator<A>` (the one that actually exists in lang-ext today) allows the lifting of `IEnumerator<A>` into it 
-and tries its best to make it appear to be an immutable sequence.  However, it does not allow multiple evaluation of the 
-same reference, where repeated iterations yield the same results. The current implemention is impure, but it isn't 
-declarative. This can lead to confusion and bugs.  
+Currently `Iterator<A>` (the one that actually exists in lang-ext today) allows the lifting of `IEnumerator<A>` and tries 
+its best to make it appear to be an immutable sequence.  However, it does not allow multiple evaluation of the same 
+reference, where repeated iterations yield the same results. The current implemention is impure and isn't 
+declarative. This can lead to confusion and bugs because users of language-ext expect all types the have pure and 
+immutable properties.  
 
 > The iteration is impure by-default because of `IEnumerator<A>`.
 > I want to create an `Iterator<A>` that is pure and an `IteratorIO<A>` that explicitly might return
@@ -119,7 +125,7 @@ different values on each evaluation.
 
 ### Designing a new `Iterator<A>`
 
-I started using a type that looked a little like this:
+I started by creating a type that looked a little like this:
 
 ```c#
 public record Iterator<A>(A Head, Func<Iterator<A>> Tail);
@@ -140,19 +146,18 @@ record IteratorSingle<A>(A Head) : Iterator<A>;
 record IteratorCons<A>(A Head, Func<Iterator<A>> Tail) : Iterator<A>;
 record IteratorLazy<A>(Func<Iterator<A>> Tail) : Iterator<A>;
 ```
-All of this ends up being a discriminated union.  And that's fine.  C# is getting unions soon, but it's
-not trivial to make this into an efficient union-type.  Firstly, it's a reference type, and so it will
-end up on the heap.  Converting to a struct is possible, but it limits the extensionality of the type,
-for example, if I wanted to add `IteratorArr<A>(Arr<A> array)` that had a more efficient implemention,
-it would probably require that I stay with `Iterator<A>` being a reference type.
+All of this ends up being a discriminated union.  And that's fine.  C# is getting unions soon, but it's not trivial to 
+make this into an efficient union-type.  Firstly, it's a reference type, and so it will end up on the heap.  Converting 
+to a struct is possible, but it limits the extensionality of the type. For example, if I wanted to add 
+`IteratorArr<A>(Arr<A> array)` that had a more efficient implemention for the `Arr<A>` type, it would probably require 
+that I stay with `Iterator<A>` being a reference type.
 
-Another issue is that the lazy evaluation of the tail means that every single item in the collection
-will end up allocating new items to the heap: potentially the closure and definitely the newly realised
-tail `Iterator<A>`.
+Another issue is that the lazy evaluation of the tail means that every single item in the collection will end up 
+allocating new entries on the heap: the closure and definitely the newly realised tail `Iterator<A>`.
 
 That's a hell of an overhead.  Especially after finding a way to generalise the iteration of collections
 using `IterableK<F, FS>` faster than C# does it itself! Using this approach to `Iterator<A>` generalisation
-will kill of those gains and send the project backwards in terms of performance.
+will kill those gains and send the project backwards in terms of performance.
 
 ## This prototype
 
