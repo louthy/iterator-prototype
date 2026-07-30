@@ -17,7 +17,7 @@ Bench<IterableKVersion>.Mark();
 Bench<ForeachVersion>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
-
+Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -43,8 +43,7 @@ public class CSharpVersion : Bench<CSharpVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Cyan is the base benchmark
-        ConsoleColor.Cyan;
+        Bench.Baseline;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -69,8 +68,7 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Yellow is mutable
-        ConsoleColor.Yellow;
+        Bench.Mutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -104,8 +102,7 @@ public class IterableKVersion : Bench<IterableKVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Yellow is mutable
-        ConsoleColor.Yellow;
+        Bench.Mutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -130,8 +127,7 @@ public class ForeachVersion : Bench<ForeachVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Yellow is mutable
-        ConsoleColor.Yellow;
+        Bench.Mutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -158,8 +154,7 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Green is immutable
-        ConsoleColor.Green;
+        Bench.Immutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -186,6 +181,5 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
     }
 
     protected override ConsoleColor Color { get; } =
-        // Green is immutable
-        ConsoleColor.Green;
+        Bench.Immutable;
 }

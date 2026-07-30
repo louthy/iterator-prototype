@@ -46,10 +46,43 @@ public abstract class Bench<A>
         elapsed /= runs;
         memory /= runs;
     
+        var restore = Console.ForegroundColor;
         Console.ForegroundColor = Color;
-        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t Memory: {memory} bytes \t{Explain}");
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns  \t Memory: {memory} bytes \t{Explain}");
+        Console.ForegroundColor = restore;
         return elapsed;
     }
 }
 
+public static class Bench
+{
+    public const ConsoleColor Baseline = ConsoleColor.Cyan;
+    public const ConsoleColor Mutable = ConsoleColor.Yellow;
+    public const ConsoleColor Immutable = ConsoleColor.Green;
+
+    public static void Key()
+    {
+        var restore = Console.ForegroundColor;
+        
+        Console.WriteLine();
+
+        Console.Write("Key:  ");
+
+        Console.ForegroundColor = Baseline;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" baseline   ");
+
+        Console.ForegroundColor = Mutable;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" mutable process   ");
+
+        Console.ForegroundColor = Immutable;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" immutable process   ");
+
+        Console.WriteLine();        
+    }
+}
