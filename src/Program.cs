@@ -41,6 +41,10 @@ public class CSharpVersion : Bench<CSharpVersion>
         }
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Cyan is the base benchmark
+        ConsoleColor.Cyan;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,6 +67,10 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
         }
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Yellow is mutable
+        ConsoleColor.Yellow;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -94,6 +102,10 @@ public class IterableKVersion : Bench<IterableKVersion>
         }
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Yellow is mutable
+        ConsoleColor.Yellow;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,6 +128,10 @@ public class ForeachVersion : Bench<ForeachVersion>
         }
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Yellow is mutable
+        ConsoleColor.Yellow;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -140,6 +156,10 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Green is immutable
+        ConsoleColor.Green;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -164,4 +184,8 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
         ignore(total);
     }
+
+    protected override ConsoleColor Color { get; } =
+        // Green is immutable
+        ConsoleColor.Green;
 }

@@ -8,6 +8,7 @@ public abstract class Bench<A>
     protected const int Count = 1_000_000;
     protected abstract string Explain { get; }
     protected abstract void Main();
+    protected abstract ConsoleColor Color { get; }
 
     public static void Mark()
     {
@@ -45,7 +46,9 @@ public abstract class Bench<A>
         elapsed /= runs;
         memory /= runs;
     
-        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t{Explain}\t Memory: {memory} bytes");
+        Console.ForegroundColor = Color;
+        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t Memory: {memory} bytes \t{Explain}");
+        Console.ForegroundColor = ConsoleColor.White;
         return elapsed;
     }
 }
