@@ -33,7 +33,7 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static bool IterableK<Array, ArrayState, ArrayStateRef>.StepMutable<A>(K<Array, A> ta, ref ArrayStateRef ts, out A value)
     {
-        var     state    = Unsafe.As<ArrayStateRef, ArrayStateRef<A>>(ref ts);
+        ref var state    = ref Unsafe.As<ArrayStateRef, ArrayStateRef<A>>(ref ts);
         ref var items    = ref state.Items;
         ref var itemsEnd = ref state.ItemsEnd;
 
@@ -47,8 +47,6 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
         
         items = ref Unsafe.Add(ref items, 1);
         state = new ArrayStateRef<A>(ref items, ref itemsEnd);
-        ts = Unsafe.As<ArrayStateRef<A>, ArrayStateRef>(ref state);
-
         return true;
     }
 
