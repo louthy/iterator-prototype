@@ -1,15 +1,13 @@
 namespace IteratorTest;
 
-public readonly struct ArrayState(object items, int index, int count)
+public readonly struct ArrayState(int index, int count)
 {
-    public readonly object Items = items;
     public readonly int Index = index;
     public readonly int Count = count;
 }
 
-public struct ArrayStateMutable(object items, int index, int count)
+public struct ArrayStateMutable(int index, int count)
 {
-    public object Items = items;
     public int Index = index;
     public int Count = count;
 }
