@@ -6,31 +6,64 @@ namespace IteratorTest.Traits;
 public static class IterableK
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static TS setup<T, TS, A>(K<T, A> ta)
-        where T : IterableK<T, TS>
-        where TS : struct =>
-        T.Setup(ta);
+    public static MS setupMutable<T, IS, MS, A>(K<T, A> ta)
+        where T : IterableK<T, IS, MS>
+        where IS : struct 
+        where MS : allows ref struct =>
+        T.SetupMutable(ta);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static bool stepMutable<T, TS, A>(K<T, A> ta, ref TS ts, out A value) 
-        where T : IterableK<T, TS>
-        where TS : struct =>
+    public static bool stepMutable<T, IS, MS, A>(K<T, A> ta, ref MS ts, out A value) 
+        where T : IterableK<T, IS, MS>
+        where IS : struct 
+        where MS : allows ref struct =>
         T.StepMutable(ta, ref ts, out value);
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public static TS setupImmutable<T, TS, A>(K<T, A> ta)
+        where T : IterableK<T, TS>
+        where TS : struct =>
+        T.SetupImmutable(ta);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public static bool stepImmutable<T, TS, A>(K<T, A> ta, in TS ts, out A head, out TS tail) 
+        where T : IterableK<T, TS>
+        where TS : struct =>
+        T.StepImmutable(ta, in ts, out head, out tail);
+
+    /*
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public static bool stepImmutable<T, TS, A>(K<T, A> ta, in TS ts, out Iterator<T, TS, A> next) 
         where T : IterableK<T, TS>
         where TS : struct =>
         T.StepImmutable(ta, in ts, out next);
+        */
     
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public static Iterator<A> fromIterable<T, TS, A>(K<T, A> ta)
         where T : IterableK<T, TS>
         where TS : struct
     {
-        var s = T.Setup(ta);
-        return T.StepImmutable(ta, in s, out var i1) 
-                   ? Unsafe.As<Iterator<T, TS, A>, Iterator<A>>(ref i1) 
+        var s = T.SetupImmutable(ta);
+        if (T.StepImmutable(ta, in s, out var head, out var tail))
+        {
+            ref readonly var t = ref Unsafe.As<TS, Space128>(ref tail);
+            return new Iterator<A>(in head, ta, VirtualTableCache<T, TS, A>.Cache, in t);
+        }
+        else
+        {
+            return default;
+        }
+    }
+        
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public static Iterator<T, TS, A> fromIterableStrong<T, TS, A>(K<T, A> ta)
+        where T : IterableK<T, TS>
+        where TS : struct
+    {
+        var s = T.SetupImmutable(ta);
+        return T.StepImmutable(ta, in s, out var head, out var tail) 
+                   ? new Iterator<T, TS, A>(in head, ta, in tail)
                    : default;
     }
 }

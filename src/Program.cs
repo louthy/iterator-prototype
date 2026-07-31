@@ -9,8 +9,6 @@ using static LanguageExt.Prelude;
 
 TestSuite.Run();
 
-const int COUNT = 1_000_000;
-
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
 Bench<IterableKVersion>.Mark();
@@ -77,24 +75,17 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 //
 public class IterableKVersion : Bench<IterableKVersion>
 {
-    readonly K<I.Array, int> array;
-    readonly ArrayState initial;
+    readonly K<I.Array, int> array = I.Array.create(..Count);
 
-    public IterableKVersion()
-    {
-        array = I.Array.create(..Count);
-        initial = IterableK.setup<I.Array, ArrayState, int>(I.Array.create(..Count));
-    }
-    
     protected override string Explain =>
         $"IterableK trait stepping ({Count:N0} items)";
 
     protected override void Main()
     {
-        var state = initial;
+        var state = IterableK.setupMutable<I.Array, ArrayState, ArrayStateRef, int>(array);
         var total = 0;
         
-        while (IterableK.stepMutable(array, ref state, out var x))
+        while (IterableK.stepMutable<I.Array, ArrayState, ArrayStateRef, int>(array, ref state, out var x))
         {
             total += x;
         }

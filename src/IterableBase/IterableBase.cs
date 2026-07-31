@@ -28,10 +28,11 @@ public interface IterableBase<T, TS, TA, A> : K<T, A>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     ReadOnlySpan<A> AsSpan()
     {
-        var ta = this;
-        var w  = ArrayWriter<A>.Init();
-        var s  = T.Setup(ta);
-        while (T.StepMutable(ta, ref s, out var x))
+        var ta   = this;
+        var w    = ArrayWriter<A>.Init();
+        var iter = IterableK.fromIterableStrong<T, TS, A>(ta);
+        
+        while (iter.TryGetValue(out var x, out iter))
         {
             ArrayWriter<A>.Add(ref w, x);
         }

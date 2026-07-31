@@ -2,15 +2,26 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorTest;
 
+public ref struct IteratorMutable<A>
+{
+    // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
+    public IteratorTag tag;
+    public A head;
+    public object? ta;
+    public Func<Iterator<A>>? lazy;
+    public VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    public Space128 space;
+}
+
 [Union]
 public readonly struct Iterator<A> : IUnion
 {
-    readonly IteratorTag tag;
-    readonly A head;
-    readonly object? ta;
-    readonly Func<Iterator<A>>? lazy;
-    readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
-    readonly Space128 space;
+    internal readonly IteratorTag tag;
+    internal readonly A head;
+    internal readonly object? ta;
+    internal readonly Func<Iterator<A>>? lazy;
+    internal readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    internal readonly Space128 space;
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in Nil nil)
@@ -51,12 +62,13 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A one, object? ta, VirtualTable<A>? vt, in Space128 state)
+    internal Iterator(in A head, object? ta, VirtualTable<A>? vt, in Space128 space)
     {
         tag = IteratorTag.IterableK;
-        head = default!;
+        this.head = head;
         this.ta = ta;
-        space = state;
+        this.vt = vt;
+        this.space = space;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
@@ -90,50 +102,50 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public bool TryGetValue(out A h, out Iterator<A> t)
+    public bool TryGetValue(out A head, out Iterator<A> tail)
     {
         switch (tag)
         {
             case IteratorTag.IterableK:
-                h = head;
-                ref readonly var s = ref space;
-                vt!.Step(ta!, in s, out t);
+                tail = this;        // Copy
+                head = this.head;
+                vt!.Next(ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref tail));
                 return true;
 
             case IteratorTag.Empty:
-                h = default!;
-                t = default!;
+                head = default!;
+                tail = default!;
                 return false;
             
             case IteratorTag.Singleton:
-                h = head;
-                t = default;
+                head = this.head;
+                tail = default;
                 return true;
             
             case IteratorTag.Cons:
-                h = head;
-                t = lazy!();
+                head = this.head;
+                tail = lazy!();
                 return true;
 
             case IteratorTag.Lazy:
-                return lazy!().TryGetValue(out h, out t);
+                return lazy!().TryGetValue(out head, out tail);
 
             case IteratorTag.Add:
                 var first = lazy!();
-                if (first.TryGetValue(out h, out var nt))
+                if (first.TryGetValue(out head, out var nt))
                 {
-                    t = new Iterator<A>(nt, head);
+                    tail = new Iterator<A>(nt, this.head);
                 }
                 else
                 {
-                    h = head;
-                    t = default;
+                    head = this.head;
+                    tail = default;
                 }
                 return true;
             
             default:
-                h = default!;
-                t = default!;
+                head = default!;
+                tail = default!;
                 return false;
         }
     }

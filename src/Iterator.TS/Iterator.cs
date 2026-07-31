@@ -4,6 +4,19 @@ using LanguageExt.Traits;
 
 namespace IteratorTest;
 
+public ref struct IteratorMutable<T, TS, A>
+    where T : IterableK<T, TS>
+    where TS : struct
+{
+    // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
+    public IteratorTag tag;
+    public A head;
+    public K<T, A>? ta;
+    public Func<Iterator<T, TS, A>>? lazy;
+    public VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    public TS space;
+}
+
 [Union]
 public readonly struct Iterator<T, TS, A> : IUnion
     where T : IterableK<T, TS>
@@ -106,8 +119,9 @@ public readonly struct Iterator<T, TS, A> : IUnion
         switch (tag)
         {
             case IteratorTag.IterableK:
+                tail = this;        // Copy
                 head = this.head;
-                T.StepImmutable(ta!, in space, out tail);
+                T.NextImmutableUntyped(ta!, ref Unsafe.As<Iterator<T, TS, A>, IteratorMutable<T, TS, A>>(ref tail));
                 return true;
             
             case IteratorTag.Empty:

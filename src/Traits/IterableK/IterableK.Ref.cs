@@ -1,25 +1,50 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
-public interface IterableK<T, TS> : IterableK<T>
-    where T : IterableK<T, TS>
-    where TS : struct
+/// <summary>
+/// A specialised version of <see cref="IterableK{T}"/> that allows fast enumeration using an immutable `struct`.
+/// </summary>
+/// <typeparam name="T">Trait type</typeparam>
+/// <typeparam name="IS">Immutable state type</typeparam>
+public interface IterableK<T, IS> : IterableK<T>
+    where T : IterableK<T, IS>
+    where IS : struct
 {
-    static abstract TS Setup<A>(K<T, A> ta);
+    static abstract IS SetupImmutable<A>(K<T, A> ta);
+    static abstract bool StepImmutable<A>(K<T, A> ta, in IS state, out A head, out IS tail);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static virtual void NextImmutableUntyped<A>(object taObj, ref IteratorMutable<A> next)
+    {
+        ref var ta    = ref Unsafe.As<object, K<T, A>>(ref taObj);
+        ref var state = ref Unsafe.As<Space128, IS>(ref Unsafe.AsRef(in next.space));
+        T.StepImmutable(ta, in state, out _, out state);
+    }    
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static virtual void NextImmutableUntyped<A>(K<T, A> ta, ref IteratorMutable<T, IS, A> next)
+    {
+        ref var state = ref next.space;
+        T.StepImmutable(ta, in state, out _, out state);
+    }    
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static Iterator<A> IterableK<T>.Forward<A>(K<T, A> ta) =>
+        IterableK.fromIterable<T, IS, A>(ta);    
+}
+
+public interface IterableK<T, IS, MS> : IterableK<T, IS>
+    where T : IterableK<T, IS, MS>
+    where IS : struct
+    where MS : allows ref struct
+{
+    static abstract MS SetupMutable<A>(K<T, A> ta);
     
     /// <summary>
     /// Used for high-performance, mutable, iteration.
     /// </summary>
-    static abstract bool StepMutable<A>(K<T, A> ta, ref TS ts, out A value);
-
-    /// <summary>
-    /// Used for high-performance, immutable, iteration.
-    /// </summary>
-    static abstract bool StepImmutable<A>(K<T, A> ta, in TS ts, out Iterator<T, TS, A> value);
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static Iterator<A> IterableK<T>.Forward<A>(K<T, A> ta) =>
-        IterableK.fromIterable<T, TS, A>(ta);    
+    static abstract bool StepMutable<A>(K<T, A> ta, ref MS ts, out A value);
 }
