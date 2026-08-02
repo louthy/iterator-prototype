@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using IteratorPrototype;
+﻿using IteratorPrototype;
 using IteratorTest;
 using IteratorTest.Traits;
 using LanguageExt;

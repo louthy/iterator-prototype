@@ -18,12 +18,12 @@ public ref struct IteratorMutable<A>
 [SkipLocalsInit]
 public readonly struct Iterator<A> : IUnion
 {
-    internal readonly IteratorTag tag;
-    internal readonly A head;
-    internal readonly object? ta;
-    internal readonly Func<Iterator<A>>? lazy;
-    internal readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
-    internal readonly Space128 space;
+    readonly IteratorTag tag;
+    readonly A head;
+    readonly object? ta;
+    readonly Func<Iterator<A>>? lazy;
+    readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    readonly Space128 space;
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator(in Nil nil)

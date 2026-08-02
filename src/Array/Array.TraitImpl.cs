@@ -73,7 +73,6 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static void IterableK<Array, ArrayState>.NextImmutable<A>(K<Array, A> ta, ref IteratorMutable<Array, ArrayState, A> next)
     {
-        ref var array = ref Unsafe.As<K<Array, A>, Array<A>>(ref ta); 
         ref var state = ref Unsafe.As<ArrayState, ArrayStateMutable>(ref next.space);
         ref var index = ref state.Index;
         ref var count = ref state.Count;
@@ -84,6 +83,7 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
             return;
         }
 
+        var array = (Array<A>)ta;
         next.head = array.Items[index];
         index++;
     }
@@ -91,7 +91,6 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static void IterableK<Array, ArrayState>.NextImmutableUntyped<A>(object taObj, ref IteratorMutable<A> next)
     {
-        ref var array = ref Unsafe.As<object, Array<A>>(ref taObj); 
         ref var state = ref Unsafe.As<Space128, ArrayStateMutable>(ref next.space);
         ref var index = ref state.Index;
         ref var count = ref state.Count;
@@ -102,6 +101,7 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
             return;
         }
 
+        var array = (Array<A>)taObj;
         next.head = array.Items[index];
         index++;
     }
