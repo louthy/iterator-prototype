@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorTest;
 
+[SkipLocalsInit]
 public ref struct IteratorMutable<A>
 {
     // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
@@ -14,6 +15,7 @@ public ref struct IteratorMutable<A>
 }
 
 [Union]
+[SkipLocalsInit]
 public readonly struct Iterator<A> : IUnion
 {
     internal readonly IteratorTag tag;

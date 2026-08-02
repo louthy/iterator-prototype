@@ -4,6 +4,7 @@ using LanguageExt.Traits;
 
 namespace IteratorTest;
 
+[SkipLocalsInit]
 public ref struct IteratorMutable<T, TS, A>
     where T : IterableK<T, TS>
     where TS : struct
@@ -18,6 +19,7 @@ public ref struct IteratorMutable<T, TS, A>
 }
 
 [Union]
+[SkipLocalsInit]
 public readonly struct Iterator<T, TS, A> : IUnion
     where T : IterableK<T, TS>
     where TS : struct
