@@ -14,15 +14,15 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
             : throw new InvalidCastException();
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static ArrayStateRef IterableK<Array, ArrayState, ArrayStateRef>.SetupMutable<A>(K<Array, A> ta)
+    static void IterableK<Array, ArrayState, ArrayStateRef>.SetupMutable<A>(K<Array, A> ta, out ArrayStateRef state)
     {
         if (ta is Array<A> arr)
         {
-            var     array = arr.Items;
-            ref var items = ref MemoryMarshal.GetArrayDataReference(array);
+            var     array    = arr.Items;
+            ref var items    = ref MemoryMarshal.GetArrayDataReference(array);
             ref var itemsEnd = ref Unsafe.Add(ref items, array.Length);
-            var     state = new ArrayStateRef<A>(ref items, ref itemsEnd);
-            return Unsafe.As<ArrayStateRef<A>, ArrayStateRef>(ref state);
+            var     stateA   = new ArrayStateRef<A>(ref items, ref itemsEnd);
+            state = Unsafe.As<ArrayStateRef<A>, ArrayStateRef>(ref stateA);
         }
         else
         {

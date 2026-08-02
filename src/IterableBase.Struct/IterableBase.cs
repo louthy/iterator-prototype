@@ -7,11 +7,10 @@ namespace IteratorTest.Traits;
 /// <summary>
 /// Apply this to an instance-type of an `IterableK`
 /// </summary>
-public interface IterableBase<T, IS, MS, TA, A> : K<T, A>
-    where T : IterableK<T, IS, MS>
+public interface IterableBase<T, IS, TA, A> : K<T, A>
+    where T : IterableK<T, IS>
     where IS : struct
-    where MS : allows ref struct
-    where TA : IterableBase<T, IS, MS, TA, A>
+    where TA : IterableBase<T, IS, TA, A>
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     Iterator<T, IS, A> Forward()
@@ -23,16 +22,17 @@ public interface IterableBase<T, IS, MS, TA, A> : K<T, A>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    IterableKEnumerator<T, IS, MS, A> GetEnumerator() =>
+    IterableKEnumerator<T, IS, A> GetEnumerator() =>
         new (this);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     ReadOnlySpan<A> AsSpan()
     {
-        var ta = this;
-        var w  = ArrayWriter<A>.Init();
-        var s  = T.SetupMutable(ta);
-        while (T.StepMutable(ta, ref s, out var x))
+        var ta   = this;
+        var w    = ArrayWriter<A>.Init();
+        var iter = IterableK.fromIterableStrong<T, IS, A>(ta);
+        
+        while (iter.TryGetValue(out var x, out iter))
         {
             ArrayWriter<A>.Add(ref w, x);
         }

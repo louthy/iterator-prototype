@@ -3,20 +3,30 @@ using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
-public struct IterableKEnumerator<T, IS, A>(K<T, A> ta)
-    where T : IterableK<T, IS>
+public ref struct IterableKEnumerator<T, IS, MS, A>
+    where T : IterableK<T, IS, MS>
     where IS : struct
+    where MS : allows ref struct
 {
-    IS state = T.SetupImmutable(ta);
+    readonly bool valid;
+    readonly K<T, A> ta;
+    MS state;
     A? current;
+
+    public IterableKEnumerator(K<T, A> ta)
+    {
+        valid = true;
+        this.ta = ta;
+        T.SetupMutable(ta, out state);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool MoveNext() =>
-        T.StepImmutable(ta, in state, out current, out state);
+        valid && T.StepMutable(ta, ref state, out current);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public void Reset() =>
-        state = T.SetupImmutable(ta);
+        T.SetupMutable(ta, out state);
 
     public A Current
     {

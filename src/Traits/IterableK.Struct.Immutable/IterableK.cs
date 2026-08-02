@@ -1,11 +1,10 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
 /// <summary>
-/// A specialised version of <see cref="IterableK{T}"/> that allows fast enumeration using an immutable `struct`.
+/// A specialised version of <see cref="IterableK{T}"/> that allows fast enumeration using an immutable `struct` state.
 /// </summary>
 /// <typeparam name="T">Trait type</typeparam>
 /// <typeparam name="IS">Immutable state type</typeparam>
@@ -34,17 +33,4 @@ public interface IterableK<T, IS> : IterableK<T>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static Iterator<A> IterableK<T>.Forward<A>(K<T, A> ta) =>
         IterableK.fromIterable<T, IS, A>(ta);    
-}
-
-public interface IterableK<T, IS, MS> : IterableK<T, IS>
-    where T : IterableK<T, IS, MS>
-    where IS : struct
-    where MS : allows ref struct
-{
-    static abstract MS SetupMutable<A>(K<T, A> ta);
-    
-    /// <summary>
-    /// Used for high-performance, mutable, iteration.
-    /// </summary>
-    static abstract bool StepMutable<A>(K<T, A> ta, ref MS ts, out A value);
 }

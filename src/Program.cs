@@ -82,7 +82,7 @@ public class IterableKVersion : Bench<IterableKVersion>
 
     protected override void Main()
     {
-        var state = IterableK.setupMutable<I.Array, ArrayState, ArrayStateRef, int>(array);
+        IterableK.setupMutable<I.Array, ArrayState, ArrayStateRef, int>(array, out var state);
         var total = 0;
         
         while (IterableK.stepMutable<I.Array, ArrayState, ArrayStateRef, int>(array, ref state, out var x))
