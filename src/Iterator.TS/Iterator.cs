@@ -28,7 +28,9 @@ public readonly struct Iterator<T, TS, A> : IUnion
     readonly A head;
     readonly K<T, A>? ta;
     readonly Func<Iterator<T, TS, A>>? lazy;
+    // ReSharper disable once NotAccessedField.Local
     readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
+    // ReSharper disable once NotAccessedField.Local
     readonly TS space;
 
     public bool IsEmpty
@@ -121,30 +123,41 @@ public readonly struct Iterator<T, TS, A> : IUnion
         switch (tag)
         {
             case IteratorTag.IterableK:
-                tail = this;        // Copy
+            {
+                tail = this; // Copy
                 head = this.head;
-                T.NextImmutableUntyped(ta!, ref Unsafe.As<Iterator<T, TS, A>, IteratorMutable<T, TS, A>>(ref tail));
+                T.NextImmutable(ta!, ref Unsafe.As<Iterator<T, TS, A>, IteratorMutable<T, TS, A>>(ref tail));
                 return true;
-            
+            }
+
             case IteratorTag.Empty:
+            {
                 head = default!;
                 tail = default!;
                 return false;
-            
+            }
+
             case IteratorTag.Singleton:
+            {
                 head = this.head;
                 tail = default;
                 return true;
-            
+            }
+
             case IteratorTag.Cons:
+            {
                 head = this.head;
                 tail = lazy!();
                 return true;
-            
+            }
+
             case IteratorTag.Lazy:
+            {
                 return lazy!().TryGetValue(out head, out tail);
-            
+            }
+
             case IteratorTag.Add:
+            {
                 var first = lazy!();
                 if (first.TryGetValue(out head, out var nt))
                 {
@@ -155,12 +168,16 @@ public readonly struct Iterator<T, TS, A> : IUnion
                     head = this.head;
                     tail = default;
                 }
-                return true;            
+
+                return true;
+            }
 
             default:
+            {
                 head = default!;
                 tail = default!;
                 return false;
+            }
         }
     }
 

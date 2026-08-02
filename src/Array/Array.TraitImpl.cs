@@ -71,7 +71,7 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static void IterableK<Array, ArrayState>.NextImmutableUntyped<A>(K<Array, A> ta, ref IteratorMutable<Array, ArrayState, A> next)
+    static void IterableK<Array, ArrayState>.NextImmutable<A>(K<Array, A> ta, ref IteratorMutable<Array, ArrayState, A> next)
     {
         ref var array = ref Unsafe.As<K<Array, A>, Array<A>>(ref ta); 
         ref var state = ref Unsafe.As<ArrayState, ArrayStateMutable>(ref next.space);

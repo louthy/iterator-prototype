@@ -24,7 +24,7 @@ public interface IterableK<T, IS> : IterableK<T>
     }    
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static virtual void NextImmutableUntyped<A>(K<T, A> ta, ref IteratorMutable<T, IS, A> next)
+    static virtual void NextImmutable<A>(K<T, A> ta, ref IteratorMutable<T, IS, A> next)
     {
         ref var state = ref next.space;
         T.StepImmutable(ta, in state, out _, out state);
