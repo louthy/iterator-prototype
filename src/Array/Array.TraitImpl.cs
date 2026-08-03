@@ -8,12 +8,6 @@ namespace IteratorTest;
 public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static ArrayState IterableK<Array, ArrayState>.SetupImmutable<A>(K<Array, A> ta) =>
-        ta is Array<A> arr
-            ? new ArrayState(0, arr.Items.Length)
-            : throw new InvalidCastException();
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static void IterableK<Array, ArrayState, ArrayStateRef>.SetupMutable<A>(K<Array, A> ta, out ArrayStateRef state)
     {
         if (ta is Array<A> arr)
@@ -51,11 +45,16 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static ArrayState IterableK<Array, ArrayState>.SetupImmutable<A>(K<Array, A> ta) =>
+        ta is Array<A> arr
+            ? new ArrayState(0, arr.Items.Length)
+            : throw new InvalidCastException();
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static bool IterableK<Array, ArrayState>.StepImmutable<A>(K<Array, A> ta, in ArrayState ts, out A head, out ArrayState tail)
     {
-        ref var array = ref Unsafe.As<K<Array, A>, Array<A>>(ref ta); 
-        var     index = ts.Index;
-        var     count = ts.Count;
+        var index = ts.Index;
+        var count = ts.Count;
 
         if (index >= count)
         {
@@ -64,6 +63,7 @@ public partial class Array : IterableK<Array, ArrayState, ArrayStateRef>
             return false;
         }
 
+        var array = (Array<A>)ta; 
         head = array.Items[index];
         tail = new ArrayState(index + 1, count);
 

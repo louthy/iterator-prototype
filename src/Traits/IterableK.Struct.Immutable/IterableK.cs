@@ -20,14 +20,28 @@ public interface IterableK<T, IS> : IterableK<T>
     {
         ref var ta    = ref Unsafe.As<object, K<T, A>>(ref taObj);
         ref var state = ref Unsafe.As<Space128, IS>(ref Unsafe.AsRef(in next.space));
-        T.StepImmutable(ta, in state, out _, out state);
+        if (T.StepImmutable(ta, in state, out var head, out state))
+        {
+            next.head = head;
+        }
+        else
+        {
+            next.tag = IteratorTag.Empty;
+        }
     }    
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static virtual void NextImmutable<A>(K<T, A> ta, ref IteratorMutable<T, IS, A> next)
     {
         ref var state = ref next.space;
-        T.StepImmutable(ta, in state, out _, out state);
+        if (T.StepImmutable(ta, in state, out var head, out state))
+        {
+            next.head = head;
+        }
+        else
+        {
+            next.tag = IteratorTag.Empty;
+        }
     }    
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
