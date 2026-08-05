@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorTest.Traits;
-using LanguageExt.Traits;
 
 namespace IteratorTest;
 
@@ -8,21 +7,24 @@ namespace IteratorTest;
 public abstract record VirtualTable<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public abstract void Next(object src, ref IteratorMutable<A> next);
+    public abstract void Next(in Iterable<A> src, ref IteratorMutable<A> next);
 }
 
-public record VirtualTable<T, TS, A> : VirtualTable<A>
-    where T : IterableK<T, TS>
-    where TS : struct
+public record VirtualTable<TA, IS, A> : VirtualTable<A>
+    where TA : class, IterableImmutable<TA, IS, A>
+    where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public override void Next(object src, ref IteratorMutable<A> next) =>
-        T.NextImmutableUntyped(src, ref next);
+    public override void Next(in Iterable<A> src, ref IteratorMutable<A> next)
+    {
+        ref var ta = ref Unsafe.As<Iterable<A>, TA>(ref Unsafe.AsRef(in src));
+        TA.NextImmutableUntyped(in ta, ref next);
+    }
 }
 
-public static class VirtualTableCache<T, TS, A>
-    where T : IterableK<T, TS>
-    where TS : struct
+public static class VirtualTableCache<TA, IS, A>
+    where TA : class, IterableImmutable<TA, IS, A>
+    where IS : struct
 {
-    public static readonly VirtualTable<A> Cache = new VirtualTable<T, TS, A>();
+    public static readonly VirtualTable<A> Cache = new VirtualTable<TA, IS, A>();
 }

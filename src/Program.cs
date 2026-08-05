@@ -2,7 +2,6 @@
 using IteratorTest;
 using IteratorTest.Traits;
 using LanguageExt;
-using LanguageExt.Traits;
 using I = IteratorTest;
 using static LanguageExt.Prelude;
 
@@ -11,7 +10,8 @@ TestSuite.Run();
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
 Bench<IterableKVersion>.Mark();
-Bench<ForeachVersion>.Mark();
+Bench<ForeachVersionRef>.Mark();
+Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
 Bench.Key();
@@ -64,7 +64,7 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
         ignore(total);
     }
 
-    protected override ConsoleColor Color { get; } =
+    protected override ConsoleColor Color => 
         Bench.Mutable;
 }
 
@@ -74,24 +74,24 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 //
 public class IterableKVersion : Bench<IterableKVersion>
 {
-    readonly K<I.Array, int> array = I.Array.create(..Count);
+    readonly Array<int> array = I.Array.create(..Count);
 
     protected override string Explain =>
         $"IterableK trait stepping ({Count:N0} items)";
 
     protected override void Main()
     {
-        IterableK.setupMutable<I.Array, ArrayState, ArrayStateRef, int>(array, out var state);
+        var state = IterableMutable.setup<Array<int>, ArrayState, ArrayStateRef, int>(array);
         var total = 0;
         
-        while (IterableK.stepMutable<I.Array, ArrayState, ArrayStateRef, int>(array, ref state, out var x))
+        while (IterableMutable.step<Array<int>, ArrayState, ArrayStateRef, int>(array, ref state, out var x))
         {
             total += x;
         }
         ignore(total);
     }
 
-    protected override ConsoleColor Color { get; } =
+    protected override ConsoleColor Color => 
         Bench.Mutable;
 }
 
@@ -99,12 +99,12 @@ public class IterableKVersion : Bench<IterableKVersion>
 //
 //  This tests the performance of a generalised foreach using the IteratorEnumerator 
 //
-public class ForeachVersion : Bench<ForeachVersion>
+public class ForeachVersionRef : Bench<ForeachVersionRef>
 {
     readonly Array<int> array = I.Array.create(..Count);
 
     protected override string Explain =>
-        $"Foreach Array<A> ({Count:N0} items)";
+        $"Ref Struct Foreach Array<A> ({Count:N0} items)";
 
     protected override void Main()
     {
@@ -116,7 +116,32 @@ public class ForeachVersion : Bench<ForeachVersion>
         ignore(total);
     }
 
-    protected override ConsoleColor Color { get; } =
+    protected override ConsoleColor Color => 
+        Bench.Mutable;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//  This tests the performance of a generalised foreach using the IteratorEnumerator 
+//
+public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
+{
+    readonly Array<int> array = I.Array.create(..Count);
+
+    protected override string Explain =>
+        $"Non-Ref Struct Foreach Array<A> ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var total = 0;
+        foreach(var x in array.yield)
+        {
+            total += x;
+        }
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
         Bench.Mutable;
 }
 
@@ -143,7 +168,7 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
         ignore(total);
     }
 
-    protected override ConsoleColor Color { get; } =
+    protected override ConsoleColor Color => 
         Bench.Immutable;
 }
 
@@ -160,7 +185,7 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
     protected override void Main()
     {
-        var iter  = IterableK.fromIterable<I.Array, ArrayState, int>(array);
+        var iter  = IterableImmutable.from<Array<int>, ArrayState, int>(array);
         var total = 0;
         while (iter.TryGetValue(out var x, out iter))
         {

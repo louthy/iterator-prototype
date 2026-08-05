@@ -1,32 +1,26 @@
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
-public ref struct IterableKEnumerator<T, IS, MS, A>
-    where T : IterableK<T, IS, MS>
+[SkipLocalsInit]
+public ref struct IterableMutableEnumerator<TA, IS, MS, A>([NotNull] TA ta)
+    where TA : class, IterableMutable<TA, IS, MS, A>
     where IS : struct
     where MS : allows ref struct
 {
-    readonly bool valid;
-    readonly K<T, A> ta;
-    MS state;
+    readonly bool valid = true;
+    MS state = TA.SetupMutable(ta);
     A? current;
-
-    public IterableKEnumerator(K<T, A> ta)
-    {
-        valid = true;
-        this.ta = ta;
-        T.SetupMutable(ta, out state);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool MoveNext() =>
-        valid && T.StepMutable(ta, ref state, out current);
+        valid && TA.StepMutable(ta, ref state, out current);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public void Reset() =>
-        T.SetupMutable(ta, out state);
+        state = TA.SetupMutable(ta);
 
     public A Current
     {

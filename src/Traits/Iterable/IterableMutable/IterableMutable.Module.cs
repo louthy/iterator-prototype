@@ -1,21 +1,20 @@
 using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
-public static partial class IterableK
+public static partial class IterableMutable
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static void setupMutable<T, IS, MS, A>(K<T, A> ta, out MS state)
-        where T : IterableK<T, IS, MS>
+    public static MS setup<TA, IS, MS, A>(TA ta)
+        where TA : class, IterableMutable<TA, IS, MS, A>
         where IS : struct 
         where MS : allows ref struct =>
-        T.SetupMutable(ta, out state);
+        TA.SetupMutable(ta);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static bool stepMutable<T, IS, MS, A>(K<T, A> ta, ref MS ts, out A value) 
-        where T : IterableK<T, IS, MS>
+    public static bool step<TA, IS, MS, A>(in TA ta, ref MS ts, out A value) 
+        where TA : class, IterableMutable<TA, IS, MS, A>
         where IS : struct 
         where MS : allows ref struct =>
-        T.StepMutable(ta, ref ts, out value);
+        TA.StepMutable(ta, ref ts, out value);
 }

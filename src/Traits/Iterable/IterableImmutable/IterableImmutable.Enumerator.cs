@@ -1,23 +1,24 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
 
 namespace IteratorTest.Traits;
 
-public struct IterableKEnumerator<T, IS, A>(K<T, A> ta) : IEnumerator<A>
-    where T : IterableK<T, IS>
+[SkipLocalsInit]
+public struct IterableImmutableEnumerator<TA, IS, A>(in TA ta) : IEnumerator<A>
+    where TA : class, IterableImmutable<TA, IS, A>
     where IS : struct
 {
-    IS state = T.SetupImmutable(ta);
+    readonly TA ta = ta;
+    IS state = TA.SetupImmutable(ta);
     A? current;
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public bool MoveNext() =>
-        T.StepImmutable(ta, in state, out current, out state);
+        TA.StepImmutable(ta, in state, out current, out state);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public void Reset() =>
-        state = T.SetupImmutable(ta);
+        state = TA.SetupImmutable(ta);
 
     public A Current
     {

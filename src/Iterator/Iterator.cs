@@ -1,4 +1,6 @@
+// ReSharper disable ParameterHidesMember
 using System.Runtime.CompilerServices;
+using IteratorTest.Traits;
 
 namespace IteratorTest;
 
@@ -8,7 +10,7 @@ public ref struct IteratorMutable<A>
     // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
     public IteratorTag tag;
     public A head;
-    public object? ta;
+    public Iterable<A>? ta;
     public Func<Iterator<A>>? lazy;
     public VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     public Space128 space;
@@ -16,11 +18,11 @@ public ref struct IteratorMutable<A>
 
 [Union]
 [SkipLocalsInit]
-public readonly struct Iterator<A> : IUnion
+public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
 {
     readonly IteratorTag tag;
     readonly A head;
-    readonly object? ta;
+    readonly Iterable<A>? ta;
     readonly Func<Iterator<A>>? lazy;
     readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     readonly Space128 space;
@@ -33,14 +35,14 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A one)
+    internal Iterator(in A one)
     {
         tag = IteratorTag.Singleton;
         head = one;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A head, Func<Iterator<A>> tail)
+    internal Iterator(in A head, Func<Iterator<A>> tail)
     {
         tag = IteratorTag.Cons;
         this.head = head;
@@ -48,7 +50,7 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(in A head, Iterator<A> tail)
+    internal Iterator(in A head, Iterator<A> tail)
     {
         tag = IteratorTag.Cons;
         this.head = head;
@@ -56,7 +58,7 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(Func<Iterator<A>> lazy)
+    internal Iterator(Func<Iterator<A>> lazy)
     {
         tag = IteratorTag.Lazy;
         head = default!;
@@ -64,7 +66,7 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    internal Iterator(in A head, object? ta, VirtualTable<A>? vt, in Space128 space)
+    internal Iterator(in A head, Iterable<A>? ta, VirtualTable<A>? vt, in Space128 space)
     {
         tag = IteratorTag.IterableK;
         this.head = head;
@@ -74,11 +76,11 @@ public readonly struct Iterator<A> : IUnion
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    Iterator(Iterator<A> first, in A then)
+    internal Iterator(Iterator<A> init, in A last)
     {
         tag = IteratorTag.Add;
-        head = then;
-        lazy = () => first;
+        head = last;
+        lazy = () => init;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
@@ -167,8 +169,11 @@ public readonly struct Iterator<A> : IUnion
         new(this);
 
     public static Iterator<A> operator +(in A head, in Iterator<A> tail) =>
-        new (head, tail);
+        new (in head, tail);
 
     public static Iterator<A> operator +(in Iterator<A> first, in A next) =>
-        new (first, next);    
+        new (first, in next);    
+    
+    public static implicit operator Iterator<A> (Nil nil) =>
+        default;
 }
