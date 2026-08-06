@@ -17,8 +17,9 @@ public record VirtualTable<TA, IS, A> : VirtualTable<A>
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public override void Next(in Iterable<A> src, ref IteratorMutable<A> next)
     {
-        ref var ta = ref Unsafe.As<Iterable<A>, TA>(ref Unsafe.AsRef(in src));
-        TA.NextImmutableUntyped(in ta, ref next);
+        ref var ta    = ref Unsafe.As<Iterable<A>, TA>(ref Unsafe.AsRef(in src));
+        ref var state = ref Unsafe.As<IteratorMutable<A>, IteratorMutable<TA, IS, A>>(ref next);
+        TA.NextImmutable(in ta, ref state);
     }
 }
 

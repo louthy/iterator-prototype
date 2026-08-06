@@ -10,7 +10,7 @@ public interface IterableImmutable<TA, IS, A> : Iterable<TA, Iterator<TA, IS, A>
     where IS : struct
     where TA : class, IterableImmutable<TA, IS, A>
 {
-    static abstract IS SetupImmutable(TA ta);
+    static abstract IS SetupImmutable(in TA ta);
     static abstract bool StepImmutable(in TA ta, in IS state, out A head, out IS tail);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]

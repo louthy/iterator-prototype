@@ -7,7 +7,7 @@ namespace IteratorTest;
 public record Array<A>(A[] Items)
     : IterableMutable<Array<A>, ArrayState, ArrayStateRef, A>
 {
-    static ArrayState IterableImmutable<Array<A>, ArrayState, A>.SetupImmutable(Array<A> ta) =>
+    static ArrayState IterableImmutable<Array<A>, ArrayState, A>.SetupImmutable(in Array<A> ta) =>
         new (0, ta.Items.Length);
 
     static bool IterableImmutable<Array<A>, ArrayState, A>.StepImmutable(

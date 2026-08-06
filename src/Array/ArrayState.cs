@@ -1,23 +1,29 @@
+using System.Runtime.CompilerServices;
+
 namespace IteratorTest;
 
-public readonly struct ArrayState(int index, int count)
+[SkipLocalsInit]
+public readonly struct ArrayState(in int index, in int count)
 {
     public readonly int Index = index;
     public readonly int Count = count;
 }
 
-public struct ArrayStateMutable(int index, int count)
+[SkipLocalsInit]
+public struct ArrayStateMutable(in int index, in int count)
 {
     public int Index = index;
     public int Count = count;
 }
 
+[SkipLocalsInit]
 public readonly ref struct ArrayStateRef(ref object items, ref object itemsEnd)
 {
     public readonly ref object Items = ref items;
     public readonly ref object ItemsEnd = ref itemsEnd;
 }
 
+[SkipLocalsInit]
 public readonly ref struct ArrayStateRef<A>(ref A items, ref A itemsEnd)
 {
     public readonly ref A Items = ref items;

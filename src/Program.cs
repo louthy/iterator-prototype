@@ -185,7 +185,7 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
     protected override void Main()
     {
-        var iter  = IterableImmutable.from<Array<int>, ArrayState, int>(array);
+        var iter  = IterableImmutable.from<Array<int>, ArrayState, int>(in array);
         var total = 0;
         while (iter.TryGetValue(out var x, out iter))
         {

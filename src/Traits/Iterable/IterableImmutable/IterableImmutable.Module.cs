@@ -21,8 +21,8 @@ public static partial class IterableImmutable
         where TA : class, IterableImmutable<TA, IS, A>
         where IS : struct
     {
-        var s = TA.SetupImmutable(ta);
-        if (TA.StepImmutable(ta, in s, out var head, out var tail))
+        var s = TA.SetupImmutable(in ta);
+        if (TA.StepImmutable(in ta, in s, out var head, out var tail))
         {
             ref readonly var t = ref Unsafe.As<IS, Space128>(ref tail);
             return new Iterator<A>(in head, ta, VirtualTableCache<TA, IS, A>.Cache, in t);

@@ -113,7 +113,7 @@ public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
             case IteratorTag.IterableK:
                 tail = this;        // Copy
                 head = this.head;
-                vt!.Next(ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref tail));
+                vt!.Next(in ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref tail));
                 return true;
 
             case IteratorTag.Empty:
