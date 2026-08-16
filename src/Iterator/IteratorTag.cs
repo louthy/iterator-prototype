@@ -1,4 +1,4 @@
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 public enum IteratorTag
 {
@@ -6,7 +6,7 @@ public enum IteratorTag
     Singleton,
     Cons,
     Lazy,
-    IterableK,
+    Iterable,
     Add,
     
     //-----------

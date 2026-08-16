@@ -1,22 +1,22 @@
-using IteratorTest.Traits;
+using IteratorPrototype.Traits;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 public static partial class IteratorExtensions
 {
-    extension<IS, TA, A>(Func<Iterator<TA, IS, A>> ta)
-        where TA : class, IterableImmutable<TA, IS, A>
+    extension<IS, T, A>(Func<Iterator<T, IS, A>> ta)
+        where T : IterableImmutable<T, IS>
         where IS : struct
     {
-        public static Iterator<TA, IS, A> operator +(in A head, Func<Iterator<TA, IS, A>> tail) =>
+        public static Iterator<T, IS, A> operator +(in A head, Func<Iterator<T, IS, A>> tail) =>
             new(head, tail);
     }
     
-    extension<IS, TA, A>(A head)
-        where TA : class, IterableImmutable<TA, IS, A>
+    extension<IS, T, A>(A head)
+        where T : IterableImmutable<T, IS>
         where IS : struct
     {
-        public Iterator<TA, IS, A> Cons(Func<Iterator<TA, IS, A>> tail) =>
+        public Iterator<T, IS, A> Cons(Func<Iterator<T, IS, A>> tail) =>
             new(head, tail);
     }    
 }

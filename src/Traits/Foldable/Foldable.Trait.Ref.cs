@@ -1,0 +1,491 @@
+/*
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using LanguageExt.ClassInstances;
+using static LanguageExt.Prelude;
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+
+namespace IteratorPrototype.Traits;
+
+/// <summary>
+/// <para>
+/// Foldable structures are those that can support repeated binary applications.  You will see
+/// two 'flavours' of methods in the `Foldable` trait: forward and backward folds, which represent
+/// different approaches to associativity when applying the binary function: 
+/// </para>
+/// <para>
+/// `Fold(Func〈S, A, S〉, S)` is equal to: `((((S * A1) * A2) * A3) * A4) * ... An)`
+/// </para>
+/// <para>
+/// `FoldBack(Func〈S, A, S〉, S)` is equal to: `(A1 * (A2 * (A3 * (A4 * ... (An * S))))`
+/// </para>
+/// <para>
+/// > Where the `*` operator represents the binary function passed to `Fold`.
+/// </para>
+/// <para>
+/// This repeated application over a structure (often a collection, but not exclusively) is known as a
+/// *fold*; and is a fundamental operation in functional programming.
+/// </para>
+/// <para>
+/// It should be noted that backward folds could come with additional overhead or problems depending on
+/// the underlying implementations.  A lazy sequence like `Iterable` would need to be completely evaluated
+/// before it could perform the first binary operation of a backward fold. Also, if the `Iterable` is
+/// infinite, then the backward fold can never be completed.   
+/// </para>
+/// <para>
+/// Whereas, a type like `Set`, which is presorted, or a type like `Arr`, or `Lst`, which support
+/// random-access, can easily and efficiently perform backward folds; because it's cheap to access the
+/// last value in the foldable structure and work backwards.
+/// </para>
+/// </summary>
+/// <typeparam name="T">This foldable type</typeparam>
+/// <typeparam name="FS">Folding state type.  Used to hold state for the duration of a fold</typeparam>
+public interface Foldable<T, FS> : Foldable<T>, IterableK<T, FS> 
+    where T : Foldable<T, FS>
+    where FS : allows ref struct
+{
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Default implementations
+    //
+
+    /// <summary>
+    /// Same behaviour as `Fold` but allows early exit of the operation once
+    /// the predicate function becomes `false` for the state/value pair 
+    /// </summary>
+    static S Foldable<T>.FoldWhile<A, S>(
+        Func<S, A, S> f,
+        Func<(S State, A Value), bool> predicate,
+        in S initialState,
+        K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var state     = initialState;
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (predicate((state, value)))
+            {
+                state = f(state, value);
+            }
+            else
+            {
+                return state;
+            }
+        }
+        return state;
+    }
+
+    /// <summary>
+    /// Fold until the `Option` returns `None`
+    /// </summary>
+    /// <param name="f">Fold function</param>
+    /// <param name="initialState">Initial state for the fold</param>
+    /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="A">Value type</typeparam>
+    /// <typeparam name="S">State type</typeparam>
+    /// <returns>Aggregated value</returns>
+    static S Foldable<T>.FoldMaybe<A, S>(
+        Func<S, A, Option<S>> f,
+        in S initialState,
+        K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var state     = initialState;
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            var option = f(state, value);
+            if (option.IsSome)
+            {
+                state = (S)option;
+            }
+            else
+            {
+                return state;
+            }
+        }
+        return state;
+    }
+
+    /// <summary>
+    /// Same behaviour as `Fold` but allows early exit of the operation once
+    /// the predicate function becomes `false` for the state/value pair
+    /// </summary>
+    static S Foldable<T>.FoldUntil<A, S>(
+        Func<S, A, S> f,
+        Func<(S State, A Value), bool> predicate,
+        in S initialState,
+        K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var state     = initialState;
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            state = f(state, value);
+            if (predicate((state, value))) return state;
+        }
+        return state;
+    }
+
+    /// <summary>
+    /// Right-associative fold of a structure, lazy in the accumulator.
+    ///
+    /// In the case of lists, 'Fold', when applied to a binary operator, a
+    /// starting value (typically the right-identity of the operator), and a
+    /// list, reduces the list using the binary operator, from right to left.
+    /// </summary>
+    static S Foldable<T>.Fold<A, S>(Func<S, A, S> f, in S initialState, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var state     = initialState;
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            state = f(state, value);
+        }
+        return state;
+    }
+    
+    /// <summary>
+    /// List of elements of a structure, from left to right
+    /// </summary>
+    static Lst<A> Foldable<T>.ToLst<A>(K<T, A> ta) =>
+        Lst<A>.FromFoldable<T, FS>(ta);
+
+    /// <summary>
+    /// List of elements of a structure, from left to right
+    /// </summary>
+    static Arr<A> Foldable<T>.ToArr<A>(K<T, A> ta)
+    {
+        var writer    = ArrayWriterRef<A>.Init();
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            writer.Add(value);
+        }
+        return writer.ToArr();
+    }
+
+    /// <summary>
+    /// List of elements of a structure, from left to right
+    /// </summary>
+    static bool Foldable<T>.IsEmpty<A>(K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        return !T.Step(ta, ref foldState, out _);
+    }
+
+    /// <summary>
+    /// Does an element that fits the predicate occur in the structure?
+    /// </summary>
+    static bool Foldable<T>.Exists<A>(Func<A, bool> predicate, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if(predicate(value)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Does the predicate hold for all elements in the structure?
+    /// </summary>
+    static bool Foldable<T>.ForAll<A>(Func<A, bool> predicate, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if(!predicate(value)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Does the element exist in the structure?
+    /// </summary>
+    static bool Foldable<T>.Contains<EqA, A>(A value, K<T, A> ta) 
+    {
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var v))
+        {
+            if(EqA.Equals(value, v)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Does the element exist in the structure?
+    /// </summary>
+    static bool Foldable<T>.Contains<A>(A value, K<T, A> ta) 
+    {
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var v))
+        {
+            if(EqualityComparer<A>.Default.Equals(value, v)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Find the first element that matches the predicate
+    /// </summary>
+    static Option<A> Foldable<T>.Find<A>(
+        Option<long> startIndex, 
+        Option<long> count, 
+        Func<A, bool> predicate, 
+        K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var ix        = startIndex.IfNone(0);
+        var cnt       = count.IfNone(long.MaxValue);
+        
+        for (; ix > 0L && T.Step(ta, ref foldState, out _); ix--) 
+            /* skipping head #1#;
+
+        for (var n = 0L; n < cnt && T.Step(ta, ref foldState, out var h); n++)
+        {
+            if (predicate(h)) return h;
+        }
+        return None;
+    }
+
+    /// <summary>
+    /// Get the head item in the foldable or `None`
+    /// </summary>
+    static Option<A> Foldable<T>.Head<A>(K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        if (T.Step(ta, ref foldState, out var value))
+        {
+            return value;
+        }
+        else
+        {
+            return default;
+        }
+    }
+    
+    /// <summary>
+    /// Map each element of a structure to an action, evaluate these
+    /// actions from left to right, and ignore the results.  For a version that
+    /// doesn't ignore the results see `Traversable.traverse`.
+    /// </summary>
+    static Unit Foldable<T>.Iter<A>(Action<A> f, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            f(value);
+        }
+        return default;
+    }
+    
+    /// <summary>
+    /// Map each element of a structure to an action, evaluate these
+    /// actions from left to right, and ignore the results.  For a version that
+    /// doesn't ignore the results see `Traversable.traverse`.
+    /// </summary>
+    static Unit Foldable<T>.Iter<A>(Action<long, A> f, long initialIndex, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var ix        = initialIndex;
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            f(ix++, value);
+        }
+        return default;
+    }
+
+    /// <summary>
+    /// Find the minimum value in the structure
+    /// </summary>
+    static Option<A> Foldable<T>.Min<OrdA, A>(K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        A   current;
+
+        if (T.Step(ta, ref foldState, out var head))
+        {
+            current = head;
+        }
+        else
+        {
+            return default;
+        }
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (OrdA.Compare(value, current) < 0)
+            {
+                current = value;
+            }
+        }
+        return current;
+    }
+
+    /// <summary>
+    /// Find the minimum value in the structure
+    /// </summary>
+    static Option<A> Foldable<T>.Min<A>(K<T, A> ta) =>
+        T.Min<OrdDefault<A>, A>(ta);
+    
+    /// <summary>
+    /// Find the maximum value in the structure
+    /// </summary>
+    static Option<A> Foldable<T>.Max<OrdA, A>(K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        A   current;
+
+        if (T.Step(ta, ref foldState, out var head))
+        {
+            current = head;
+        }
+        else
+        {
+            return default;
+        }
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (OrdA.Compare(value, current) > 0)
+            {
+                current = value;
+            }
+        }
+        return current;
+    }
+    
+    /// <summary>
+    /// Find the minimum value in the structure
+    /// </summary>
+    static A Foldable<T>.Min<OrdA, A>(A initialMin, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var current   = initialMin;
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (OrdA.Compare(value, current) < 0)
+            {
+                current = value;
+            }
+        }
+        return current;
+    }
+
+    /// <summary>
+    /// Find the maximum value in the structure
+    /// </summary>
+    static A Foldable<T>.Max<OrdA, A>(A initialMax, K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var current   = initialMax;
+        
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (OrdA.Compare(value, current) > 0)
+            {
+                current = value;
+            }
+        }
+        return current;
+    }
+
+    /// <summary>
+    /// Find the first index of an element in the structure that matches the predicate
+    /// </summary>
+    /// <param name="startIndex">Initial index to start the search</param>
+    /// <param name="count">Maximum number of elements to test before giving up</param>
+    /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="A">Bound value type</typeparam>
+    /// <returns>`Some(index)` if the predicate returns `true`, otherwise `None`</returns>
+    static Option<long> Foldable<T>.IndexOf<A>(
+        Option<long> startIndex, 
+        Option<long> count, 
+        Func<A, bool> predicate, 
+        K<T, A> ta)
+    {
+        var foldState = T.StepSetup(ta);
+        var ix        = startIndex.IfNone(0);
+        var cnt       = count.IfNone(long.MaxValue);
+        
+        for (; ix > 0L && T.Step(ta, ref foldState, out _); ix--) 
+            /* skipping head #1#;
+
+        for (var n = 0L; n < cnt && T.Step(ta, ref foldState, out var h); n++)
+        {
+            if (predicate(h)) return n;
+        }
+        return None;
+    }
+
+    /// <summary>
+    /// Partition foldable into two sequences based on a predicate
+    /// </summary>
+    /// <param name="f">Predicate function</param>
+    /// <param name="ta">Foldable structure</param>
+    /// <typeparam name="A">Bound value type</typeparam>
+    /// <returns>Partitioned structure</returns>
+    static (Arr<A> True, Arr<A> False) Foldable<T>.Partition<A>(Func<A, bool> f, K<T, A> ta)
+    {
+        var @true  = ArrayWriterRef<A>.Init();
+        var @false = ArrayWriterRef<A>.Init();
+        
+        var foldState = T.StepSetup(ta);
+        while (T.Step(ta, ref foldState, out var value))
+        {
+            if (f(value))
+            {
+                @true.Add(value);
+            }
+            else
+            {
+                @false.Add(value);
+            }
+        }
+        return (@true.ToArr(), @false.ToArr());
+    }
+
+    /// <summary>
+    /// Sort the items in the foldable structure in the order dictated by the ordering function
+    /// </summary>
+    /// <param name="comparer">Ordering function</param>
+    /// <param name="ta">Foldable structure</param>
+    /// <returns>An array of sorted values</returns>
+    static Arr<A> Foldable<T>.Sort<A>(Comparison<A> comparer, K<T, A> ta)
+    {
+        var ys = ArrayWriterRef<A>.Init();
+        var fs = T.StepSetup(ta);
+        while (T.Step(ta, ref fs, out var x))
+        {
+            ys.Add(x);
+        }
+        ys.MutableView.Sort(comparer);
+        return ys.ToArr();
+    }
+    
+    /// <summary>
+    /// Sort the items in the foldable structure in the order dictated by the ordering function using the key selector.
+    /// </summary>
+    /// <param name="key">Key selector function</param>
+    /// <param name="comparer">Ordering function</param>
+    /// <param name="ta">Foldable structure</param>
+    /// <returns>An array of sorted values</returns>
+    static Arr<A> Foldable<T>.Sort<A, Key>(Func<A, Key> key, Comparison<Key> comparer, K<T, A> ta)
+    {
+        var ks = ArrayWriterRef<Key>.Init();
+        var ys = ArrayWriterRef<A>.Init();
+        var fs = T.StepSetup(ta);
+        while (T.Step(ta, ref fs, out var x))
+        {
+            ks.Add(key(x));
+            ys.Add(x);
+        }
+        ks.MutableView.Sort(ys.MutableView, comparer);
+        return ys.ToArr();
+    }    
+}
+*/

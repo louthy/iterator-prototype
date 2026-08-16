@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 // Large struct for IterableK states
 [StructLayout(LayoutKind.Explicit, Size = 32)]

@@ -1,4 +1,4 @@
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 public class TestSuite
 {

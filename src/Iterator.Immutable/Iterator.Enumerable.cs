@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Traits;
 
-namespace IteratorTest.Traits;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public readonly struct IteratorEnumerable<TA, IS, A>(in Iterator<TA, IS, A> ta) : IEnumerable<A>
-    where TA : class, IterableImmutable<TA, IS, A>
+public readonly struct IteratorEnumerable<T, IS, A>(in Iterator<T, IS, A> ta) : IEnumerable<A>
+    where T : IterableImmutable<T, IS>
     where IS : struct
 {
-    readonly Iterator<TA, IS, A> ta = ta;
+    readonly Iterator<T, IS, A> ta = ta;
     
-    public IteratorEnumerator<TA, IS, A> GetEnumerator() =>
+    public IteratorEnumerator<T, IS, A> GetEnumerator() =>
         new (in ta);
     
     IEnumerator<A> IEnumerable<A>.GetEnumerator() =>

@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
 public readonly struct ArrayState(in int index, in int count)

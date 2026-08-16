@@ -1,6 +1,6 @@
 using Range = System.Range;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 public partial class Array
 {

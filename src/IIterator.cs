@@ -1,10 +1,11 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 public interface IIterator<IA, A>
     where IA : IIterator<IA, A>
 {
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    public bool TryGetValue(out Nil nil);
     public bool TryGetValue(out A head, out IA tail);
+    Iterator<A> Lower { get; }
 }

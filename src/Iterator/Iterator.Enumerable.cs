@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace IteratorTest.Traits;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
 public readonly struct IteratorEnumerable<A>(in Iterator<A> ta) : IEnumerable<A>

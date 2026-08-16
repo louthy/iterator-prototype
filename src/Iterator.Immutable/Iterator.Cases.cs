@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
-using IteratorTest.Traits;
+using IteratorPrototype.Traits;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 // Cons structure used to carry the result of consuming the next element
 [SkipLocalsInit]
-public readonly record struct Cons<TA, IS, A>(in A Head, in Iterator<TA, IS, A> Tail)
-    where TA : class, IterableImmutable<TA, IS, A>
+public readonly record struct Cons<T, IS, A>(in A Head, in Iterator<T, IS, A> Tail)
+    where T : IterableImmutable<T, IS>
     where IS : struct;

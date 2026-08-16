@@ -1,6 +1,6 @@
-namespace IteratorTest;
+namespace IteratorPrototype;
 
-public static partial class Iterator
+public partial class Iterator
 {
     /// <summary>
     /// Construct a new iterator that yields no values.

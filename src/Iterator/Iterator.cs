@@ -1,8 +1,9 @@
 // ReSharper disable ParameterHidesMember
 using System.Runtime.CompilerServices;
-using IteratorTest.Traits;
+using IteratorPrototype.Traits;
+using LanguageExt.Traits;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
 public ref struct IteratorMutable<A>
@@ -10,7 +11,7 @@ public ref struct IteratorMutable<A>
     // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
     public IteratorTag tag;
     public A head;
-    public Iterable<A>? ta;
+    public object? ta;
     public Func<Iterator<A>>? lazy;
     public VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     public Space128 space;
@@ -18,11 +19,11 @@ public ref struct IteratorMutable<A>
 
 [Union]
 [SkipLocalsInit]
-public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
+public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>, K<Iterator, A>
 {
     readonly IteratorTag tag;
     readonly A head;
-    readonly Iterable<A>? ta;
+    readonly object? ta;
     readonly Func<Iterator<A>>? lazy;
     readonly VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
     readonly Space128 space;
@@ -66,13 +67,21 @@ public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    internal Iterator(in A head, Iterable<A>? ta, VirtualTable<A>? vt, in Space128 space)
+    internal Iterator(in A head, object? ta, VirtualTable<A>? vt, in Space128 space)
     {
-        tag = IteratorTag.IterableK;
+        tag = IteratorTag.Iterable;
         this.head = head;
         this.ta = ta;
         this.vt = vt;
         this.space = space;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    internal Iterator(Func<Iterator<A>> init, in A last)
+    {
+        tag = IteratorTag.Add;
+        head = last;
+        lazy = init;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
@@ -106,52 +115,76 @@ public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public bool TryGetValue(out A head, out Iterator<A> tail)
-    {
-        switch (tag)
+    public bool TryGetValue(out A head, out Iterator<A> tail) =>
+        tag switch
         {
-            case IteratorTag.IterableK:
-                tail = this;        // Copy
-                head = this.head;
-                vt!.Next(in ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref tail));
-                return true;
+            IteratorTag.Iterable  => IterableCase(out head, out tail),
+            IteratorTag.Singleton => SingletonCase(out head, out tail),
+            IteratorTag.Cons      => ConsCase(out head, out tail),
+            IteratorTag.Lazy      => LazyCase(out head, out tail),
+            IteratorTag.Add       => AddCase(out head, out tail),
+            _                     => EmptyCase(out head, out tail)
+        };
 
-            case IteratorTag.Empty:
-                head = default!;
-                tail = default!;
-                return false;
-            
-            case IteratorTag.Singleton:
-                head = this.head;
-                tail = default;
-                return true;
-            
-            case IteratorTag.Cons:
-                head = this.head;
-                tail = lazy!();
-                return true;
+    public Iterator<A> Lower
+    {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        get => this;
+    }
 
-            case IteratorTag.Lazy:
-                return lazy!().TryGetValue(out head, out tail);
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool IterableCase(out A head, out Iterator<A> tail)
+    {
+        tail = this;        // Copy
+        head = this.head;
+        vt!.Next(in ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref tail));
+        return true;
+    }
 
-            case IteratorTag.Add:
-                var first = lazy!();
-                if (first.TryGetValue(out head, out var nt))
-                {
-                    tail = new Iterator<A>(nt, this.head);
-                }
-                else
-                {
-                    head = this.head;
-                    tail = default;
-                }
-                return true;
-            
-            default:
-                head = default!;
-                tail = default!;
-                return false;
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool EmptyCase(out A head, out Iterator<A> tail)
+    {
+        head = default!;
+        tail = default!;
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool SingletonCase(out A head, out Iterator<A> tail)
+    {
+        head = this.head;
+        tail = default;
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool ConsCase(out A head, out Iterator<A> tail)
+    {
+        head = this.head;
+        tail = lazy!();
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool LazyCase(out A head, out Iterator<A> tail)
+    {
+        return lazy!().TryGetValue(out head, out tail);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    bool AddCase(out A head, out Iterator<A> tail)
+    {
+        var first = lazy!();
+        if (first.TryGetValue(out head, out var nt))
+        {
+            tail = new Iterator<A>(nt, this.head);
         }
+        else
+        {
+            head = this.head;
+            tail = default;
+        }
+        return true;
     }
 
     public bool HasValue
@@ -176,4 +209,51 @@ public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>
     
     public static implicit operator Iterator<A> (Nil nil) =>
         default;
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 
+    // LINQ operators
+    // 
+
+    /// <summary>
+    /// Projects each element of a range into a new form.
+    /// </summary>
+    public Iterator<B> Select<B>(Func<A, B> f)
+    {
+        switch (tag)
+        {
+            case IteratorTag.Singleton:
+                return new Iterator<B>(f(head));
+
+            case IteratorTag.Cons:
+            {
+                var tail = lazy ?? (() => default);
+                return new Iterator<B>(f(head), () => tail().Select(f));
+            }
+
+            case IteratorTag.Lazy:
+            {
+                var iter = lazy ?? (() => default);
+                return new Iterator<B>(() => iter().Select(f));
+            }
+
+            case IteratorTag.Iterable:
+            {
+                var s = this;
+                var t = s;        // Copy
+                var h = s.head;
+                s.vt!.Next(in s.ta!, ref Unsafe.As<Iterator<A>, IteratorMutable<A>>(ref t));
+                return new Iterator<B>(f(h), () => t.Select(f));
+            }
+
+            case IteratorTag.Add:
+            {
+                var tail = lazy ?? (() => default);
+                return new Iterator<B>(() => tail().Select(f), f(head));
+            }
+            
+            default:
+                return default;
+        }
+    }
 }

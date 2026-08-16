@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
 public struct IteratorEnumerator<A>(in Iterator<A> iterator) : IEnumerator<A>

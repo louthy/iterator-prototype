@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
-using IteratorTest.Traits;
+using IteratorPrototype.Traits;
 
-namespace IteratorTest;
+namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public struct IteratorEnumerator<TA, IS, A>(in Iterator<TA, IS, A> iterator) : IEnumerator<A>
-    where TA : class, IterableImmutable<TA, IS, A>
+public struct IteratorEnumerator<T, IS, A>(in Iterator<T, IS, A> iterator) : IEnumerator<A>
+    where T : IterableImmutable<T, IS>
     where IS : struct
 {
-    readonly Iterator<TA, IS, A> original = iterator;
-    Iterator<TA, IS, A> iterator = iterator;
+    readonly Iterator<T, IS, A> original = iterator;
+    Iterator<T, IS, A> iterator = iterator;
     A? current;
 
     public bool MoveNext() =>

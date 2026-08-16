@@ -5,5 +5,15 @@ public sealed class UnionAttribute : Attribute;
 
 public interface IUnion
 {
-    object? Value { get; }
+    object? Value
+    {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        get; 
+    }
+    
+    bool HasValue
+    {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        get;
+    }
 }
