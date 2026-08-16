@@ -46,7 +46,7 @@ public class CSharpVersion : Bench<CSharpVersion>
 //
 public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 {
-    readonly LE.Arr<int> arr = toArray(Root.Array.create(..Count).AsSpan());
+    readonly LE.Arr<int> arr = toArray(Arr.create(..Count).AsSpan());
 
     protected override string Explain =>
         $"Foreach current LanguageExt Arr<A> ({Count:N0} items)";
@@ -71,17 +71,17 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 //
 public class IterableKVersion : Bench<IterableKVersion>
 {
-    readonly Array<int> array = Root.Array.create(..Count);
+    readonly Arr<int> array = Arr.create(..Count);
 
     protected override string Explain =>
-        $"IterableK trait stepping ({Count:N0} items)";
+        $"Arr Iterable trait implementation ({Count:N0} items)";
 
     protected override void Main()
     {
-        var state = IterableMutable.setup<Root.Array, ArrayState, ArrayStateRef, int>(array);
+        var state = IterableMutable.setup<Arr, ArrState, ArrStateRef, int>(array);
         var total = 0;
         
-        while (IterableMutable.step<Root.Array, ArrayState, ArrayStateRef, int>(array, ref state, out var x))
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, int>(array, ref state, out var x))
         {
             total += x;
         }
@@ -101,7 +101,7 @@ public class ForeachVersionRef : Bench<ForeachVersionRef>
     readonly Arr<int> array = Arr.create(..Count);
 
     protected override string Explain =>
-        $"Ref Struct Foreach Array<A> ({Count:N0} items)";
+        $"Ref Struct Foreach Arr<A> ({Count:N0} items)";
 
     protected override void Main()
     {
