@@ -767,13 +767,24 @@ public abstract partial class Arr<A> :
         new (this);
 
     /// <summary>
-    /// Return an immutable struct enumerator that can be used for rapid iteration of the items in this collection.   
+    /// Return a struct enumerable that can be used for rapid iteration of the items in this collection.   
     /// </summary>
     /// <remarks>
-    /// Note, if you want something even with even greater performance, then use `reference`; it will return a mutable
-    /// ref-struct enumerable, that is great for more performance-sensitive code.
+    /// Note, this is slower than `.reference` but it can be used with  `yield` or `async/await`, If you don't need to
+    /// enumerate this and either `yield` or `await` then use `reference`.
     /// </remarks>
-    public IterableImmutableEnumerator<Arr, ArrState, A> GetEnumerator() =>
+    [Pure]
+    public IterableImmutableEnumerable<Arr, ArrState, A> nonref =>
+        new (this);
+
+    /// <summary>
+    /// Return a mutable struct enumerator that can be used for rapid iteration of the items in this collection.   
+    /// </summary>
+    /// <remarks>
+    /// Note, it cannot be used with `yield` or `async/await`, If you need to enumerate this and either
+    /// `yield` or `await` then use `GetEnumerator()`.
+    /// </remarks>
+    public IterableMutableEnumerator<Arr, ArrState, ArrStateRef, A> GetEnumerator() =>
         new (this);
 
     /// <summary>

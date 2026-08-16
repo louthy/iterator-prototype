@@ -131,7 +131,7 @@ public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
     protected override void Main()
     {
         var total = 0;
-        foreach(var x in array)
+        foreach(var x in array.nonref)
         {
             total += x;
         }
@@ -148,14 +148,15 @@ public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
 //
 public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 {
-    readonly Arr<int> array = Arr.create(..Count);
+    readonly Iterator<Arr, ArrState, int> iterator = 
+        IterableImmutable.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Strong Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {
-        var iter  = IterableImmutable.from<Arr, ArrState, int>(array);
+        var iter  = iterator;
         var total = 0;
         while (iter.TryGetValue(out var x, out iter))
         {
@@ -175,14 +176,15 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 //
 public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 {
-    readonly Arr<int> array = Arr.create(..Count);
+    readonly Iterator<int> iterator = 
+        IterableImmutable.fromWeak<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Weak Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {
-        var iter  = IterableImmutable.fromWeak<Arr, ArrState, int>(array);
+        var iter  = iterator;
         var total = 0;
         while (iter.TryGetValue(out var x, out iter))
         {
