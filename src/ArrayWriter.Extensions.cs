@@ -238,7 +238,7 @@ public static class ArrayWriterExtensions
                             {
                                 0 => Root.Arr<A>.Empty,
                                 1 => Root.Arr.singleton(buffer[start]),
-                                _ => new Root.DSL.ArrMany<A>(buffer, start, count)
+                                _ => new Root.Arr<A>(buffer, start, count)
                             };
                     writer.RefDispose();
                     return r;

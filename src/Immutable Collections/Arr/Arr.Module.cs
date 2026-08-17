@@ -1,5 +1,4 @@
 ﻿using LanguageExt.Traits;
-using IteratorPrototype.DSL;
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
@@ -22,7 +21,7 @@ public partial class Arr
     /// <returns>Collection with a single item in it</returns>
     [Pure]
     public static Arr<A> singleton<A>(A value) =>
-        new ArrSingleton<A>(value);
+        new ([value], 0, 1);
 
     /// <summary>
     /// Create a collection from an initial set of items
@@ -34,8 +33,7 @@ public partial class Arr
         items.Length switch
         {
             0 => Arr<A>.Empty,
-            1 => new ArrSingleton<A>(items[0]),
-            _ => new ArrMany<A>([.. items], 0, items.Length)
+            _ => new Arr<A>([.. items], 0, items.Length)
         };
 
     /// <summary>
@@ -50,8 +48,7 @@ public partial class Arr
         items.Length switch
         {
             0                             => Arr<A>.Empty,
-            1                             => new ArrSingleton<A>(items[0]),
-            var l when start + count <= l => new ArrMany<A>(items, start, count),
+            var l when start + count <= l => new Arr<A>(items, start, count),
             _                             => throw new ArgumentOutOfRangeException()
         };
 
@@ -69,9 +66,6 @@ public partial class Arr
             case 0:
                 return Arr<int>.Empty;
             
-            case 1:
-                return singleton(start);
-            
             default:
                 var xs = new int[count];
                 var ix = 0;
@@ -80,7 +74,7 @@ public partial class Arr
                 {
                     xs[ix++] = x;
                 }
-                return new ArrMany<int>(xs, 0, count);
+                return new Arr<int>(xs, 0, count);
         }
     }
 

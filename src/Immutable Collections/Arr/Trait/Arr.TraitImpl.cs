@@ -2,7 +2,7 @@ using System;
 using System.Buffers;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using IteratorPrototype.DSL;
+//using IteratorPrototype.DSL;
 using LanguageExt;
 using LanguageExt.Traits;
 using static LanguageExt.Prelude;
@@ -191,10 +191,10 @@ public partial class Arr :
     }    
     
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, K<Arr, A> mb) => 
-        ma is ArrEmpty<A> ? mb : ma;
+        ma is Arr<A> { IsEmpty: true } ? mb : ma;
 
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, LE.Memo<Arr, A> mb) => 
-        ma is ArrEmpty<A> ? mb.Value : ma;
+        ma is Arr<A> { IsEmpty: true } ? mb.Value : ma;
 
     /*
     static bool Foldable<Arr>.IsEmpty<A>(K<Arr, A> ta) =>

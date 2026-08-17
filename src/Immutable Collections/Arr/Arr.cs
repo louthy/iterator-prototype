@@ -1,7 +1,6 @@
 using System.Numerics;
+using System.Diagnostics;
 using LanguageExt.Traits;
-using LanguageExt.Common;
-using IteratorPrototype.DSL;
 using IteratorPrototype.Traits;
 using LanguageExt.ClassInstances;
 using static LanguageExt.Prelude;
@@ -28,10 +27,10 @@ namespace IteratorPrototype;
 /// <typeparam name="A">Value type</typeparam>
 [Serializable]
 [CollectionBuilder(typeof(Arr), nameof(Arr.create))]
-public abstract partial class Arr<A> :
+public sealed class Arr<A>(A[] values, int start, int count) :
     IComparisonOperators<Arr<A>, Arr<A>, bool>,
     IAdditionOperators<Arr<A>, Arr<A>, Arr<A>>,
-    ConstructFrom<Arr<A>, ReadOnlySpan<A>>,
+    Constructor<Arr<A>, ReadOnlySpan<A>>,
     IAdditiveIdentity<Arr<A>, Arr<A>>,
     TokenStream<Arr<A>, A>,
     IComparable<Arr<A>>,
@@ -42,33 +41,25 @@ public abstract partial class Arr<A> :
     IUnion
 {
     /// <summary>
+    /// Cached hash code 
+    /// </summary>
+    int? hashCode;
+    
+    /// <summary>
+    /// Cached empty collection
+    /// </summary>
+    static readonly Arr<A> empty = 
+        new ([], 0, 0);
+    
+    /// <summary>
     /// Empty collection
     /// </summary>
     public static Arr<A> Empty => 
-        ArrEmpty<A>.Default;
-
-    /// <summary>
-    /// Discriminated union value accessor
-    /// </summary>
-    /// <returns>Either `Nil` or `Cons{Arr, ArrState, A}`</returns>
-    [Pure]
-    public abstract object? Value
-    {
-        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        get; 
-    }
+        empty;
     
     /// <summary>
-    /// Discriminated union has-value accessor
+    /// Identity for an array (empty)
     /// </summary>
-    /// <returns>true</returns>
-    [Pure]
-    public abstract bool HasValue
-    {
-        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        get;
-    }    
-    
     [Pure]
     public static Arr<A> AdditiveIdentity => 
         Empty;
@@ -127,33 +118,34 @@ public abstract partial class Arr<A> :
         Get: la => la.Count < index - 1 ? None : Some(la[index]),
         Set: a => la => la.Count < index - 1 || a.IsSome ? la : la.SetItemUnsafe(index, a.ValueUnsafe()!));
 
-    /*  TODO
-     
     /// <summary>
-    /// Lens map
+    /// Constructor
     /// </summary>
-    [Pure]
-    public static LE.Lens<Arr<A>, Arr<B>> map<B>(LE.Lens<A, B> lens) =>
-        LE.Lens<Arr<A>, Arr<B>>.New(
-        Get: la => la.Map(lens.Get),
-        Set: lb => la => la.Zip(lb).Map(ab => lens.Set(ab.Item2, ab.Item1)).ToArr());
-        */
-
+    /// <param name="value">Value to construct from</param>
+    /// <returns>A constructed array</returns>
     [Pure]
     public static Arr<A> Construct(in ReadOnlySpan<A> value) =>
         [.. value];
 
+    public object Value => 
+        TryGetValue(out var h, out var t) 
+            ? new Cons<Arr, ArrState, A>(h, t) 
+            : Nil.Obj;
+
+    public bool HasValue =>
+        true;
+
     /// <summary>
     /// Is the collection empty
     /// </summary>
-    [Pure]
-    public abstract bool IsEmpty { get; }
+    public bool IsEmpty =>
+        false;
 
     /// <summary>
     /// Find the number of elements in the collection
     /// </summary>
-    [Pure]
-    public abstract int Count { get; }
+    public int Count => 
+        count;
 
     /// <summary>
     /// Take all items other than the first
@@ -161,8 +153,8 @@ public abstract partial class Arr<A> :
     /// <remarks>
     /// Equivalent to `Slice(1, Count - 1)`
     /// </remarks>
-    [Pure]
-    public abstract Arr<A> Tail { get; }
+    public Arr<A> Tail =>
+        Slice(1, Count - 1);
 
     /// <summary>
     /// Take all items other than the last
@@ -170,8 +162,8 @@ public abstract partial class Arr<A> :
     /// <remarks>
     /// Equivalent to `Slice(0, length - 1)`
     /// </remarks>
-    [Pure]
-    public abstract Arr<A> Init { get; }
+    public Arr<A> Init =>
+        Slice(0, Count - 1);
 
     /// <summary>
     /// Read the element at the index provided.
@@ -179,17 +171,22 @@ public abstract partial class Arr<A> :
     /// <remarks>If the index is out of range, the result is `None`</remarks>
     /// <param name="index">Index of the element to read</param>
     /// <returns>Optional element value</returns>
-    [Pure]
-    public abstract LE.Option<A> At(Index index);
+    public LE.Option<A> At(Index index) =>
+        (index.IsFromEnd, index.Value) switch
+        {
+            (false, var ix)        when ix < count  => values[start         + ix],
+            (true, var ix and > 0) when ix <= count => values[start + count - ix],
+            _                                       => default
+        };
 
     /// <summary>
-    /// Get a readonly reference the element at the index provided.
+    /// Get a readonly reference to the element at the index provided.
     /// </summary>
     /// <param name="index">Index of the element to read</param>
     /// <returns>Optional element value</returns>
-    [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal abstract ref readonly A AtRef(int index); 
+    internal ref readonly  A AtRef(int index) => 
+        ref values[start + index];
     
     /// <summary>
     /// Indexer
@@ -201,14 +198,17 @@ public abstract partial class Arr<A> :
     /// for a safe, non-exception throwing alternative.</exception>
     public A this[Index index] =>
         At(index).IfNone(() => throw new IndexOutOfRangeException());
-
+    
     /// <summary>
     /// Test if the collection is empty
     /// </summary>
     /// <param name="nil">Nil structure</param>
     /// <returns>`true` if empty, `false` otherwise</returns>
-    [Pure]
-    public abstract bool TryGetValue(out Nil nil);
+    public bool TryGetValue(out Nil nil)
+    {
+        nil = default;
+        return count == 0;
+    }
 
     /// <summary>
     /// If the collection has elements, return the head element and an iterator that allows consumption of
@@ -217,8 +217,13 @@ public abstract partial class Arr<A> :
     /// <param name="head">Head element</param>
     /// <param name="Tail">Tail iterator</param>
     /// <returns>`true` if elements exist, `false` otherwise</returns>
-    [Pure]
-    public abstract bool TryGetValue(out A head, out Iterator<Arr, ArrState, A> Tail);
+    public bool TryGetValue(out A head, out Iterator<Arr, ArrState, A> tail)
+    {
+        Debug.Assert(count > 0);
+        head = values[start];
+        tail = default!;
+        return true;
+    }
 
     /// <summary>
     /// If the collection has elements, return the head element and an iterator that allows consumption of
@@ -240,13 +245,13 @@ public abstract partial class Arr<A> :
             return false;
         }
     }
-    
+
     /// <summary>
     /// Create a readonly span of this array.  This doesn't do any copying, so it is very fast.   
     /// </summary>
     /// <returns>A read-only span of values</returns>
-    [Pure]
-    public abstract ReadOnlySpan<A> AsSpan();
+    public ReadOnlySpan<A> AsSpan() =>
+        new (values, start, count); 
 
     /// <summary>
     /// Create a readonly sub-span of this array.   
@@ -262,8 +267,10 @@ public abstract partial class Arr<A> :
     /// </remarks>
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <returns>A read-only span of values</returns>
-    [Pure]
-    public abstract ReadOnlySpan<A> AsSpan(int skip);
+    public ReadOnlySpan<A> AsSpan(int skip) =>
+        skip >= count
+            ? ReadOnlySpan<A>.Empty
+            : new (values, start + skip, count - skip);
 
     /// <summary>
     /// Create a readonly sub-span of this array.   
@@ -280,8 +287,10 @@ public abstract partial class Arr<A> :
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <param name="take">The number of items to take. This will be clamped to the maximum number of items available</param>
     /// <returns>A read-only span of values</returns>
-    [Pure]
-    public abstract ReadOnlySpan<A> AsSpan(int skip, int take);
+    public ReadOnlySpan<A> AsSpan(int skip, int take) =>
+        count - skip <= 0 || take <= 0
+            ? ReadOnlySpan<A>.Empty
+            :  new (values, start + skip, Math.Min(take, count - skip));
 
     /// <summary>
     /// Create a subarray of this array.   
@@ -297,8 +306,12 @@ public abstract partial class Arr<A> :
     /// </remarks>
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <returns>Subset of this array</returns>
-    [Pure]
-    public abstract Arr<A> Slice(int skip);
+    public Arr<A> Slice(int skip) =>
+        (count - skip) switch
+        {
+            < 1   => Empty,
+            var n => new Arr<A>(values, start + skip, n)
+        };
 
     /// <summary>
     /// Create a subarray of this array.  This doesn't do any copying, so is very fast, but be aware that any items
@@ -316,8 +329,16 @@ public abstract partial class Arr<A> :
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <param name="take">The number of items to take. This will be clamped to the maximum number of items available</param>
     /// <returns>Subset of this array</returns>
-    [Pure]
-    public abstract Arr<A> Slice(int skip, int take);
+    public Arr<A> Slice(int skip, int take) =>
+        take switch
+        {
+            < 1 => Empty,
+            var t => (count - skip) switch
+                     {
+                         < 1   => Empty,
+                         var n => new Arr<A>(values, start + skip, Math.Min(t, n))
+                     }
+        };
 
     /// <summary>
     /// Set an item at the specified index
@@ -325,8 +346,16 @@ public abstract partial class Arr<A> :
     /// <remarks>NOTE: This needs to create a whole new backing array which in which the item being set has changed.
     /// That is 'okay' for certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure
     /// that can handle an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
-    [Pure]
-    public abstract LE.Option<Arr<A>> SetItem(Index index, A val);
+    public LE.Option<Arr<A>> SetItem(Index index, A val)
+    {
+        var offset = index.GetOffset(Count);
+        if(offset < 0 || offset >= Count) return None;
+        var ovalues = AsSpan();
+        var nvalues = new A[count - start];
+        nvalues[offset] = val;
+        ovalues.CopyTo(nvalues);
+        return new Arr<A>(nvalues, 0, count);
+    }
 
     /// <summary>
     /// Set an item at the specified index
@@ -345,7 +374,15 @@ public abstract partial class Arr<A> :
     /// certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure that can handle
     /// an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public abstract Arr<A> Add(in A value);
+    public Arr<A> Add(in A value)
+    {
+        var span   = AsSpan();
+        var narray = new A[count + 1];
+        var nspan  = narray.AsSpan();
+        span.CopyTo(nspan);
+        narray[^1] = value;
+        return new Arr<A>(narray, 0, count + 1);
+    }
 
     /// <summary>
     /// Prepend an item to the beginning of the array
@@ -354,7 +391,15 @@ public abstract partial class Arr<A> :
     /// certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure that can handle
     /// an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public abstract Arr<A> Cons(in A value);
+    public Arr<A> Cons(in A value)
+    {
+        var span   = AsSpan();
+        var narray = new A[count + 1];
+        var nspan  = narray.AsSpan();
+        span.CopyTo(nspan[1..]);
+        narray[0] = value;
+        return new Arr<A>(narray, 0, count + 1);
+    }
 
     /// <summary>
     /// Concatenate this collection the collection provided
@@ -364,7 +409,22 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public abstract Arr<A> AddRange(in ReadOnlySpan<A> range);
+    public Arr<A> AddRange(in ReadOnlySpan<A> range)
+    {
+        if (range.Length == 0) return this;
+        var lcount = Count;
+        var rcount = range.Length;
+        var ncount = lcount + rcount;
+        var lspan  = AsSpan();
+        var narray = new A[ncount];
+        var nlspan = narray.AsSpan(0, lcount);
+        var nrspan = narray.AsSpan(lcount, rcount);
+        
+        lspan.CopyTo(nlspan);
+        range.CopyTo(nrspan);
+        
+        return new Arr<A>(narray, 0, ncount);
+    }
 
     /// <summary>
     /// Concatenate this collection the collection provided
@@ -374,7 +434,7 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public virtual Arr<A> AddRange(IEnumerable<A> range) =>
+    public Arr<A> AddRange(IEnumerable<A> range) =>
         AddRange((ReadOnlySpan<A>)[..range]);
 
     /// <summary>
@@ -412,9 +472,23 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public abstract Arr<A> ConsRange(in ReadOnlySpan<A> range);
-
-    /// <summary>
+    public Arr<A> ConsRange(in ReadOnlySpan<A> range)
+    {
+        if (range.Length == 0) return this;
+        var lcount = Count;
+        var rcount = range.Length;
+        var ncount = lcount + rcount;
+        var lspan  = AsSpan();
+        var narray = new A[ncount];
+        var nlspan = narray.AsSpan(0, rcount);
+        var nrspan = narray.AsSpan(rcount, lcount);
+        
+        range.CopyTo(nlspan);
+        lspan.CopyTo(nrspan);
+        
+        return new Arr<A>(narray, 0, ncount);
+    }
+        /// <summary>
     /// Concatenate the provided collection with this collection (the provided collection is prepended to this one) 
     /// </summary>
     /// <remarks>NOTE: This needs to create a whole new backing array which is the size of this collection and the range
@@ -422,7 +496,7 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public virtual Arr<A> ConsRange(IEnumerable<A> range) =>
+    public Arr<A> ConsRange(IEnumerable<A> range) =>
         ConsRange((ReadOnlySpan<A>)[..range]);
     
     /// <summary>
@@ -463,7 +537,36 @@ public abstract partial class Arr<A> :
     /// <param name="value">Element value to insert</param>
     /// <returns>An updated `Arr` or `None` if the index was out-of-bounds</returns>
     [Pure]
-    public abstract LE.Option<Arr<A>> Insert(Index index, in A value);
+    public LE.Option<Arr<A>> Insert(Index index, in A value)
+    {
+        var offset = index.GetOffset(Count);
+        
+        if (offset == 0)
+        {
+            return Cons(in value);
+        }
+        else if (offset == Count)
+        {
+            return Add(in value);
+        }
+        else if(offset > 0 && offset < Count)
+        {
+            var narray  = new A[Count + 1];
+            var nspan   = narray.AsSpan();
+            var span    = AsSpan();
+            var roffset = offset + 1;
+            
+            span[..offset].CopyTo(nspan[..offset]);
+            narray[offset] = value;
+            span[offset..].CopyTo(nspan[roffset..]);
+            
+            return new Arr<A>(narray, 0, narray.Length);
+        }
+        else
+        {
+            return LE.Option<Arr<A>>.None;
+        }
+    }
 
     /// <summary>
     /// Insert an element at the specified index
@@ -477,7 +580,7 @@ public abstract partial class Arr<A> :
     /// <returns>An updated `Arr` or `None` if the index was out-of-bounds</returns>
     public Arr<A> InsertUnsafe(Index index, in A value) =>
         Insert(index, in value).IfNone(() => throw new IndexOutOfRangeException());
-
+    
     /// <summary>
     /// Insert a range of elements at the specified index
     /// </summary>
@@ -555,7 +658,7 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public virtual LE.Option<Arr<A>> InsertRange(Index index, IEnumerable<A> range) =>
+    public LE.Option<Arr<A>> InsertRange(Index index, IEnumerable<A> range) =>
         InsertRange(index, (ReadOnlySpan<A>)[.. range]);
 
     /// <summary>
@@ -582,8 +685,37 @@ public abstract partial class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public abstract LE.Option<Arr<A>> InsertRange(Index index, in ReadOnlySpan<A> range);
-
+    public LE.Option<Arr<A>> InsertRange(Index index, in ReadOnlySpan<A> range)
+    {
+        if (range.Length == 0) return this;
+        var offset = index.GetOffset(Count);
+        if (offset == 0)
+        {
+            return ConsRange(in range);
+        }
+        else if (offset == Count)
+        {
+            return AddRange(in range);
+        }
+        else if(offset > 0 && offset < Count)
+        {
+            var narray  = new A[Count + range.Length];
+            var nspan   = narray.AsSpan();
+            var span    = AsSpan();
+            var roffset = offset + range.Length;
+            
+            span.CopyTo(nspan[..offset]);
+            range.CopyTo(nspan[offset..roffset]);
+            span[offset..].CopyTo(nspan[roffset..]);
+            
+            return new Arr<A>(narray, 0, narray.Length);
+        }
+        else
+        {
+            return LE.Option<Arr<A>>.None;
+        }
+    }
+    
     /// <summary>
     /// Insert a range of elements at the specified index
     /// </summary>
@@ -606,7 +738,15 @@ public abstract partial class Arr<A> :
     /// <returns>This collection with its first item removed.  If the collection is empty, an empty collection is
     /// returned.</returns>
     [Pure]
-    public abstract Arr<A> RemoveAtHead();
+    public Arr<A> RemoveAtHead()
+    {
+        if (Count == 1) return Empty; 
+        var narray = new A[Count - 1];
+        var nspan  = narray.AsSpan();
+        var span   = AsSpan();
+        span[1..].CopyTo(nspan);
+        return new Arr<A>(narray, 0, narray.Length);
+    }
 
     /// <summary>
     /// Remove the last item (if one exists)
@@ -617,7 +757,15 @@ public abstract partial class Arr<A> :
     /// <returns>This collection with its last item removed.  If the collection is empty, an empty collection is
     /// returned.</returns>
     [Pure]
-    public abstract Arr<A> RemoveAtLast();
+    public Arr<A> RemoveAtLast()
+    {
+        if (Count == 1) return Empty; 
+        var narray = new A[Count - 1];
+        var nspan  = narray.AsSpan();
+        var span   = AsSpan();
+        span[..^1].CopyTo(nspan);
+        return new Arr<A>(narray, 0, narray.Length);
+    }
 
     /// <summary>
     /// Remove the item at the index provided.
@@ -627,7 +775,34 @@ public abstract partial class Arr<A> :
     /// an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     /// <returns>Returns this collection with the item, at the index provided, removed.</returns>
     [Pure]
-    public abstract Arr<A> RemoveAt(Index index);
+    public Arr<A> RemoveAt(Index index)
+    {
+        var offset = index.GetOffset(Count);
+
+        if (offset == 0)
+        {
+            return RemoveAtHead();
+        }
+        else if (offset == Count)
+        {
+            return RemoveAtLast();
+        }
+        else if(offset > 0 && offset < Count)
+        {
+            var narray = new A[Count - 1];
+            var nspan  = narray.AsSpan();
+            var span   = AsSpan();
+            
+            span[..offset].CopyTo(nspan);
+            span[(offset+1)..].CopyTo(nspan[offset..]);
+            
+            return new Arr<A>(narray, 0, narray.Length);
+        }
+        else
+        {
+            return this;
+        }
+    }
 
     /// <summary>
     /// Remove all items at the indices provided.
@@ -639,7 +814,32 @@ public abstract partial class Arr<A> :
     /// <param name="indices"></param>
     /// <returns></returns>
     [Pure]
-    public abstract Arr<A> RemoveAt(ReadOnlySpan<Index> indices);
+    public Arr<A> RemoveAt(ReadOnlySpan<Index> indices)
+    {
+        if (indices.IsEmpty) return this;
+        HashSet<int> set = [];
+        foreach (var ix in indices)
+        {
+            var offset = ix.GetOffset(Count);
+            if (offset >= 0 && offset < Count)
+            {
+                set.Add(offset);
+            }
+        }
+        
+        var w = LE.ArrayWriter<A>.Init(Count - set.Count);
+        var i = 0;
+        foreach (var x in values)
+        {
+            if (!set.Contains(i))
+            {
+                LE.ArrayWriter<A>.Add(ref w, in x);
+            }
+            i++;
+        }
+
+        return w.ToArr();
+    }
 
     /// <summary>
     /// Remove a range of items
@@ -649,14 +849,40 @@ public abstract partial class Arr<A> :
     /// Consider using a data-structure that can handle an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     /// <returns>Returns this collection with the items within the range provided, removed.</returns>
     [Pure]
-    public abstract Arr<A> RemoveRange(in Range range);
+    public Arr<A> RemoveRange(in Range range)
+    {
+        var begin = range.Start.GetOffset(Count);
+        var end   = range.End.GetOffset(Count);
+        (begin, end) = begin > end 
+                           ? (end, begin) 
+                           : (begin, end);
+
+        var narray = new A[Count - (end - begin)];
+        var nspan  = narray.AsSpan();
+        var span   = AsSpan();
+        
+        span[..begin].CopyTo(nspan);
+        span[end..].CopyTo(nspan[begin..]);
+
+        return [.. span];
+    }
 
     /// <summary>
     /// Reverse the order of the items in the collection
     /// </summary>
     [Pure]
-    public abstract Arr<A> Reverse();
+    public Arr<A> Reverse()
+    {
+        var span   = AsSpan();
+        var narray = new A[Count];
+        var nspan  = narray.AsSpan();
 
+        span.CopyTo(nspan);
+        nspan.Reverse();
+
+        return [.. nspan];
+    }
+    
     /// <summary>
     /// Operations like `Take` or `Skip` can result in a lot of unused backing buffers, so this method
     /// allows you to make a copy of just the active buffer and create a new instance with it.  The old
@@ -664,8 +890,9 @@ public abstract partial class Arr<A> :
     /// </summary>
     /// <returns>A copy of this instance, with any fat trimmed</returns>
     [Pure]
-    public abstract Arr<A> Copy();
-
+    public Arr<A> Copy() =>
+        new (AsSpan().ToArray(), 0, count);
+    
     /// <summary>
     /// Functor map: projects each element of this collection to a new value
     /// </summary>
@@ -673,7 +900,18 @@ public abstract partial class Arr<A> :
     /// <typeparam name="B">Resulting value-type</typeparam>
     /// <returns>A new collection</returns>
     [Pure]
-    public abstract Arr<B> Map<B>(Func<A, B> f);
+    public Arr<B> Map<B>(Func<A, B> f)
+    {
+        var ma = this;
+        var w  = LE.ArrayWriter<B>.Init(Count);
+        var ts = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ma);
+
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ma, ref ts, out var x))
+        {
+            w.Add(f(x));
+        }
+        return w.ToArr();
+    }
 
     /// <summary>
     /// Monadic bind: projects each element of this collection to a new collection and concatenates the results
@@ -682,7 +920,23 @@ public abstract partial class Arr<A> :
     /// <typeparam name="B">Resulting value-type</typeparam>
     /// <returns>A new collection</returns>
     [Pure]
-    public abstract Arr<B> Bind<B>(Func<A, Arr<B>> f);
+    public Arr<B> Bind<B>(Func<A, Arr<B>> f)
+    {
+        var ma = this;
+        var w  = LE.ArrayWriter<B>.Init();
+        var sa = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ma);
+
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ma, ref sa, out var x))
+        {
+            var mb = f(x);
+            var sb = IterableMutable.setup<Arr, ArrState, ArrStateRef, B>(mb);
+            while (IterableMutable.step<Arr, ArrState, ArrStateRef, B>(mb, ref sb, out var y))
+            {
+                w.Add(y);
+            }
+        }
+        return w.ToArr();
+    }
 
     /// <summary>
     /// Monadic bind: projects each element of this collection to a new collection and concatenates the results
@@ -691,50 +945,96 @@ public abstract partial class Arr<A> :
     /// <typeparam name="B">Resulting value-type</typeparam>
     /// <returns>A new collection</returns>
     [Pure]
-    public abstract Arr<B> Bind<B>(Func<A, K<Arr, B>> f);
-    
-    /*
-     TODO
-     
-    /// <summary>
-    /// Map each element of a structure to an action, evaluate these actions from
-    /// left to right, and collect the results.
-    /// </summary>
-    /// <param name="f"></param>
-    /// <typeparam name="F">Applicative functor trait</typeparam>
-    /// <typeparam name="B">Bound value (output)</typeparam>
-    [Pure]
-    public K<F, Arr<B>> Traverse<F, B>(Func<A, K<F, B>> f) 
-        where F : Applicative<F> =>
-        F.Map(x => x.As(), Traversable.traverse(f, this));
-    
-    /// <summary>
-    /// Map each element of a structure to an action, evaluate these actions from
-    /// left to right, and collect the results.
-    /// </summary>
-    /// <param name="f"></param>
-    /// <typeparam name="M">Monad trait</typeparam>
-    /// <typeparam name="B">Bound value (output)</typeparam>
-    [Pure]
-    public K<M, Arr<B>> TraverseM<M, B>(Func<A, K<M, B>> f) 
-        where M : Monad<M> =>
-        M.Map(x => +x, Traversable.traverseM(f, this));
-        */
+    public Arr<B> Bind<B>(Func<A, K<Arr, B>> f)
+    {
+        var ma = this;
+        var w  = LE.ArrayWriter<B>.Init();
+        var sa = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ma);
 
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ma, ref sa, out var x))
+        {
+            var mb = f(x);
+            var sb = IterableMutable.setup<Arr, ArrState, ArrStateRef, B>(mb);
+            while (IterableMutable.step<Arr, ArrState, ArrStateRef, B>(mb, ref sb, out var y))
+            {
+                w.Add(y);
+            }
+        }
+        return w.ToArr();
+    }
+    
     /// <summary>
     /// Filter: projects each value in the structure to a boolean and returns only those values for which the boolean
     /// is `true`.
     /// </summary>
     [Pure]
-    public abstract Arr<A> Filter(Func<A, bool> f);
+    public Arr<A> Filter(Func<A, bool> f)
+    {
+        var ma     = this;
+        var writer = LE.ArrayWriter<A>.Init();
+        var ts     = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ma);
 
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ma, ref ts, out var x))
+        {
+            if (f(x))
+            {
+                writer.Add(x);
+            }
+        }
+        return writer.ToArr();
+    }
+    
     /// <summary>
     /// If this structure is empty, return the second structure; otherwise return this structure.
     /// </summary>
     /// <param name="tb">Second structure to return if the first one is empty</param>
     /// <returns>First argument to 'succeed', `this` or `tb`</returns>
     [Pure]
-    public abstract Arr<A> Choose(K<Arr, A> tb);
+    public Arr<A> Choose(K<Arr, A> tb) =>
+        +tb;
+
+    public bool Equals<EqA>(K<Arr, A>? rhs)
+        where EqA : Eq<A>
+    {
+        if (rhs is not Arr<A>) return false;
+        if (Count != rhs.Count) return false;
+
+        var ta = this;
+        var tb = rhs;
+        var sa = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ta);
+        var sb = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(tb);
+
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ta, ref sa, out var x) &&
+               IterableMutable.step<Arr, ArrState, ArrStateRef, A>(tb, ref sb, out var y))
+        {
+            if (!EqA.Equals(x, y)) return false;
+        }
+        
+        return true;
+    }
+    
+    public int CompareTo<OrdA>(K<Arr, A>? rhs)
+        where OrdA : Ord<A>
+    {
+        if (rhs is null || Count > rhs.Count) return 1;
+        if (Count < rhs.Count) return -1;
+
+        var ta = this;
+        var tb = rhs;
+        var sa = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(ta);
+        var sb = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(tb);
+
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(ta, ref sa, out var x) &&
+               IterableMutable.step<Arr, ArrState, ArrStateRef, A>(tb, ref sb, out var y))
+        {
+            switch (OrdA.Compare(x, y))
+            {
+                case <0: return -1;
+                case >0: return 1;
+            }
+        }
+        return 0;
+    }
     
     /// <summary>
     /// Part of the monoid category: equivalent to concatenation.
@@ -797,9 +1097,8 @@ public abstract partial class Arr<A> :
     public static implicit operator Arr<A>(A[] xs) =>
         xs switch
         {
-            []      => Empty,
-            [var x] => new ArrSingleton<A>(x),
-            _       => new ArrMany<A>(CopyArray(xs), 0, xs.Length)
+            [] => Empty,
+            _  => new Arr<A>(CopyArray(xs), 0, xs.Length)
         };
 
     /// <summary>
@@ -830,15 +1129,6 @@ public abstract partial class Arr<A> :
         Equals<EqDefault<A>>(rhs);
 
     /// <summary>
-    /// Equality operator
-    /// </summary>
-    /// <param name="rhs">Right-hand side of the equality expression</param>
-    /// <returns>`true` if `rhs` is equal to `this`</returns>
-    [Pure]
-    public abstract bool Equals<EqA>(K<Arr, A>? rhs)
-        where EqA : Eq<A>;
-
-    /// <summary>
     /// Ordering operator
     /// </summary>
     /// <param name="rhs">Right-hand side of the comparison expression</param>
@@ -867,16 +1157,6 @@ public abstract partial class Arr<A> :
     [Pure]
     public int CompareTo(K<Arr, A>? rhs) =>
         CompareTo<OrdDefault<A>>(rhs);
-    
-    /// <summary>
-    /// Ordering operator
-    /// </summary>
-    /// <param name="rhs">Right-hand side of the comparison expression</param>
-    /// <returns>`0` if the two collections are equal. `-1` if `rhs` is greater than `this`. `1` if `rhs` is less
-    /// than `this`</returns>
-    [Pure]
-    public abstract int CompareTo<OrdA>(K<Arr, A>? rhs)
-        where OrdA : Ord<A>;
     
     /// <summary>
     /// Get the hash code of the collection
@@ -927,13 +1207,6 @@ public abstract partial class Arr<A> :
     [Pure]
     public static implicit operator Arr<A>(LE.Unit _) =>
         Empty;
-
-    /// <summary>
-    /// Hash code calculator 
-    /// </summary>
-    /// <param name="offsetBasis">-2128831035 is the offset for an FNV-1 or FNV-1a 32-bit hash</param>
-    /// <returns>Calculated hash code</returns>
-    protected abstract int CalculateHashCode(int offsetBasis = -2128831035);   
     
     /// <summary>
     /// Fast copy of the collection
@@ -947,6 +1220,63 @@ public abstract partial class Arr<A> :
         return narray;
     }
     
+    int CalculateHashCode(int offsetBasis = -2128831035)
+    {
+        var hash = offsetBasis;
+        const int prime = 16777619;
+
+        unchecked
+        {
+            var xs = values;
+            for (var current = start; current < start + count; current++)
+            {
+                var x = xs[current];
+                hash = ((x?.GetHashCode() ?? 0) ^ hash) * prime;
+            }
+            return hash;
+        }        
+    }
+    
+    /*  TODO
+     
+    /// <summary>
+    /// Lens map
+    /// </summary>
+    [Pure]
+    public static LE.Lens<Arr<A>, Arr<B>> map<B>(LE.Lens<A, B> lens) =>
+        LE.Lens<Arr<A>, Arr<B>>.New(
+        Get: la => la.Map(lens.Get),
+        Set: lb => la => la.Zip(lb).Map(ab => lens.Set(ab.Item2, ab.Item1)).ToArr());
+        */
+    
+    /*
+     TODO
+     
+    /// <summary>
+    /// Map each element of a structure to an action, evaluate these actions from
+    /// left to right, and collect the results.
+    /// </summary>
+    /// <param name="f"></param>
+    /// <typeparam name="F">Applicative functor trait</typeparam>
+    /// <typeparam name="B">Bound value (output)</typeparam>
+    [Pure]
+    public K<F, Arr<B>> Traverse<F, B>(Func<A, K<F, B>> f) 
+        where F : Applicative<F> =>
+        F.Map(x => x.As(), Traversable.traverse(f, this));
+    
+    /// <summary>
+    /// Map each element of a structure to an action, evaluate these actions from
+    /// left to right, and collect the results.
+    /// </summary>
+    /// <param name="f"></param>
+    /// <typeparam name="M">Monad trait</typeparam>
+    /// <typeparam name="B">Bound value (output)</typeparam>
+    [Pure]
+    public K<M, Arr<B>> TraverseM<M, B>(Func<A, K<M, B>> f) 
+        where M : Monad<M> =>
+        M.Map(x => +x, Traversable.traverseM(f, this));
+        */
+
     /*
     readonly A[]? value;
     internal readonly long start;
