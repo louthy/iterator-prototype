@@ -7,6 +7,7 @@ using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using LanguageExt.UnsafeValueAccess;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype;
 
@@ -27,7 +28,8 @@ namespace IteratorPrototype;
 /// <typeparam name="A">Value type</typeparam>
 [Serializable]
 [CollectionBuilder(typeof(Arr), nameof(Arr.create))]
-public sealed class Arr<A>(A[] values, int start, int count) :
+[SkipLocalsInit]
+public sealed class Arr<A> :
     IComparisonOperators<Arr<A>, Arr<A>, bool>,
     IAdditionOperators<Arr<A>, Arr<A>, Arr<A>>,
     Constructor<Arr<A>, ReadOnlySpan<A>>,
@@ -40,6 +42,21 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     K<Arr, A>,
     IUnion
 {
+    /// <summary>
+    /// Backing array
+    /// </summary>
+    internal readonly A[] Values;
+    
+    /// <summary>
+    /// Start offset from the beginning of the backing array
+    /// </summary>
+    readonly int Start;
+
+    /// <summary>
+    /// Find the number of elements in the collection
+    /// </summary>
+    public int count;
+
     /// <summary>
     /// Cached hash code 
     /// </summary>
@@ -56,6 +73,12 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// </summary>
     public static Arr<A> Empty => 
         empty;
+    
+    /// <summary>
+    /// Find the number of elements in the collection
+    /// </summary>
+    public int Count => 
+        count;
     
     /// <summary>
     /// Identity for an array (empty)
@@ -121,6 +144,16 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <summary>
     /// Constructor
     /// </summary>
+    internal Arr(A[] values, int start, int count)
+    {
+        Values = values;
+        Start = start;
+        this.count = count;
+    }
+    
+    /// <summary>
+    /// Constructor
+    /// </summary>
     /// <param name="value">Value to construct from</param>
     /// <returns>A constructed array</returns>
     [Pure]
@@ -140,12 +173,6 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// </summary>
     public bool IsEmpty =>
         false;
-
-    /// <summary>
-    /// Find the number of elements in the collection
-    /// </summary>
-    public int Count => 
-        count;
 
     /// <summary>
     /// Take all items other than the first
@@ -174,8 +201,8 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     public LE.Option<A> At(Index index) =>
         (index.IsFromEnd, index.Value) switch
         {
-            (false, var ix)        when ix < count  => values[start         + ix],
-            (true, var ix and > 0) when ix <= count => values[start + count - ix],
+            (false, var ix)        when ix < Count  => Values[Start         + ix],
+            (true, var ix and > 0) when ix <= Count => Values[Start + Count - ix],
             _                                       => default
         };
 
@@ -186,7 +213,7 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <returns>Optional element value</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal ref readonly  A AtRef(int index) => 
-        ref values[start + index];
+        ref Values[Start + index];
     
     /// <summary>
     /// Indexer
@@ -207,7 +234,7 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     public bool TryGetValue(out Nil nil)
     {
         nil = default;
-        return count == 0;
+        return Count == 0;
     }
 
     /// <summary>
@@ -220,8 +247,8 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     // ReSharper disable once ParameterHidesMember
     public bool TryGetValue(out A head, out Iterator<Arr, ArrState, A> tail)
     {
-        Debug.Assert(count > 0);
-        head = values[start];
+        Debug.Assert(Count > 0);
+        head = Values[Start];
         tail = default!;
         return true;
     }
@@ -252,7 +279,7 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// </summary>
     /// <returns>A read-only span of values</returns>
     public ReadOnlySpan<A> AsSpan() =>
-        new (values, start, count); 
+        new (Values, Start, Count); 
 
     /// <summary>
     /// Create a readonly sub-span of this array.   
@@ -269,9 +296,9 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <returns>A read-only span of values</returns>
     public ReadOnlySpan<A> AsSpan(int skip) =>
-        skip >= count
+        skip >= Count
             ? ReadOnlySpan<A>.Empty
-            : new (values, start + skip, count - skip);
+            : new (Values, Start + skip, Count - skip);
 
     /// <summary>
     /// Create a readonly sub-span of this array.   
@@ -289,9 +316,9 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <param name="take">The number of items to take. This will be clamped to the maximum number of items available</param>
     /// <returns>A read-only span of values</returns>
     public ReadOnlySpan<A> AsSpan(int skip, int take) =>
-        count - skip <= 0 || take <= 0
+        Count - skip <= 0 || take <= 0
             ? ReadOnlySpan<A>.Empty
-            :  new (values, start + skip, Math.Min(take, count - skip));
+            :  new (Values, Start + skip, Math.Min(take, Count - skip));
 
     /// <summary>
     /// Create a subarray of this array.   
@@ -308,10 +335,10 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <param name="skip">Offset from the beginning of the array</param>
     /// <returns>Subset of this array</returns>
     public Arr<A> Slice(int skip) =>
-        (count - skip) switch
+        (Count - skip) switch
         {
             < 1   => Empty,
-            var n => new Arr<A>(values, start + skip, n)
+            var n => new Arr<A>(Values, Start + skip, n)
         };
 
     /// <summary>
@@ -334,10 +361,10 @@ public sealed class Arr<A>(A[] values, int start, int count) :
         take switch
         {
             < 1 => Empty,
-            var t => (count - skip) switch
+            var t => (Count - skip) switch
                      {
                          < 1   => Empty,
-                         var n => new Arr<A>(values, start + skip, Math.Min(t, n))
+                         var n => new Arr<A>(Values, Start + skip, Math.Min(t, n))
                      }
         };
 
@@ -352,10 +379,10 @@ public sealed class Arr<A>(A[] values, int start, int count) :
         var offset = index.GetOffset(Count);
         if(offset < 0 || offset >= Count) return None;
         var ovalues = AsSpan();
-        var nvalues = new A[count - start];
+        var nvalues = new A[Count - Start];
         nvalues[offset] = val;
         ovalues.CopyTo(nvalues);
-        return new Arr<A>(nvalues, 0, count);
+        return new Arr<A>(nvalues, 0, Count);
     }
 
     /// <summary>
@@ -378,11 +405,11 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     public Arr<A> Add(in A value)
     {
         var span   = AsSpan();
-        var narray = new A[count + 1];
+        var narray = new A[Count + 1];
         var nspan  = narray.AsSpan();
         span.CopyTo(nspan);
         narray[^1] = value;
-        return new Arr<A>(narray, 0, count + 1);
+        return new Arr<A>(narray, 0, Count + 1);
     }
 
     /// <summary>
@@ -395,11 +422,11 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     public Arr<A> Cons(in A value)
     {
         var span   = AsSpan();
-        var narray = new A[count + 1];
+        var narray = new A[Count + 1];
         var nspan  = narray.AsSpan();
         span.CopyTo(nspan[1..]);
         narray[0] = value;
-        return new Arr<A>(narray, 0, count + 1);
+        return new Arr<A>(narray, 0, Count + 1);
     }
 
     /// <summary>
@@ -830,7 +857,7 @@ public sealed class Arr<A>(A[] values, int start, int count) :
         
         var w = LE.ArrayWriter<A>.Init(Count - set.Count);
         var i = 0;
-        foreach (var x in values)
+        foreach (var x in Values)
         {
             if (!set.Contains(i))
             {
@@ -892,7 +919,7 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// <returns>A copy of this instance, with any fat trimmed</returns>
     [Pure]
     public Arr<A> Copy() =>
-        new (AsSpan().ToArray(), 0, count);
+        new (AsSpan().ToArray(), 0, Count);
     
     /// <summary>
     /// Functor map: projects each element of this collection to a new value
@@ -1079,13 +1106,9 @@ public sealed class Arr<A>(A[] values, int start, int count) :
         new (this);
 
     /// <summary>
-    /// Return a mutable struct enumerator that can be used for rapid iteration of the items in this collection.   
+    /// Return an enumerator that can be used for rapid iteration of the items in this collection.   
     /// </summary>
-    /// <remarks>
-    /// Note, it cannot be used with `yield` or `async/await`, If you need to enumerate this and either
-    /// `yield` or `await` then use `GetEnumerator()`.
-    /// </remarks>
-    public IterableMutableEnumerator<Arr, ArrState, ArrStateRef, A> GetEnumerator() =>
+    public IterableImmutableEnumerator<Arr, ArrState, A> GetEnumerator() =>
         new (this);
 
     /// <summary>
@@ -1228,8 +1251,8 @@ public sealed class Arr<A>(A[] values, int start, int count) :
 
         unchecked
         {
-            var xs = values;
-            for (var current = start; current < start + count; current++)
+            var xs = Values;
+            for (var current = Start; current < Start + Count; current++)
             {
                 var x = xs[current];
                 hash = ((x?.GetHashCode() ?? 0) ^ hash) * prime;

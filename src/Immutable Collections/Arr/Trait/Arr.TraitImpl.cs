@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 //using IteratorPrototype.DSL;
 using LanguageExt;
 using LanguageExt.Traits;
@@ -14,8 +15,12 @@ public partial class Arr :
     MonoidK<Arr>,
     Alternative<Arr>,
     Tr.Countable<Arr>,
+    Tr.Indexable<Arr, int>,
+    Tr.Indexable<Arr, Index>,
+    Tr.RefIndexable<Arr, Index>,
+    Tr.RefIndexable<Arr, int>,
     Tr.IterableMutable<Arr, ArrState, ArrStateRef>/*,
-    Traversable<Arr>, 
+    Traversable<Arr>,
     Tr.Indexable<Arr, Index>,
     Natural<Arr, LE.Seq>,
     Natural<Arr, LE.Iterable>,
@@ -27,16 +32,42 @@ public partial class Arr :
     */
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static Option<A> Tr.Indexable<Arr, Index>.At<A>(Index index, K<Arr, A> ta) =>
+        ta.As().At(index);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static Option<A> Tr.Indexable<Arr, int>.At<A>(int index, K<Arr, A> ta) =>
+        ta.As().At(index);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static ref readonly A Tr.RefIndexable<Arr, Index>.AtRef<A>(in Index index, in K<Arr, A> ta)
+    {
+        if (index.IsFromEnd)
+        {
+            return ref Unsafe.Add(ref Unsafe.As<K<Arr, A>, A>(ref Unsafe.AsRef(in ta)), (nint)(uint)index.GetOffset(ta.Count) /* force zero-extension */);
+        }
+        else
+        {
+            return ref Unsafe.Add(ref Unsafe.As<K<Arr, A>, A>(ref Unsafe.AsRef(in ta)), (nint)(uint)index.Value /* force zero-extension */);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static ref readonly A Tr.RefIndexable<Arr, int>.AtRef<A>(in int index, in K<Arr, A> ta) =>
+        ref Unsafe.Add(ref Unsafe.As<K<Arr, A>, A>(ref Unsafe.AsRef(in ta)), (nint)(uint)index /* force zero-extension */);
+    
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ReadOnlySpan<A> Tr.Iterable<Arr>.AsSpan<A>(K<Arr, A> ta) =>
         (+ta).AsSpan();
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static int Tr.Countable<Arr>.Count<A>(K<Arr, A> fa) =>
         fa is Arr<A> arr ? arr.Count : 0;
-    
+
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ArrState Tr.IterableImmutable<Arr, ArrState>.SetupImmutable<A>(in K<Arr, A> ta) =>
         new (0, ta.Count);
+        
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static bool Tr.IterableImmutable<Arr, ArrState>.StepImmutable<A>(
@@ -55,8 +86,8 @@ public partial class Arr :
             return false;
         }
 
-        var arr = (Arr<A>)ta;
-        head = arr.AtRef(index);
+        ref var arr = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
+        head = arr.Values[index];
         tail = new ArrState(index + 1, count);
 
         return true;    
@@ -67,8 +98,9 @@ public partial class Arr :
         in K<Arr, A> ta, 
         ref IteratorMutable<Arr, ArrState, A> next)
     {
-        ref var index = ref Unsafe.As<ArrState, int>(ref next.space);
-        ref var count = ref Unsafe.AddByteOffset(ref index, sizeof(int));
+        ref var          ts     = ref Unsafe.As<ArrState, ArrStateMutable>(ref next.space);
+        ref var          index  = ref ts.Index;
+        ref readonly var count  = ref ts.Count;
         
         if (index >= count)
         {
@@ -76,7 +108,10 @@ public partial class Arr :
             return;
         }
 
-        next.head = ((Arr<A>)ta).AtRef(index);
+        ref var arr   = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
+        ref var items = ref MemoryMarshal.GetArrayDataReference(arr.Values);
+        ref var item  = ref Unsafe.Add(ref items, index);
+        next.head = item;
         index++;
     }
 
@@ -87,7 +122,7 @@ public partial class Arr :
         if (array.IsEmpty) return default;
 
         ref var          items    = ref Unsafe.AsRef(in array[0]);
-        ref readonly var itemsEnd = ref array[^1];
+        ref readonly var itemsEnd = ref Unsafe.Add(ref Unsafe.AsRef(in array[^1]), 1);
         var              stateA   = new ArrStateRef<A>(ref items, in itemsEnd);
         return Unsafe.As<ArrStateRef<A>, ArrStateRef>(ref stateA);
     }
@@ -99,7 +134,7 @@ public partial class Arr :
         ref var          items    = ref state.Items;
         ref readonly var itemsEnd = ref state.ItemsEnd;
 
-        if (Unsafe.IsNullRef(in items) || Unsafe.IsAddressGreaterThan(in items, in itemsEnd))
+        if (Unsafe.AreSame(in items, in itemsEnd))
         {
             value = default!;
             return false;
@@ -356,4 +391,5 @@ public partial class Arr :
                        : None;
     }
 */
+
 }

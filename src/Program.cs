@@ -6,7 +6,7 @@ TestSuite.Run();
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
-Bench<IterableKVersion>.Mark();
+Bench<IterableVersion>.Mark();
 Bench<ForeachVersionRef>.Mark();
 Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
@@ -67,9 +67,9 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-//  This tests the IterableK trait performance 
+//  This tests the Iterable trait performance 
 //
-public class IterableKVersion : Bench<IterableKVersion>
+public class IterableVersion : Bench<IterableVersion>
 {
     readonly Arr<int> array = Arr.create(..Count);
 

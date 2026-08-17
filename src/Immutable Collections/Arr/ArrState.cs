@@ -13,7 +13,7 @@ public readonly struct ArrState(in int index, in int count)
 public struct ArrStateMutable(in int index, in int count)
 {
     public int Index = index;
-    public int Count = count;
+    public readonly int Count = count;
 }
 
 [SkipLocalsInit]
