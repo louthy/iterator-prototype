@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
 public static class CountableExtensions
@@ -16,7 +17,10 @@ public static class CountableExtensions
         /// <typeparam name="F">Countable structure trait implementation type</typeparam>
         /// <typeparam name="A">Bound value type</typeparam>
         /// <returns></returns>
-        public int Count =>
-            F.Count(fa);
+        public int Count
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => F.Count(fa);
+        }
     }
 }

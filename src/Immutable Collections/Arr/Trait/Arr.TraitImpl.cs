@@ -26,15 +26,19 @@ public partial class Arr :
     FoldableBack<Arr, Arr.FoldState>
     */
 {
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ReadOnlySpan<A> Tr.Iterable<Arr>.AsSpan<A>(K<Arr, A> ta) =>
         (+ta).AsSpan();
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static int Tr.Countable<Arr>.Count<A>(K<Arr, A> fa) =>
         fa is Arr<A> arr ? arr.Count : 0;
     
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ArrState Tr.IterableImmutable<Arr, ArrState>.SetupImmutable<A>(in K<Arr, A> ta) =>
         new (0, ta.Count);
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static bool Tr.IterableImmutable<Arr, ArrState>.StepImmutable<A>(
         in K<Arr, A> ta, 
         in ArrState ts, 
@@ -72,8 +76,7 @@ public partial class Arr :
             return;
         }
 
-        var arr = (Arr<A>)ta;
-        next.head = arr.AtRef(index);
+        next.head = ((Arr<A>)ta).AtRef(index);
         index++;
     }
 
@@ -176,9 +179,11 @@ public partial class Arr :
         return writer.ToArr();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static K<Arr, A> MonoidK<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static K<Arr, A> Alternative<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
@@ -190,10 +195,12 @@ public partial class Arr :
         return writer.ToArr();
     }    
     
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, K<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb : ma;
 
-    static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, LE.Memo<Arr, A> mb) => 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, Memo<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb.Value : ma;
 
     /*

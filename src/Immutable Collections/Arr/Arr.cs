@@ -215,8 +215,9 @@ public sealed class Arr<A>(A[] values, int start, int count) :
     /// remaining elements in sequence.
     /// </summary>
     /// <param name="head">Head element</param>
-    /// <param name="Tail">Tail iterator</param>
+    /// <param name="tail">Tail iterator</param>
     /// <returns>`true` if elements exist, `false` otherwise</returns>
+    // ReSharper disable once ParameterHidesMember
     public bool TryGetValue(out A head, out Iterator<Arr, ArrState, A> tail)
     {
         Debug.Assert(count > 0);
