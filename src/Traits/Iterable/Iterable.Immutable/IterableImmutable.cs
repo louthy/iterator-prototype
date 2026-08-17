@@ -50,7 +50,7 @@ public interface IterableImmutable<T, IS> : Iterable<T>
     }    
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static virtual void Next<A>(in K<T, A> ta, ref IteratorMutable<T, IS, A> next)
+    static virtual void Next<A>(in K<T, A> ta, ref IteratorFieldsMutable<T, IS, A> next)
     {
         ref var state = ref next.space;
         if (T.StepImmutable(in ta, in state, out var head, out state))

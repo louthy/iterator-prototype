@@ -8,7 +8,7 @@ namespace IteratorPrototype;
 public abstract record VirtualTable<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public abstract void Next(in object src, ref IteratorMutable<A> next);
+    public abstract void Next(in object src, ref IteratorFieldsMutable<A> next);
 }
 
 public record VirtualTable<T, IS, A> : VirtualTable<A>
@@ -16,10 +16,10 @@ public record VirtualTable<T, IS, A> : VirtualTable<A>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public override void Next(in object src, ref IteratorMutable<A> next)
+    public override void Next(in object src, ref IteratorFieldsMutable<A> next)
     {
         ref readonly var ta    = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in src));
-        ref var          state = ref Unsafe.As<IteratorMutable<A>, IteratorMutable<T, IS, A>>(ref next);
+        ref var          state = ref Unsafe.As<IteratorFieldsMutable<A>, IteratorFieldsMutable<T, IS, A>>(ref next);
         T.Next(in ta, ref state);
     }
 }

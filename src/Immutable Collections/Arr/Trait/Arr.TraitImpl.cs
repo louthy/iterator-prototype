@@ -96,7 +96,7 @@ public partial class Arr :
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static void Tr.IterableImmutable<Arr, ArrState>.Next<A>(
         in K<Arr, A> ta, 
-        ref IteratorMutable<Arr, ArrState, A> next)
+        ref IteratorFieldsMutable<Arr, ArrState, A> next)
     {
         ref var          ts     = ref Unsafe.As<ArrState, ArrStateMutable>(ref next.space);
         ref var          index  = ref ts.Index;

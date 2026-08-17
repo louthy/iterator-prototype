@@ -64,7 +64,7 @@ public partial class Array : Tr.IterableMutable<Array,ArrayState, ArrayStateRef>
 
     static void Tr.IterableImmutable<Array, ArrayState>.Next<A>(
         in K<Array, A> ta, 
-        ref IteratorMutable<Array, ArrayState, A> next)
+        ref IteratorFieldsMutable<Array, ArrayState, A> next)
     {
         ref var index = ref Unsafe.As<ArrayState, int>(ref next.space);
         ref var count = ref Unsafe.AddByteOffset(ref index, sizeof(int));
