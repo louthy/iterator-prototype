@@ -93,6 +93,24 @@ public partial class Arr :
         return true;    
     }
 
+    public static bool Next<A>(in K<Arr, A> ta, ref ArrState state, out A head)
+    {
+        ref var index = ref Unsafe.AsRef(in state.Index);
+        
+        if (index >= state.Count)
+        {
+            head = default!;
+            return false;
+        }
+
+        ref var arr   = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
+        ref var items = ref MemoryMarshal.GetArrayDataReference(arr.Values);
+        ref var item  = ref Unsafe.Add(ref items, index);
+        head = item;
+        index++;
+        return true;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static void Tr.IterableImmutable<Arr, ArrState>.Next<A>(
         in K<Arr, A> ta, 

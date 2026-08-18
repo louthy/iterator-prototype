@@ -1,0 +1,95 @@
+using System;
+using System.Threading.Tasks;
+
+namespace LanguageExt;
+
+record FoldWhileTransducer<A, S>(
+    Func<S, A, S> Folder, 
+    Func<S, A, bool> Pred, 
+    S State) : 
+    Transducer<A, S>
+{
+    public override ReducerIO<A, S1> Reduce<S1>(ReducerIO<S, S1> reducer)
+    {
+        var state = State;
+        return (s1, x) =>
+                   IO.liftVAsync(async e =>
+                                 {
+                                     if(e.Token.IsCancellationRequested) return Reduced.Done(s1);
+                                     if (Pred(state, x))
+                                     {
+                                         state = Folder(state, x);
+                                         return Reduced.Continue(s1);
+                                     }
+                                     else
+                                     {
+                                         switch (await reducer(s1, state).RunAsync(e))
+                                         {
+                                             case { Continue: true, Value: var nstate }:
+                                                 state = Folder(State /* reset */, x);
+                                                 return Reduced.Continue(nstate);
+
+                                             case { Value: var nstate }:
+                                                 return Reduced.Done(nstate);
+                                         }
+                                     }
+                                 });
+    }
+    
+    public override TransducerM<M, A, S> Lift<M>() =>
+        new FoldWhileTransducerM<M, A, S>(Folder, Pred, State);
+}
+
+/*
+record FoldWhileTransducer2<A, S>(
+    Schedule Schedule, 
+    Func<S, A, S> Folder, 
+    Func<S, A, bool> Pred, 
+    S State) : 
+    Transducer<A, S>
+{
+    public override ReducerIO<A, S1> Reduce<S1>(ReducerIO<S, S1> reducer)
+    {
+        // TODO: This needs checking since it's changed to an IteratorIO
+        var state = State;
+        var sch = Duration.Zero.Cons(Schedule.Run()).ForwardIteratorIO();
+        return (s1, x) =>
+                   IO.liftVAsync(async e =>
+                                 {
+                                     if (Pred(state, x))
+                                     {
+                                         state = Folder(state, x);
+                                         return Reduced.Continue(s1);
+                                     }
+                                     else
+                                     {
+                                         var nxt = await sch.NextIO().RunAsync(e);
+                                         
+                                         // Schedule
+                                         if (nxt is (Exist<Duration> (var d), var tail))
+                                         {
+                                             sch = tail;
+                                             if (!d.IsZero) await Task.Delay((TimeSpan)d);
+                                         }
+                                         else
+                                         {
+                                             return Reduced.Done(s1);
+                                         }
+
+                                         switch (await reducer(s1, state).RunAsync(e))
+                                         {
+                                             case { Continue: true, Value: var nstate }:
+                                                 state = Folder(State /* reset #1#, x);
+                                                 return Reduced.Continue(nstate);
+
+                                             case { Value: var nstate }:
+                                                 return Reduced.Done(nstate);
+                                         }
+                                     }
+                                 });
+    }
+    
+    public override TransducerM<M, A, S> Lift<M>() =>
+        new FoldWhileTransducerM2<M, A, S>(Schedule, Folder, Pred, State);
+}
+*/

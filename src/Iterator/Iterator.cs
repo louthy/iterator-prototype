@@ -5,18 +5,6 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
-/*[SkipLocalsInit]
-public ref struct IteratorMutable<A>
-{
-    // MUST MATCH THE FIELDS IN Iterator<T, TS, A>
-    public IteratorTag tag;
-    public A head;
-    public object? ta;
-    public Func<Iterator<A>>? lazy;
-    public VirtualTable<A>? vt; //< Used, do not remove (it supports casting between Iterator<T, TS, A> and Iterator<A>)
-    public Space128 space;
-}*/
-
 [Union]
 [SkipLocalsInit]
 public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>, K<Iterator, A>

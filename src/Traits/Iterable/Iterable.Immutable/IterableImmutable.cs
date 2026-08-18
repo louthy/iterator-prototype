@@ -53,16 +53,16 @@ public interface IterableImmutable<T, IS> : Iterable<T>
     static virtual void Next<A>(in K<T, A> ta, ref IteratorFieldsMutable<T, IS, A> next)
     {
         ref var state = ref next.space;
-        if (T.StepImmutable(in ta, in state, out var head, out state))
-        {
-            next.head = head;
-        }
-        else
+        if (!T.StepImmutable(in ta, in state, out next.head, out state))
         {
             next.tag = IteratorTag.Empty;
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static virtual bool Next<A>(in K<T, A> ta, ref IS state, out A head) =>
+        T.StepImmutable(in ta, in state, out head, out state);
+    
     static string Iterable<T>.ToString<A>(K<T, A> ta, string separator)
     {
         var sm = new StringMaker(stackalloc char[1024]);
