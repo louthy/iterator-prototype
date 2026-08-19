@@ -27,25 +27,3 @@ public readonly struct IteratorFields2<T, IS, A>
         this.space = space;
     }
 }
-
-/*
-[SkipLocalsInit]
-public ref struct IteratorFieldsMutable2<T, IS, A>
-    where T : Tr.IterableImmutable<T, IS>
-    where IS : struct
-{
-    public K<T, A> ta;
-    public IteratorAction<T, IS, A>? action;
-    public IS space;
-}
-
-[SkipLocalsInit]
-public ref struct IteratorFieldsMutable2<T, IS, A, B>
-    where T : Tr.IterableImmutable<T, IS>
-    where IS : struct
-{
-    public K<T, A> ta;
-    public IteratorAction<T, IS, A, B>? action;
-    public IS space;
-}
-*/
