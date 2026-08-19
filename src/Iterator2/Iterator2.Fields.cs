@@ -17,11 +17,3 @@ public readonly struct IteratorFields2<A>
         this.space = space;
     }
 }
-
-[SkipLocalsInit]
-public ref struct IteratorFieldsMutable2<A>
-{
-    public object ta;
-    public IteratorAction<A> action;
-    public Space128 space;
-}

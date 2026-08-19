@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct Iterator2<A>
 {
-    readonly IteratorFields2<A> fields;
+    internal readonly IteratorFields2<A> fields;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal Iterator2(object ta, IteratorAction<A> action, in Space128 space) =>
@@ -17,5 +17,11 @@ public readonly struct Iterator2<A>
         tail = this;    // Copy
         ref var s = ref Unsafe.AsRef(in tail.fields.space);
         return fields.action.TryGetValue(in fields.ta, ref s, out head);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator2<B> Map<B>(Func<A, B> f)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -95,9 +95,10 @@ public partial class Arr :
 
     public static bool Next<A>(in K<Arr, A> ta, ref ArrState state, out A head)
     {
-        ref var index = ref Unsafe.AsRef(in state.Index);
+        ref var          index = ref Unsafe.AsRef(in state.Index);
+        ref readonly var count = ref state.Count;
         
-        if (index >= state.Count)
+        if (index >= count)
         {
             head = default!;
             return false;

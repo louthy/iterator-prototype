@@ -27,30 +27,12 @@ public readonly struct Iterator2<T, IS, A>
                    ? T.Next(in fields.ta, ref s, out head) 
                    : fields.action.TryGetValue(in fields.ta, ref s, out head);
     }
-}
 
-[SkipLocalsInit]
-public readonly struct Iterator2<T, IS, A, B>
-    where T : Tr.IterableImmutable<T, IS>
-    where IS : struct
-{
-    readonly K<T, A> ta;
-    readonly IteratorAction<T, IS, A, B> action;
-    readonly IS space;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iterator2(K<T, A> ta, IteratorAction<T, IS, A, B> action, in IS space)
+    public Iterator2<A> Lower
     {
-        this.ta = ta;
-        this.action = action;
-        this.space = space;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(out B head, out Iterator2<T, IS, A, B> tail)
-    {
-        tail = this;    // Copy
-        ref var s = ref Unsafe.AsRef(in tail.space);
-        return action.TryGetValue(in ta, ref s, out head);
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => new (fields.ta,
+                    fields.action ?? IdAction<T, IS, A>.Default,
+                    Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fields.space)));
     }
 }
