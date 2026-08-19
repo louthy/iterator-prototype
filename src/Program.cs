@@ -13,6 +13,7 @@ Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
 Bench<StrongIterator2Version>.Mark();
 Bench<WeakIterator2Version>.Mark();
+Bench<MappedIterator2Version>.Mark();
 Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -241,6 +242,35 @@ public class WeakIterator2Version : Bench<WeakIterator2Version>
 
     protected override string Explain =>
         $"Weak Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Immutable;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+//  This tests the performance of a generalised Iterator2 Strong
+//
+
+public class MappedIterator2Version : Bench<MappedIterator2Version>
+{
+    readonly Iterator2<int> iterator = 
+        Iterator2.from<Arr, ArrState, int>(Arr.create(..Count)).Map(x => x * 2);
+
+    protected override string Explain =>
+        $"Mapped Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {

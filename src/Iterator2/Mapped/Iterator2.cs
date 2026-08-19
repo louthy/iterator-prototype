@@ -26,7 +26,8 @@ public readonly struct Iterator2<T, IS, A, B>
     public bool TryGetValue(out B head, out Iterator2<T, IS, A, B> tail)
     {
         tail = this;    // Copy
+        ref var a = ref Unsafe.AsRef(in tail.fields.action);
         ref var s = ref Unsafe.AsRef(in tail.fields.space);
-        return fields.action.TryGetValue(in fields.ta, ref s, out head);        
+        return fields.action.TryGetValue(in fields.ta, ref a, ref s, out head);        
     }
 }

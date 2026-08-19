@@ -70,7 +70,7 @@ public partial class Arr
                 var xs = new int[count];
                 var ix = 0;
                 var ct = count;
-                for (var x = start; ct > 0; ct--)
+                for (var x = start; ct > 0; ct--, x++)
                 {
                     xs[ix++] = x;
                 }
