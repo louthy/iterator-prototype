@@ -2,6 +2,7 @@
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
+
 TestSuite.Run();
 
 Bench<CSharpVersion>.Mark();

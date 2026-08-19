@@ -23,7 +23,7 @@ public class TestSuite
 
     static void InOrder()
     {
-        var arr = Array.create(1, 2, 3, 4, 5);
+        var arr = Arr.create(1, 2, 3, 4, 5);
         foreach (var x in arr)
         {
             Console.Write($"{x} ");
@@ -32,7 +32,7 @@ public class TestSuite
 
     static void Prepend()
     {
-        var iter = 1 + (2 + (3 + Array.create(4, 5).Forward()));
+        var iter = 1 + (2 + (3 + Arr.create(4, 5).Forward()));
         foreach (var x in iter)
         {
             Console.Write($"{x} ");
@@ -41,7 +41,7 @@ public class TestSuite
 
     static void PrependLazy()
     {
-        var iter = 1.Cons(() => 2.Cons(() => 3.Cons(() => Array.create(4, 5).Forward())));
+        var iter = 1.Cons(() => 2.Cons(() => 3.Cons(() => Arr.create(4, 5).Forward())));
         foreach (var x in iter)
         {
             Console.Write($"{x} ");

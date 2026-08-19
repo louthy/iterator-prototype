@@ -11,4 +11,7 @@ public interface IteratorAction<A> : IteratorAction
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     IteratorAction<B> Map<B>(Func<A, B> f);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    IteratorAction<A> Cons(A value);
 }
