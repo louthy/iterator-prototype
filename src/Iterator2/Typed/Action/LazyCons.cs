@@ -5,32 +5,31 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class ConsAction<T, IS, A, B>(B Head, IteratorAction<T, IS, A, B> Then) : IteratorAction<T, IS, A, B>
+public record LazyConsIteratorAction<T, IS, A>(A x, LazyIteratorAction<T, IS, A> xs) : IteratorAction<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)
+    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
     {
-        head = Head;
-        self = Then;
+        head = x;
+        self = xs;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A, B> self, ref IS space, out B head)
+    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A> self, ref IS space, out A head)
     {
-        head = Head;
-        self = Then;
+        head = x;
+        self = xs;
         return true;
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public IteratorAction<B> Map<B>(Func<A, B> f) =>
+        new MapAction<T, IS, A, B>(this, f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<C> Map<C>(Func<B, C> f) =>
-        new MapAction<T, IS, B, C>(this, f);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<B> Cons(B value) =>
-        new ConsAction<T, IS, A, B>(value, this);
+    public IteratorAction<T, IS, A> Cons(A value) =>
+        new ConsAction<T, IS, A>(value, this);
 }
-

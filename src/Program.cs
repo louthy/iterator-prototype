@@ -3,7 +3,8 @@ using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
 
-TestSuite.Run();
+IteratorTestSuite.Run();
+
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
@@ -228,7 +229,7 @@ public class StrongIterator2Version : Bench<StrongIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Immutable;
+        Bench.Iterator2;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -257,7 +258,7 @@ public class WeakIterator2Version : Bench<WeakIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Immutable;
+        Bench.Iterator2;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -286,5 +287,5 @@ public class MappedIterator2Version : Bench<MappedIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Immutable;
+        Bench.Iterator2;
 }

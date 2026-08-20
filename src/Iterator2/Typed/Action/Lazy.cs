@@ -5,26 +5,46 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class ConsAction<T, IS, A>(A Head, IteratorAction<T, IS, A> Then) : IteratorAction<T, IS, A>
+public record LazyIteratorAction<T, IS, A>(Func<Iterator2<T, IS, A>> xs) : IteratorAction<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
     {
-        head = Head;
-        self = Then;
-        return true;
+        var iter = xs();
+        if (iter.TryGetValue(out head, out var tail))
+        {
+            ta = tail.fields.ta;
+            self = tail.fields.action!;
+            space = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in tail.fields.space));
+            return true;
+        }
+        else
+        {
+            head = default!;
+            return false;
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A> self, ref IS space, out A head)
     {
-        head = Head;
-        self = Then;
-        return true;
+        var iter = xs();
+        if (iter.TryGetValue(out head, out var tail))
+        {
+            ta = tail.fields.ta;
+            self = tail.fields.action!;
+            space = tail.fields.space;
+            return true;
+        }
+        else
+        {
+            head = default!;
+            return false;
+        }
     }
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public IteratorAction<B> Map<B>(Func<A, B> f) =>
         new MapAction<T, IS, A, B>(this, f);

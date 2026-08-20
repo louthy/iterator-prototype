@@ -9,7 +9,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct Iterator<A> : IUnion, IIterator<Iterator<A>, A>, K<Iterator, A>
 {
-    readonly IteratorFields<A> fields;
+    internal readonly IteratorFields<A> fields;
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     internal Iterator(in Nil nil) =>

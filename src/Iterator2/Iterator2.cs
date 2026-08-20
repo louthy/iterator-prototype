@@ -15,9 +15,10 @@ public readonly struct Iterator2<A>
     public bool TryGetValue(out A head, out Iterator2<A> tail)
     {
         tail = this;    // Copy
-        ref var a = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action));
-        ref var s = ref Unsafe.AsRef(in tail.fields.space);
-        return fields.action.TryGetValue(in fields.ta, ref a, ref s, out head);
+        ref var ta = ref Unsafe.AsRef(in tail.fields.ta);
+        ref var a  = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action));
+        ref var s  = ref Unsafe.AsRef(in tail.fields.space);
+        return fields.action.TryGetValue(ref ta, ref a, ref s, out head);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -27,8 +28,4 @@ public readonly struct Iterator2<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public Iterator2<B> Map<B>(Func<A, B> f) =>
         new (fields.ta, fields.action.Map(f), fields.space);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iterator2<A> operator+(A x, Iterator2<A> xs) =>
-        new (xs.fields.ta, xs.fields.action.Cons(x), xs.fields.space);
 }

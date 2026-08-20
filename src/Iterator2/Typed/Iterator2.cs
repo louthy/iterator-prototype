@@ -23,6 +23,7 @@ public readonly struct Iterator2<T, IS, A>
     {
         tail = this;    // Copy
         ref var fs = ref Unsafe.AsRef(in tail.fields);
+        ref var ta = ref Unsafe.AsRef(in fs.ta);
         ref var s  = ref Unsafe.AsRef(in fs.space);
         
         if (fs.action is null)
@@ -32,16 +33,16 @@ public readonly struct Iterator2<T, IS, A>
         else
         {
             ref var a = ref Unsafe.AsRef(in fs.action);
-            return fs.action.TryGetValue(in fs.ta, ref a, ref s, out head);
+            return fs.action.TryGetValue(ref ta, ref a, ref s, out head);
         }
     }
-
+    
     public Iterator2<A> Lower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => new (fields.ta,
                     fields.action ?? IdAction<T, IS, A>.Default,
-                    Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fields.space)));
+                    in Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fields.space)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

@@ -10,6 +10,7 @@ public struct IteratorEnumerator2<T, IS, A>
     Iterator2<T, IS, A> iter;
     A current;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public IteratorEnumerator2(in Iterator2<T, IS, A> iter)
     {
         this.reset = iter;
@@ -17,9 +18,11 @@ public struct IteratorEnumerator2<T, IS, A>
         this.current = default!;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool MoveNext()
     {
         ref var fs = ref Unsafe.AsRef(in iter.fields);
+        ref var ta = ref Unsafe.AsRef(in fs.ta);
         if (fs.action is null)
         {
             ref var s = ref Unsafe.AsRef(in fs.space);
@@ -29,12 +32,15 @@ public struct IteratorEnumerator2<T, IS, A>
         {
             ref var a = ref Unsafe.AsRef(in fs.action);
             ref var s = ref Unsafe.AsRef(in fs.space);
-            return fs.action.TryGetValue(in fs.ta, ref a, ref s, out current);
+            return fs.action.TryGetValue(ref ta, ref a, ref s, out current);
         }
     }
 
-    public A Current => 
-        current;
+    public A Current
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => current;
+    }
 
     public void Reset()
     {
