@@ -13,11 +13,8 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator2<T, IS, A>> xs) : Itera
     public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
     {
         var iter = xs();
-        if (iter.TryGetValue(out head, out var tail))
+        if (iter.TryGetValueInternal(ref ta, ref self, ref space, out head))
         {
-            ta = tail.fields.ta;
-            self = tail.fields.action!;
-            space = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in tail.fields.space));
             return true;
         }
         else
@@ -28,7 +25,7 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator2<T, IS, A>> xs) : Itera
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A> self, ref IS space, out A head)
+    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head)
     {
         var iter = xs();
         if (iter.TryGetValue(out head, out var tail))
@@ -44,12 +41,4 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator2<T, IS, A>> xs) : Itera
             return false;
         }
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<B> Map<B>(Func<A, B> f) =>
-        new MapAction<T, IS, A, B>(this, f);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<T, IS, A> Cons(A value) =>
-        new ConsAction<T, IS, A>(value, this);
 }

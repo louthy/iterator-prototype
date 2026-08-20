@@ -19,7 +19,7 @@ public static partial class Iterator2Operators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Iterator2<T, IS, A> operator +(A x, Iterator2<T, IS, A> xs) =>
-            new (xs.fields.ta, (xs.fields.action ?? IdAction<T, IS, A>.Default).Cons(x), xs.fields.space);
+            new (xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
     }
     
     extension<T, IS, A>(Func<Iterator2<T, IS, A>> self)

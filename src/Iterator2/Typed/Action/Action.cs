@@ -13,18 +13,18 @@ public interface IteratorAction<T, IS, A> : IteratorAction<A>
     {
         ref var ta  = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in obj));
         ref var ts  = ref Unsafe.As<Space128, IS>(ref space);
-        ref var act = ref Unsafe.As<IteratorAction, IteratorAction<T, IS, A>>(ref self);
+        ref var act = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref self);
         return TryGetValue(ref ta, ref act, ref ts, out head);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A> self, ref IS space, out A head);
+    bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    new IteratorAction<T, IS, A> Cons(A value);
+    new IteratorAction<T, IS, A> Cons(A value) =>
+        new ConsAction<T, IS, A>(value, this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     IteratorAction<A> IteratorAction<A>.Cons(A value) =>
         Cons(value);
-    
 }

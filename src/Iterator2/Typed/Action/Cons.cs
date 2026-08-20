@@ -18,18 +18,10 @@ public sealed class ConsAction<T, IS, A>(A Head, IteratorAction<T, IS, A> Then) 
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<T, IS, A> self, ref IS space, out A head)
+    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head)
     {
         head = Head;
         self = Then;
         return true;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<B> Map<B>(Func<A, B> f) =>
-        new MapAction<T, IS, A, B>(this, f);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<T, IS, A> Cons(A value) =>
-        new ConsAction<T, IS, A>(value, this);
 }

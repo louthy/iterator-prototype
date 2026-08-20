@@ -9,11 +9,11 @@ public readonly struct IteratorFields2<T, IS, A, B>
     where IS : struct
 {
     public readonly K<T, A> ta;
-    public readonly IteratorAction<T, IS, A, B> action;
+    public readonly IteratorAction<B> action;
     public readonly IS space;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal IteratorFields2(K<T, A> ta, IteratorAction<T, IS, A, B> action, in IS space)
+    internal IteratorFields2(K<T, A> ta, IteratorAction<B> action, in IS space)
     {
         this.ta = ta;
         this.action = action;

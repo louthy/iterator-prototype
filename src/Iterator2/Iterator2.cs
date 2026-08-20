@@ -28,4 +28,38 @@ public readonly struct Iterator2<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public Iterator2<B> Map<B>(Func<A, B> f) =>
         new (fields.ta, fields.action.Map(f), fields.space);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator2<B> Bind<B>(Func<A, Iterator2<B>> f) =>
+        new (fields.ta, fields.action.Bind(f), fields.space);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator2<A> Concat(Iterator2<A> rhs) =>
+        new (fields.ta, fields.action.Concat(rhs), fields.space);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref object ta, ref Space128 space)
+    {
+        ref readonly var fs = ref fields;
+        ta = fs.ta!;
+        space = fs.space;
+    }    
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref object ta, ref IteratorAction action, ref Space128 space)
+    {
+        ref readonly var fs = ref fields;
+        ta = fs.ta!;
+        action = fs.action!;
+        space = fs.space;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref object ta, ref IteratorAction<A> action, ref Space128 space)
+    {
+        ref readonly var fs = ref fields;
+        ta = fs.ta!;
+        action = fs.action!;
+        space = fs.space;
+    }
 }

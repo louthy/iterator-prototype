@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
@@ -22,7 +23,7 @@ public struct IteratorEnumerator2<T, IS, A>
     public bool MoveNext()
     {
         ref var fs = ref Unsafe.AsRef(in iter.fields);
-        ref var ta = ref Unsafe.AsRef(in fs.ta);
+        ref var ta = ref Unsafe.As<K<T, A>, object>(ref Unsafe.AsRef(in fs.ta));
         if (fs.action is null)
         {
             ref var s = ref Unsafe.AsRef(in fs.space);
@@ -30,8 +31,8 @@ public struct IteratorEnumerator2<T, IS, A>
         }
         else
         {
-            ref var a = ref Unsafe.AsRef(in fs.action);
-            ref var s = ref Unsafe.AsRef(in fs.space);
+            ref var a = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action));
+            ref var s = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fs.space));
             return fs.action.TryGetValue(ref ta, ref a, ref s, out current);
         }
     }

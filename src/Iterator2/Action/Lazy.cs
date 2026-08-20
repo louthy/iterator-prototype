@@ -21,12 +21,4 @@ public record LazyIteratorAction<A>(Func<Iterator2<A>> xs) : IteratorAction<A>
             return false;
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<B> Map<B>(Func<A, B> f) =>
-        new LazyIteratorAction<B>(() => xs().Map(f));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<A> Cons(A value) =>
-        new ConsAction<A>(value, this);
 }

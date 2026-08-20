@@ -9,7 +9,7 @@ public readonly struct IteratorFields2<T, IS, A>
     where IS : struct
 {
     public readonly K<T, A> ta;
-    public readonly IteratorAction<T, IS, A>? action;
+    public readonly IteratorAction<A>? action;
     public readonly IS space;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -20,7 +20,7 @@ public readonly struct IteratorFields2<T, IS, A>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal IteratorFields2(K<T, A> ta, IteratorAction<T, IS, A> action, in IS space)
+    internal IteratorFields2(K<T, A> ta, IteratorAction<A> action, in IS space)
     {
         this.ta = ta;
         this.action = action;

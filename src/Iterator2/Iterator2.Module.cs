@@ -11,7 +11,7 @@ public class Iterator2
         where IS : struct
     {
         var s = T.SetupImmutable(ta);
-        var i = new Iterator2<T, IS, A>(ta, IdAction<T, IS, A>.Default, in s);
+        var i = new Iterator2<T, IS, A>(ta, PureAction<T, IS, A>.Default, in s);
         return Unsafe.As<Iterator2<T, IS, A>, Iterator2<A>>(ref i);
     }     
     

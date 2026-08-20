@@ -12,7 +12,7 @@ public readonly struct Iterator<T, IS, A> : IUnion, IIterator<Iterator<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {
-    readonly IteratorFields<T, IS, A> fields;
+    internal readonly IteratorFields<T, IS, A> fields;
 
     public bool IsEmpty
     {

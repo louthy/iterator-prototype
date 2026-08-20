@@ -12,12 +12,4 @@ public sealed class ConsAction<A>(A Head, IteratorAction<A> Then) : IteratorActi
         self = Then;
         return true;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<B> Map<B>(Func<A, B> f) =>
-        new MapAction<A, B>(this, f);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorAction<A> Cons(A value) =>
-        new ConsAction<A>(value, this);
 }
