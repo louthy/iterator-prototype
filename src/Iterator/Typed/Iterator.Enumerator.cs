@@ -3,16 +3,16 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
-public struct IteratorEnumerator2<T, IS, A>
+public struct IteratorEnumerator<T, IS, A>
     where T : Tr.IterableImmutable<T, IS>
     where IS : struct
 {
-    readonly Iterator2<T, IS, A> reset;
-    Iterator2<T, IS, A> iter;
+    readonly Iterator<T, IS, A> reset;
+    Iterator<T, IS, A> iter;
     A current;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorEnumerator2(in Iterator2<T, IS, A> iter)
+    public IteratorEnumerator(in Iterator<T, IS, A> iter)
     {
         this.reset = iter;
         this.iter = iter;

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public record LazyIteratorAction<A>(Func<Iterator2<A>> xs) : IteratorAction<A>
+public record LazyIteratorAction<A>(Func<Iterator<A>> xs) : IteratorAction<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)

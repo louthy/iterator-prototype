@@ -13,9 +13,7 @@ Bench<ForeachVersionRef>.Mark();
 Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
-Bench<StrongIterator2Version>.Mark();
-Bench<WeakIterator2Version>.Mark();
-Bench<MappedIterator2Version>.Mark();
+Bench<MappedIteratorVersion>.Mark();
 Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -182,7 +180,7 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 {
     readonly Iterator<int> iterator = 
-        IterableImmutable.fromWeak<Arr, ArrState, int>(Arr.create(..Count));
+        Arr.create(..Count).Forward();
 
     protected override string Explain =>
         $"Weak Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
@@ -210,8 +208,8 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
 public class StrongIterator2Version : Bench<StrongIterator2Version>
 {
-    readonly Iterator2<Arr, ArrState, int> iterator = 
-        Iterator2.from<Arr, ArrState, int>(Arr.create(..Count));
+    readonly Iterator<Arr, ArrState, int> iterator = 
+        Iterator.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Strong Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
@@ -229,7 +227,7 @@ public class StrongIterator2Version : Bench<StrongIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Iterator2;
+        Bench.Immutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,8 +237,8 @@ public class StrongIterator2Version : Bench<StrongIterator2Version>
 
 public class WeakIterator2Version : Bench<WeakIterator2Version>
 {
-    readonly Iterator2<int> iterator = 
-        Iterator2.fromWeak<Arr, ArrState, int>(Arr.create(..Count));
+    readonly Iterator<int> iterator = 
+        Arr.create(..Count).Forward();
 
     protected override string Explain =>
         $"Weak Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
@@ -258,7 +256,7 @@ public class WeakIterator2Version : Bench<WeakIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Iterator2;
+        Bench.Immutable;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -266,13 +264,13 @@ public class WeakIterator2Version : Bench<WeakIterator2Version>
 //  This tests the performance of a generalised Iterator2 Strong
 //
 
-public class MappedIterator2Version : Bench<MappedIterator2Version>
+public class MappedIteratorVersion : Bench<MappedIteratorVersion>
 {
-    readonly Iterator2<int> iterator = 
-        Iterator2.from<Arr, ArrState, int>(Arr.create(..Count)).Map(x => x * 2);
+    readonly Iterator<int> iterator = 
+        Arr.create(..Count).Forward().Map(x => x * 2);
 
     protected override string Explain =>
-        $"Mapped Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
+        $"Mapped Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {
@@ -287,5 +285,5 @@ public class MappedIterator2Version : Bench<MappedIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Iterator2;
+        Bench.Immutable;
 }

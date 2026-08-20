@@ -19,13 +19,8 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         new IterableImmutableEnumerable<T, IS, A>(ta);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static Iterator<A> Iterable<T>.Forward<A>(K<T, A> ta)
-    {
-        var ts = T.SetupImmutable(ta);
-        return T.StepImmutable(ta, in ts, out var head, out var tail) 
-                   ? new Iterator<T, IS, A>(in head, in ta, in tail) 
-                   : default;
-    }
+    static Iterator<A> Iterable<T>.Forward<A>(K<T, A> ta) =>
+        Iterator.fromWeak<T, IS, A>(in ta);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static Unit Iterable<T>.ToWriter<A>(K<T, A> ta, ref ArrayWriter<A> writer)
@@ -48,16 +43,6 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         }
         return default;
     }    
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static virtual void Next<A>(in K<T, A> ta, ref IteratorFieldsMutable<T, IS, A> next)
-    {
-        ref var state = ref next.space;
-        if (!T.StepImmutable(in ta, in state, out next.head, out state))
-        {
-            next.tag = IteratorTag.Empty;
-        }
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static virtual bool Next<A>(in K<T, A> ta, ref IS state, out A head) =>

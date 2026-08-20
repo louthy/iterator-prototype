@@ -14,7 +14,7 @@ public readonly struct Iterator2<T, IS, A, B>
     internal Iterator2(K<T, A> ta, IteratorAction<B> action, in IS space) =>
         fields = new IteratorFields2<T, IS, A, B>(ta, action, in space);
 
-    public Iterator2<B> Lower
+    public Iterator<B> Lower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => new (fields.ta,

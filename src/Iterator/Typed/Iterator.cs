@@ -4,27 +4,27 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public readonly struct Iterator2<T, IS, A>
+public readonly struct Iterator<T, IS, A>
     where T : Tr.IterableImmutable<T, IS>
     where IS : struct
 {
-    internal readonly IteratorFields2<T, IS, A> fields;
+    internal readonly IteratorFields<T, IS, A> fields;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iterator2(K<T, A> ta, in IS space) =>
-        fields = new IteratorFields2<T, IS, A>(ta, space);
+    internal Iterator(K<T, A> ta, in IS space) =>
+        fields = new IteratorFields<T, IS, A>(ta, space);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iterator2(K<T, A> ta, IteratorAction<A> action, in IS space) =>
-        fields = new IteratorFields2<T, IS, A>(ta, action, space);
+    internal Iterator(K<T, A> ta, IteratorAction<A> action, in IS space) =>
+        fields = new IteratorFields<T, IS, A>(ta, action, space);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(out A head, out Iterator2<T, IS, A> tail)
+    public bool TryGetValue(out A head, out Iterator<T, IS, A> tail)
     {
-        tail = this;    // Copy
+        tail = this; // Copy
         ref var fs = ref Unsafe.AsRef(in tail.fields);
         ref var ta = ref Unsafe.As<K<T, A>, object>(ref Unsafe.AsRef(in fs.ta));
-        
+
         if (fs.action is null)
         {
             ref var s = ref Unsafe.AsRef(in fs.space);
@@ -57,7 +57,7 @@ public readonly struct Iterator2<T, IS, A>
         }
     }
     
-    public Iterator2<A> Lower
+    public Iterator<A> Lower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => new (fields.ta,
@@ -66,7 +66,7 @@ public readonly struct Iterator2<T, IS, A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Iterator2<B> Map<B>(Func<A, B> f) =>
+    public Iterator<B> Map<B>(Func<A, B> f) =>
         new Iterator2<T, IS, A, B>(
             fields.ta, 
             (fields.action ?? PureAction<T, IS, A>.Default).Map(f), 
@@ -74,11 +74,11 @@ public readonly struct Iterator2<T, IS, A>
            .Lower;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public IteratorEnumerator2<T, IS, A> GetEnumerator() =>
+    public IteratorEnumerator<T, IS, A> GetEnumerator() =>
         new (in this);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iterator2<T, IS, A> operator+(A x, Iterator2<T, IS, A> xs) =>
+    public static Iterator<T, IS, A> operator+(A x, Iterator<T, IS, A> xs) =>
         new (xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

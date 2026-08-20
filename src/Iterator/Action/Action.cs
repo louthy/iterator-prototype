@@ -14,7 +14,7 @@ public interface IteratorAction<A> : IteratorAction
         new MapAction<A, B>(this, f);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    IteratorAction<B> Bind<B>(Func<A, Iterator2<B>> f) =>
+    IteratorAction<B> Bind<B>(Func<A, Iterator<B>> f) =>
         new BindAction<A, B>(this, f);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -22,6 +22,6 @@ public interface IteratorAction<A> : IteratorAction
         new ConsAction<A>(value, this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    IteratorAction<A> Concat(Iterator2<A> rhs) =>
+    IteratorAction<A> Concat(Iterator<A> rhs) =>
         new ConcatAction<A>(this, rhs);
 }

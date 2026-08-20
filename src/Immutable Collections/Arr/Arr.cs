@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Diagnostics;
 using LanguageExt.Traits;
 using IteratorPrototype.Traits;
 using LanguageExt.ClassInstances;
@@ -7,7 +6,6 @@ using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using LanguageExt.UnsafeValueAccess;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace IteratorPrototype;
 
@@ -160,17 +158,20 @@ public sealed class Arr<A> :
     public static Arr<A> Construct(in ReadOnlySpan<A> value) =>
         [.. value];
 
+    [Pure]
     public object Value => 
         TryGetValue(out var h, out var t) 
-            ? new Cons<Arr, ArrState, A>(h, t) 
+            ? new Cons<A>(h, t) 
             : Nil.Obj;
 
+    [Pure]
     public bool HasValue =>
         true;
 
     /// <summary>
     /// Is the collection empty
     /// </summary>
+    [Pure]
     public bool IsEmpty =>
         false;
 
@@ -245,13 +246,8 @@ public sealed class Arr<A> :
     /// <param name="tail">Tail iterator</param>
     /// <returns>`true` if elements exist, `false` otherwise</returns>
     // ReSharper disable once ParameterHidesMember
-    public bool TryGetValue(out A head, out Iterator<Arr, ArrState, A> tail)
-    {
-        Debug.Assert(Count > 0);
-        head = Values[Start];
-        tail = default!;
-        return true;
-    }
+    public bool TryGetValue(out A head, out Iterator<A> tail) =>
+        this.Forward().TryGetValue(out head, out tail);
 
     /// <summary>
     /// If the collection has elements, return the head element and an iterator that allows consumption of
@@ -260,11 +256,11 @@ public sealed class Arr<A> :
     /// <param name="cons">Head and tail element</param>
     /// <returns>`true` if elements exist, `false` otherwise</returns>
     [Pure]
-    public bool TryGetValue(out Cons<Arr, ArrState, A> cons)
+    public bool TryGetValue(out Cons<A> cons)
     {
         if (TryGetValue(out var h, out var t))
         {
-            cons = new Cons<Arr, ArrState, A>(h, t);
+            cons = new Cons<A>(h, t);
             return true;
         }
         else

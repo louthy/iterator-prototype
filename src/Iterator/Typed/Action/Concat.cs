@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Iterator2<T, IS, A> next) : IteratorAction<T, IS, A>
+public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Iterator<T, IS, A> next) : IteratorAction<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {

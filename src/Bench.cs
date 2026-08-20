@@ -58,8 +58,7 @@ public static class Bench
 {
     public const ConsoleColor Baseline = ConsoleColor.Cyan;
     public const ConsoleColor Mutable = ConsoleColor.Yellow;
-    public const ConsoleColor Immutable = ConsoleColor.Green;
-    public const ConsoleColor Iterator2 = ConsoleColor.Magenta;
+    public const ConsoleColor Immutable = ConsoleColor.Magenta;
 
     public static void Key()
     {

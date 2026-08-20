@@ -5,7 +5,7 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public record LazyIteratorAction<T, IS, A>(Func<Iterator2<T, IS, A>> xs) : IteratorAction<T, IS, A>
+public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : IteratorAction<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {

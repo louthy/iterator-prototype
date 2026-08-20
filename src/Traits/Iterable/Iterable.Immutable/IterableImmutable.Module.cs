@@ -23,24 +23,16 @@ public static partial class IterableImmutable
         where IS : struct
     {
         var s = T.SetupImmutable(ta);
-        return T.StepImmutable(ta, in s, out var head, out var tail) 
-                   ? new Iterator<T, IS, A>(in head, ta, in tail) 
-                   : default;
-    }    
+        return new Iterator<T, IS, A>(ta, in s);
+    }
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iterator<A> fromWeak<T, IS, A>(in K<T, A> ta)
         where T : IterableImmutable<T, IS>
         where IS : struct
     {
-        var s = T.SetupImmutable(in ta);
-        if (T.StepImmutable(in ta, in s, out var head, out var tail))
-        {
-            ref readonly var t = ref Unsafe.As<IS, Space128>(ref tail);
-            return new Iterator<A>(in head, ta, VirtualTableCache<T, IS, A>.Cache, in t);
-        }
-        else
-        {
-            return default;
-        }
+        var              s1 = T.SetupImmutable(ta);
+        ref readonly var s2 = ref Unsafe.As<IS, Space128>(ref s1);
+        return new Iterator<A>(ta, PureAction<T, IS, A>.Default, in s2);
     }
 }

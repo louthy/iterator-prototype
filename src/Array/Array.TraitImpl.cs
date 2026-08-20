@@ -6,7 +6,7 @@ namespace IteratorPrototype;
 
 public partial class Array : Tr.IterableMutable<Array,ArrayState, ArrayStateRef>
 {
-    public static ArrayState SetupImmutable<A>(in K<Array, A> ta) =>
+    static ArrayState Tr.IterableImmutable<Array, ArrayState>.SetupImmutable<A>(in K<Array, A> ta) =>
         new (0, ((Array<A>)ta).Items.Length);
 
     static bool Tr.IterableImmutable<Array, ArrayState>.StepImmutable<A>(
@@ -60,22 +60,5 @@ public partial class Array : Tr.IterableMutable<Array,ArrayState, ArrayStateRef>
         items = ref Unsafe.Add(ref items, 1);
         state = new ArrayStateRef<A>(ref items, ref itemsEnd);
         return true;
-    }
-
-    static void Tr.IterableImmutable<Array, ArrayState>.Next<A>(
-        in K<Array, A> ta, 
-        ref IteratorFieldsMutable<Array, ArrayState, A> next)
-    {
-        ref var index = ref Unsafe.As<ArrayState, int>(ref next.space);
-        ref var count = ref Unsafe.AddByteOffset(ref index, sizeof(int));
-        
-        if (index >= count)
-        {
-            next = default!;
-            return;
-        }
-
-        next.head = ((Array<A>)ta).Items[index];
-        index++;    
     }
 }

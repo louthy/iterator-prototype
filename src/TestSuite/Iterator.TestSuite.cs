@@ -24,7 +24,7 @@ public static class IteratorTestSuite
 
     static void InOrder()
     {
-        var iter  = Iterator2.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5));
+        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5));
         var total = 0;
         
         foreach (var x in iter)
@@ -38,7 +38,7 @@ public static class IteratorTestSuite
 
     static void Prepend()
     {
-        var iter1 = Iterator2.from<Arr, ArrState, int>(Arr.create(4, 5));
+        var iter1 = Iterator.from<Arr, ArrState, int>(Arr.create(4, 5));
         var iter  = 1 + (2 + (3 + iter1));
         var total = 0;
         
@@ -52,7 +52,7 @@ public static class IteratorTestSuite
 
     static void PrependLazy()
     {
-        var iter1 = Iterator2.from<Arr, ArrState, int>(Arr.create(4, 5));
+        var iter1 = Iterator.from<Arr, ArrState, int>(Arr.create(4, 5));
         var iter  = 1.Cons(() => 2.Cons(() => 3.Cons(() => iter1)));
         var total = 0;
         
@@ -67,7 +67,7 @@ public static class IteratorTestSuite
 
     static void MapToString()
     {
-        var iter  = Iterator2.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5)).Map(x => $"Item: {x}");
+        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5)).Map(x => $"Item: {x}");
         
         foreach (var x in iter)
         {

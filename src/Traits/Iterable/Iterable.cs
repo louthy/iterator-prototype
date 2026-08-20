@@ -356,7 +356,7 @@ public interface Iterable<T>
     /// Projects each element of a range into a new form.
     /// </summary>
     static virtual Iterator<B> Select<A, B>(Func<A, B> f, K<T, A> fa) =>
-        T.Forward(fa).Select(f);
+        T.Forward(fa).Map(f);
 
     /*
     /// <summary>

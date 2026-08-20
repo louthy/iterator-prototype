@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator2<B>> f) : IteratorAction<A, B>
+public sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) : IteratorAction<A, B>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     bool IteratorAction<B>.TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)

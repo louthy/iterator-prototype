@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class ConcatAction<A>(IteratorAction<A> first, Iterator2<A> next) : IteratorAction<A>
+public sealed class ConcatAction<A>(IteratorAction<A> first, Iterator<A> next) : IteratorAction<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)

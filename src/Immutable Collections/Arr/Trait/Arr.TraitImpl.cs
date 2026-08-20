@@ -1,12 +1,7 @@
-using System;
-using System.Buffers;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-//using IteratorPrototype.DSL;
 using LanguageExt;
 using LanguageExt.Traits;
-using static LanguageExt.Prelude;
 
 namespace IteratorPrototype;
 
@@ -93,6 +88,7 @@ public partial class Arr :
         return true;    
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     public static bool Next<A>(in K<Arr, A> ta, ref ArrState state, out A head)
     {
         ref var          index = ref Unsafe.AsRef(in state.Index);
@@ -110,28 +106,6 @@ public partial class Arr :
         head = item;
         index++;
         return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    static void Tr.IterableImmutable<Arr, ArrState>.Next<A>(
-        in K<Arr, A> ta, 
-        ref IteratorFieldsMutable<Arr, ArrState, A> next)
-    {
-        ref var          ts     = ref Unsafe.As<ArrState, ArrStateMutable>(ref next.space);
-        ref var          index  = ref ts.Index;
-        ref readonly var count  = ref ts.Count;
-        
-        if (index >= count)
-        {
-            next = default!;
-            return;
-        }
-
-        ref var arr   = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
-        ref var items = ref MemoryMarshal.GetArrayDataReference(arr.Values);
-        ref var item  = ref Unsafe.Add(ref items, index);
-        next.head = item;
-        index++;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
