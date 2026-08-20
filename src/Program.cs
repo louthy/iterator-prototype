@@ -44,9 +44,7 @@ public class CSharpVersion : Bench<CSharpVersion>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  Current LanguageExt Arr<A> foreach version 
-//
+
 public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 {
     readonly LE.Arr<int> arr = toArray(Arr.create(..Count).AsSpan());
@@ -69,9 +67,7 @@ public class CurrentLanguageExtArrVersion : Bench<CurrentLanguageExtArrVersion>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the Iterable trait performance 
-//
+
 public class IterableVersion : Bench<IterableVersion>
 {
     readonly Arr<int> array = Arr.create(..Count);
@@ -96,9 +92,7 @@ public class IterableVersion : Bench<IterableVersion>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised foreach using the IteratorEnumerator 
-//
+
 public class ForeachVersionRef : Bench<ForeachVersionRef>
 {
     readonly Arr<int> array = Arr.create(..Count);
@@ -121,9 +115,7 @@ public class ForeachVersionRef : Bench<ForeachVersionRef>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised foreach using the IteratorEnumerator 
-//
+
 public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
 {
     readonly Arr<int> array = Arr.create(..Count);
@@ -146,9 +138,7 @@ public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised Iterator 
-//
+
 public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 {
     readonly Iterator<Arr, ArrState, int> iterator = 
@@ -174,9 +164,7 @@ public class StrongIteratorVersion : Bench<StrongIteratorVersion>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised Iterator 
-//
+
 public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 {
     readonly Iterator<int> iterator = 
@@ -202,9 +190,6 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised Iterator2 Strong
-//
 
 public class StrongIterator2Version : Bench<StrongIterator2Version>
 {
@@ -231,9 +216,6 @@ public class StrongIterator2Version : Bench<StrongIterator2Version>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised Iterator2 Weak
-//
 
 public class WeakIterator2Version : Bench<WeakIterator2Version>
 {
@@ -260,9 +242,6 @@ public class WeakIterator2Version : Bench<WeakIterator2Version>
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//
-//  This tests the performance of a generalised Iterator2 Strong
-//
 
 public class MappedIteratorVersion : Bench<MappedIteratorVersion>
 {
