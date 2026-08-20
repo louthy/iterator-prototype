@@ -272,7 +272,7 @@ public class MappedIteratorVersion : Bench<MappedIteratorVersion>
 
 public class MonadBindIteratorVersion : Bench<MonadBindIteratorVersion>
 {
-    static readonly Iterator<int> inner = Arr.create(1, 2, 3).Forward();
+    static readonly Iterator<int> inner = Arr.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).Forward();
     
     readonly Iterator<int> iterator = 
         Arr.create(..Count).Forward().Bind(x => inner);
