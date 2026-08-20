@@ -10,7 +10,7 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack stack, out A head)
+    bool IteratorAction<A>.TryGetValue(ref IteratorStack stack, out A head)
     {
         if (first.TryGetValue(ref stack, out head))
         {

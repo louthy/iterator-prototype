@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Traits;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
@@ -28,9 +27,8 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : Iterat
     public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
     {
         var iter = xs();
-        if (iter.TryGetValue(out head, out var tail))
+        if (iter.TryGetValueInternal(ref stack, out head))
         {
-            tail.Prime(ref stack);
             return true;
         }
         else

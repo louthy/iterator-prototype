@@ -54,6 +54,20 @@ public readonly struct Iterator<T, IS, A>
                    ? T.Next(in fs.ta, ref ts, out head) 
                    : fs.action.TryGetValue(ref stack, out head);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal bool TryGetValueInternal(ref IteratorStack<T, IS, A> stack, out A head)
+    {
+        ref var fs = ref Unsafe.AsRef(in fields);
+        ref var ts = ref stack.space;
+        stack.ta = fs.ta;
+        stack.action = fs.action!;
+        ts = fs.space;
+        
+        return stack.action is null 
+                   ? T.Next(in stack.ta, ref stack.space, out head) 
+                   : stack.action.TryGetValue(ref IteratorStack.From(ref stack), out head);
+    }
     
     public Iterator<A> Lower
     {

@@ -278,7 +278,7 @@ public class MonadBindIteratorVersion : Bench<MonadBindIteratorVersion>
         Arr.create(..Count).Forward().Bind(x => inner);
 
     protected override string Explain =>
-        $"Monad bind Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
+        $"Monad bind Iterator, for Arr, using while TryGetValue (10 x {Count:N0} items)";
 
     protected override void Main()
     {
