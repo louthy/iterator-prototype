@@ -15,10 +15,13 @@ public readonly struct Iterator<A>
     public bool TryGetValue(out A head, out Iterator<A> tail)
     {
         tail = this;    // Copy
-        ref var ta = ref Unsafe.AsRef(in tail.fields.ta);
-        ref var a  = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action));
-        ref var s  = ref Unsafe.AsRef(in tail.fields.space);
-        return fields.action.TryGetValue(ref ta, ref a, ref s, out head);
+        
+        var stack = new IteratorStack(
+            ref Unsafe.AsRef(in tail.fields.ta), 
+            ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action)), 
+            ref Unsafe.AsRef(in tail.fields.space));
+        
+        return fields.action.TryGetValue(ref stack, out head);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -64,6 +67,15 @@ public readonly struct Iterator<A>
         ta = fs.ta!;
         space = fs.space;
     }    
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref IteratorStack stack)
+    {
+        ref readonly var fs = ref fields;
+        stack.ta = fs.ta!;
+        stack.action = fs.action!;
+        stack.space = fs.space;
+    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref object ta, ref IteratorAction action, ref Space128 space)

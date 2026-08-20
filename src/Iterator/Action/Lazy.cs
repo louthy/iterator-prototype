@@ -6,13 +6,11 @@ namespace IteratorPrototype;
 public record LazyIteratorAction<A>(Func<Iterator<A>> xs) : IteratorAction<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
+    public bool TryGetValue(ref IteratorStack stack, out A head)
     {
         if (xs().TryGetValue(out head, out var tail))
         {
-            ta = tail.fields.ta;
-            self = tail.fields.action;
-            space = tail.fields.space;
+            tail.Prime(ref stack);
             return true;
         }
         else

@@ -10,9 +10,9 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
+    public bool TryGetValue(ref IteratorStack stack, out A head)
     {
-        if (first.TryGetValue(ref ta, ref self, ref space, out head))
+        if (first.TryGetValue(ref stack, out head))
         {
             return true;
         }
@@ -20,7 +20,7 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
         {
             if (next.TryGetValue(out head, out var tail))
             {
-                tail.Prime(ref ta, ref self, ref space);
+                tail.Prime(ref stack);
                 return true;
             }
             else
@@ -28,12 +28,12 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
                 return false;
             }
         }
-    }
-
+    }    
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head)
+    public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
     {
-        if (first.TryGetValue(ref ta, ref self, ref space, out head))
+        if (first.TryGetValue(ref stack, out head))
         {
             return true;
         }
@@ -41,13 +41,13 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
         {
             if (next.TryGetValue(out head, out var tail))
             {
-                tail.Prime(ref ta, ref self, ref space);
+                tail.Prime(ref stack);
                 return true;
             }
             else
             {
                 return false;
             }
-        }        
+        }
     }
 }

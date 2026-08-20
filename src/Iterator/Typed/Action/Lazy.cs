@@ -10,10 +10,10 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : Iterat
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
+    public bool TryGetValue(ref IteratorStack stack, out A head)
     {
         var iter = xs();
-        if (iter.TryGetValueInternal(ref ta, ref self, ref space, out head))
+        if (iter.TryGetValueInternal(ref stack, out head))
         {
             return true;
         }
@@ -25,14 +25,12 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : Iterat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head)
+    public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
     {
         var iter = xs();
         if (iter.TryGetValue(out head, out var tail))
         {
-            ta = tail.fields.ta;
-            self = tail.fields.action!;
-            space = tail.fields.space;
+            tail.Prime(ref stack);
             return true;
         }
         else

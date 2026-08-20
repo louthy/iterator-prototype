@@ -34,27 +34,25 @@ public readonly struct Iterator<T, IS, A>
         {
             ref var a = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action));
             ref var s = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fs.space));
-            return fs.action.TryGetValue(ref ta, ref a, ref s, out head);
+
+            var stack = new IteratorStack(ref ta, ref a, ref s);
+            return fs.action.TryGetValue(ref stack, out head);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal bool TryGetValueInternal(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
+    internal bool TryGetValueInternal(ref IteratorStack stack, out A head)
     {
         ref var fs = ref Unsafe.AsRef(in fields);
-        ref var ts = ref Unsafe.As<Space128, IS>(ref space);
-        ta = fs.ta;
-        ts = fs.space;
-        self = fs.action!;
+        ref var ts = ref Unsafe.As<Space128, IS>(ref stack.space);
         
-        if (fs.action is null)
-        {
-            return T.Next(in fs.ta, ref ts, out head);
-        }
-        else
-        {
-            return fs.action.TryGetValue(ref ta, ref self, ref space, out head);
-        }
+        stack.ta = fs.ta;
+        stack.action = fs.action!;
+        ts = fs.space;
+        
+        return fs.action is null 
+                   ? T.Next(in fs.ta, ref ts, out head) 
+                   : fs.action.TryGetValue(ref stack, out head);
     }
     
     public Iterator<A> Lower
@@ -80,6 +78,24 @@ public readonly struct Iterator<T, IS, A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iterator<T, IS, A> operator+(A x, Iterator<T, IS, A> xs) =>
         new (xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref IteratorStack stack)
+    {
+        ref readonly var fs = ref fields;
+        stack.ta = fs.ta!;
+        stack.action = fs.action!;
+        stack.space = Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fs.space));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref IteratorStack<T, IS, A> stack)
+    {
+        ref readonly var fs = ref fields;
+        stack.ta = fs.ta!;
+        stack.action = fs.action!;
+        stack.space = fs.space;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref object ta, ref IteratorAction action, ref Space128 space)

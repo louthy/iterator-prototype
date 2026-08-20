@@ -4,21 +4,30 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
-public interface IteratorAction<A, B> : IteratorAction<B>;
+public interface IteratorAction<A, B> : IteratorAction<B>
+{
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    bool IteratorAction<B>.TryGetValue(ref IteratorStack stack, out B head)
+    {
+        ref var s1 = ref IteratorStack<A, B>.From(ref stack);
+        return TryGetValue(ref s1, out head);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    bool TryGetValue(ref IteratorStack<A, B> stack, out B head);*/
+}
 
 public interface IteratorAction<T, IS, A, B> : IteratorAction<A, B>
     where T : IterableImmutable<T, IS>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref object obj, ref IteratorAction self, ref Space128 space, out B head)
+    bool IteratorAction<B>.TryGetValue(ref IteratorStack stack, out B head)
     {
-        ref var ta  = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in obj));
-        ref var ts  = ref Unsafe.As<Space128, IS>(ref space);
-        ref var act = ref Unsafe.As<IteratorAction, IteratorAction<B>>(ref self);
-        return TryGetValue(ref ta, ref act, ref ts, out head);
+        ref var s1 = ref IteratorStack<T, IS, A, B>.From(ref stack);
+        return TryGetValue(ref s1, out head);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref K<T, A> ta, ref IteratorAction<B> self, ref IS space, out B head);
+    bool TryGetValue(ref IteratorStack<T, IS, A, B> stack, out B head);
 }

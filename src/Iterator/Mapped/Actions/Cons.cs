@@ -10,18 +10,18 @@ public sealed class ConsAction<T, IS, A, B>(B Head, IteratorAction<T, IS, A, B> 
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)
+    public bool TryGetValue(ref IteratorStack stack, out B head)
     {
         head = Head;
-        self = Then;
+        stack.action = Then;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref K<T, A> ta, ref IteratorAction<B> self, ref IS space, out B head)
+    public bool TryGetValue(ref IteratorStack<T, IS, A, B> stack, out B head)
     {
         head = Head;
-        self = Then;
+        stack.action = Then;
         return true;
     }
 }

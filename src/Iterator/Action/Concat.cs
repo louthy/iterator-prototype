@@ -6,9 +6,9 @@ namespace IteratorPrototype;
 public sealed class ConcatAction<A>(IteratorAction<A> first, Iterator<A> next) : IteratorAction<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head)
+    public bool TryGetValue(ref IteratorStack stack, out A head)
     {
-        if (first.TryGetValue(ref ta, ref self, ref space, out head))
+        if (first.TryGetValue(ref stack, out head))
         {
             return true;
         }
@@ -16,7 +16,7 @@ public sealed class ConcatAction<A>(IteratorAction<A> first, Iterator<A> next) :
         {
             if (next.TryGetValue(out head, out var tail))
             {
-                tail.Prime(ref ta, ref self, ref space);
+                tail.Prime(ref stack);
                 return true;
             }
             else

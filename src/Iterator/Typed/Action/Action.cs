@@ -9,16 +9,14 @@ public interface IteratorAction<T, IS, A> : IteratorAction<A>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<A>.TryGetValue(ref object obj, ref IteratorAction self,ref Space128 space, out A head)
+    bool IteratorAction<A>.TryGetValue(ref IteratorStack stack, out A head)
     {
-        ref var ta  = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in obj));
-        ref var ts  = ref Unsafe.As<Space128, IS>(ref space);
-        ref var act = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref self);
-        return TryGetValue(ref ta, ref act, ref ts, out head);
+        ref var s1 = ref IteratorStack<T, IS, A>.From(ref stack);
+        return TryGetValue(ref s1, out head);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS space, out A head);
+    bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     new IteratorAction<T, IS, A> Cons(A value) =>

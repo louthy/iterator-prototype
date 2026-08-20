@@ -12,14 +12,13 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
     public static readonly IteratorAction<T, IS, A> Default = new PureAction<T, IS, A>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<A>.TryGetValue(ref object obj, ref IteratorAction self, ref Space128 space, out A head)
+    bool IteratorAction<A>.TryGetValue(ref IteratorStack stack, out A head)
     {
-        ref readonly var ta = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in obj));
-        ref var          ts = ref Unsafe.As<Space128, IS>(ref space);
-        return T.StepImmutable(in ta, in ts, out head, out ts);
+        var s1 = IteratorStack<T, IS, A>.From(ref stack);
+        return T.StepImmutable(in s1.ta, in s1.space, out head, out s1.space);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<T, IS, A>.TryGetValue(ref K<T, A> ta, ref IteratorAction<A> self, ref IS ts, out A head) =>
-        T.Next(in ta, ref ts, out head);
+    bool IteratorAction<T, IS, A>.TryGetValue(ref IteratorStack<T, IS, A> stack, out A head) =>
+        T.Next(in stack.ta, ref stack.space, out head);
 }

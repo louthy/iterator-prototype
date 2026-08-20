@@ -7,7 +7,7 @@ public interface IteratorAction;
 public interface IteratorAction<A> : IteratorAction
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out A head);
+    bool TryGetValue(ref IteratorStack stack, out A head);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     IteratorAction<B> Map<B>(Func<A, B> f) =>

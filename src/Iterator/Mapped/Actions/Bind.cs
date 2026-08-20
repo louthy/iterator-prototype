@@ -5,22 +5,18 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) : IteratorAction<A, B>
 {
-    static readonly Stack<BindStack<A, B>> stack = new();
+    static readonly Stack<BindStack<A, B>> bindStack = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)
+    public bool TryGetValue(ref IteratorStack stack, out B head)
     {
-        var     actionTyped   = action;
-        ref var actionUntyped = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref actionTyped);
-        
-        while (action.TryGetValue(ref ta, ref actionUntyped, ref space, out var x))
+        while (action.TryGetValue(ref stack, out var x))
         {
             var ib = f(x);
             if (ib.TryGetValue(out head, out var tail))
             {
-                //self = new BindStack<A, B>(ta, this, space, tail.fields.action);
-                self = Acquire(ta, this, space, tail.fields.action);
-                tail.Prime(ref ta, ref space);
+                stack.action = Acquire(stack.ta, this, stack.space, tail.fields.action);
+                tail.Prime(ref stack.ta, ref stack.space);
                 return true;
             }
         }
@@ -36,7 +32,7 @@ sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) 
         in Space128 savedSpace, 
         in IteratorAction<B> bindAction)
     {
-        if (stack.TryPop(out var element))
+        if (bindStack.TryPop(out var element))
         {
             element.savedTA = savedTA;
             element.savedBind = savedBind;
@@ -55,7 +51,7 @@ sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) 
     {
         element.savedTA = null!;
         element.bindAction = null!;
-        stack.Push(element);
+        bindStack.Push(element);
     }
 }
 
@@ -69,21 +65,21 @@ sealed class BindStack<A, B>(object savedTA, BindAction<A, B> savedBind, Space12
     bool released;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref object tb, ref IteratorAction self, ref Space128 space, out B head)
+    bool IteratorAction<B>.TryGetValue(ref IteratorStack stack, out B head)
     {
-        if(bindAction.TryGetValue(ref tb, ref self, ref space, out head))
+        if(bindAction.TryGetValue(ref stack, out head))
         {
             return true;
         }
         else
         {
-            tb = savedTA;
-            self = savedBind;
-            space = savedSpace;
+            stack.ta = savedTA;
+            stack.action = savedBind;
+            stack.space = savedSpace;
 
             released = true;
             BindAction<A, B>.Release(this);
-            return savedBind.TryGetValue(ref tb, ref self, ref space, out head);
+            return savedBind.TryGetValue(ref stack, out head);
         }
     }
 

@@ -20,10 +20,13 @@ public struct IteratorEnumerator<A>
     public bool MoveNext()
     {
         ref var fs = ref Unsafe.AsRef(in iter.fields);
-        ref var ta = ref Unsafe.AsRef(in fs.ta);
-        ref var a  = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action));
-        ref var s  = ref Unsafe.AsRef(in fs.space);
-        return fs.action.TryGetValue(ref ta, ref a, ref s, out current);
+        
+        var stack = new IteratorStack(
+            ref Unsafe.AsRef(in fs.ta), 
+            ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action)), 
+            ref Unsafe.AsRef(in fs.space));
+        
+        return fs.action.TryGetValue(ref stack, out current);
     }
 
     public A Current
