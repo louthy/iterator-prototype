@@ -14,6 +14,7 @@ Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
 Bench<MappedIteratorVersion>.Mark();
+Bench<MonadBindIteratorVersion>.Mark();
 Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -250,6 +251,34 @@ public class MappedIteratorVersion : Bench<MappedIteratorVersion>
 
     protected override string Explain =>
         $"Mapped Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Immutable;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+public class MonadBindIteratorVersion : Bench<MonadBindIteratorVersion>
+{
+    static readonly Iterator<int> inner = Arr.create(1, 2, 3).Forward();
+    
+    readonly Iterator<int> iterator = 
+        Arr.create(..Count).Forward().Bind(x => inner);
+
+    protected override string Explain =>
+        $"Monad bind Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {

@@ -6,7 +6,7 @@ namespace IteratorPrototype;
 public sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) : IteratorAction<A, B>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)
+    public bool TryGetValue(ref object ta, ref IteratorAction self, ref Space128 space, out B head)
     {
         var     actionTyped   = action;
         ref var actionUntyped = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref actionTyped);
@@ -42,7 +42,8 @@ public sealed class BindStack<A, B>(object savedTA, BindAction<A, B> savedBind, 
             tb = savedTA;
             self = savedBind;
             space = savedSpace;
-            return false;
+            
+            return savedBind.TryGetValue(ref tb, ref self, ref space, out head);
         }
     }
 }
