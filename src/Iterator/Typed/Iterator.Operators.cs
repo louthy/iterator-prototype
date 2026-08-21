@@ -20,6 +20,10 @@ public static partial class IteratorOperators
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Iterator<T, IS, A> operator +(A x, Iterator<T, IS, A> xs) =>
             new (xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Iterator<T, IS, A> operator +(Iterator<T, IS, A> xs, Iterator<T, IS, A> ys) =>
+            xs.Concat(ys);
     }
     
     extension<T, IS, A>(Func<Iterator<T, IS, A>> self)

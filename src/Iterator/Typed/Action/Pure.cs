@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Traits;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
@@ -12,13 +11,16 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
     public static readonly IteratorAction<T, IS, A> Default = new PureAction<T, IS, A>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<A>.TryGetValue(ref IteratorStack stack, out A head)
+    bool IteratorAction<A>.TryGetValue(ref MiniStack<IteratorStack> stack, out A head)
     {
-        var s1 = IteratorStack<T, IS, A>.From(ref stack);
-        return T.StepImmutable(in s1.ta, in s1.space, out head, out s1.space);
+        var top = MiniStack<IteratorStack>.Cast<IteratorStack<T, IS, A>>(ref stack).Peek();
+        return T.StepImmutable(in top.ta, in top.space, out head, out top.space);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<T, IS, A>.TryGetValue(ref IteratorStack<T, IS, A> stack, out A head) =>
-        T.Next(in stack.ta, ref stack.space, out head);
+    bool IteratorAction<T, IS, A>.TryGetValue(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head)
+    {
+        var top = stack.Peek();
+        return T.Next(in top.ta, ref top.space, out head);
+    }
 }

@@ -9,11 +9,11 @@ public interface IteratorAction<T, IS, A> : IteratorAction<A>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<A>.TryGetValue(ref IteratorStack stack, out A head) =>
-        TryGetValue(ref IteratorStack<T, IS, A>.From(ref stack), out head);
+    bool IteratorAction<A>.TryGetValue(ref MiniStack<IteratorStack> stack, out A head) =>
+        TryGetValue(ref MiniStack<IteratorStack>.Cast<IteratorStack<T, IS, A>>(ref stack), out head);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head);
+    bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     new IteratorAction<T, IS, A> Cons(A value) =>

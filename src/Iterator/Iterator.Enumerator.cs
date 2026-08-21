@@ -21,10 +21,13 @@ public struct IteratorEnumerator<A>
     {
         ref var fs = ref Unsafe.AsRef(in iter.fields);
         
-        var stack = new IteratorStack(
+        var stack = new MiniStack<IteratorStack>();
+        var entry = new IteratorStack(
             ref Unsafe.AsRef(in fs.ta), 
             ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action)), 
             ref Unsafe.AsRef(in fs.space));
+        
+        stack.Push(in entry);
         
         return fs.action.TryGetValue(ref stack, out current);
     }

@@ -9,7 +9,7 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : Iterat
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack> stack, out A head)
     {
         var iter = xs();
         if (iter.TryGetValueInternal(ref stack, out head))
@@ -24,7 +24,7 @@ public record LazyIteratorAction<T, IS, A>(Func<Iterator<T, IS, A>> xs) : Iterat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head)
     {
         var iter = xs();
         if (iter.TryGetValueInternal(ref stack, out head))

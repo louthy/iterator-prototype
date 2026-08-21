@@ -11,6 +11,7 @@ public static class IteratorTestSuite
         Test(Prepend, "Show that the an item can be prepended (cons'd)");
         Test(PrependLazy, "Show that the an item can be prepended (cons'd) lazily");
         Test(MapToString, "Show that elements can be mapped to other types");
+        Test(BindToString, "Show that elements can be monad bound to other types");
         
         Console.WriteLine();
     }
@@ -24,7 +25,7 @@ public static class IteratorTestSuite
 
     static void InOrder()
     {
-        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5));
+        var iter  = Arr.create(1, 2, 3, 4, 5).Forward();
         var total = 0;
         
         foreach (var x in iter)
@@ -38,8 +39,7 @@ public static class IteratorTestSuite
 
     static void Prepend()
     {
-        var iter1 = Iterator.from<Arr, ArrState, int>(Arr.create(4, 5));
-        var iter  = 1 + (2 + (3 + iter1));
+        var iter  = 1 + (2 + (3 + Arr.create(4, 5).Forward()));
         var total = 0;
         
         foreach (var x in iter)
@@ -52,8 +52,7 @@ public static class IteratorTestSuite
 
     static void PrependLazy()
     {
-        var iter1 = Iterator.from<Arr, ArrState, int>(Arr.create(4, 5));
-        var iter  = 1.Cons(() => 2.Cons(() => 3.Cons(() => iter1)));
+        var iter  = 1.Cons(() => 2.Cons(() => 3.Cons(() => Arr.create(4, 5).Forward())));
         var total = 0;
         
         foreach (var x in iter)
@@ -67,7 +66,20 @@ public static class IteratorTestSuite
 
     static void MapToString()
     {
-        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5)).Map(x => $"Item: {x}");
+        var iter  = Arr.create(1, 2, 3, 4, 5)
+                       .Forward()
+                       .Map(x => $"Item: {x}");
+        
+        foreach (var x in iter)
+        {
+            Console.Write($"{x} ");
+        }
+    }
+    
+    public static void BindToString()
+    {
+        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5))
+                            .Bind(x => Arr.create($"Item 1: {x * 1}", $"Item 2: {x * 2}", $"Item 3: {x * 3}").Forward());
         
         foreach (var x in iter)
         {

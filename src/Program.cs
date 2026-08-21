@@ -2,6 +2,8 @@
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
+IteratorTestSuite.BindToString();
+return;
 
 IteratorTestSuite.Run();
 

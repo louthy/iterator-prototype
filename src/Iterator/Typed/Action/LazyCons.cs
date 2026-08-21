@@ -10,18 +10,18 @@ public record LazyConsIteratorAction<T, IS, A>(A x, LazyIteratorAction<T, IS, A>
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack> stack, out A head)
     {
         head = x;
-        stack.action = xs;
+        stack.Peek().action = xs;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head)
     {
         head = x;
-        stack.action = xs;
+        stack.Peek().action = xs;
         return true;
     }
 }

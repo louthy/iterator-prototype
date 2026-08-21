@@ -4,14 +4,14 @@ using LanguageExt.Traits;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public readonly struct Iterator2<T, IS, A, B>
+public readonly struct Iterator<T, IS, A, B>
     where T : Tr.IterableImmutable<T, IS>
     where IS : struct
 {
     readonly IteratorFields2<T, IS, A, B> fields;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iterator2(K<T, A> ta, IteratorAction<B> action, in IS space) =>
+    internal Iterator(K<T, A> ta, IteratorAction<B> action, in IS space) =>
         fields = new IteratorFields2<T, IS, A, B>(ta, action, in space);
 
     public Iterator<B> Lower
@@ -23,15 +23,17 @@ public readonly struct Iterator2<T, IS, A, B>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(out B head, out Iterator2<T, IS, A, B> tail)
+    public bool TryGetValue(out B head, out Iterator<T, IS, A, B> tail)
     {
         tail = this;    // Copy
         
-        var stack = new IteratorStack(
+        var stack = new MiniStack<IteratorStack>();
+        var entry = new IteratorStack(
             ref Unsafe.As<K<T, A>, object>(ref Unsafe.AsRef(in tail.fields.ta)),
             ref Unsafe.As<IteratorAction<B>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action)),
             ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in tail.fields.space)));
-        
+        stack.Push(in entry);
+
         return fields.action.TryGetValue(ref stack, out head);        
     }
 }

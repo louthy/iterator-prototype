@@ -8,15 +8,17 @@ namespace IteratorPrototype;
 public sealed class MapAction<A, B>(IteratorAction<A> action, Func<A, B> f) : IteratorAction<A, B>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref IteratorStack stack, out B head)
+    bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorStack> stack, out B head)
     {
-        var saved = stack.action;
+        ref var top   = ref stack.Peek();
+        var     saved = top.action;
         if (action.TryGetValue(ref stack, out var h))
         {
             head = f(h);
-            if (ReferenceEquals(stack.action, saved)) return true;
-            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref stack.action);
-            stack.action = new MapAction<A, B>(a, f);
+            ref var ttop = ref stack.Peek();
+            if (ReferenceEquals(ttop.action, saved)) return true;
+            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref ttop.action);
+            ttop.action = new MapAction<A, B>(a, f);
             return true;
         }
         else
@@ -37,15 +39,16 @@ public sealed class MapAction<T, IS, A, B>(IteratorAction<A> action, Func<A, B> 
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref IteratorStack stack, out B head)
+    bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorStack> stack, out B head)
     {
-        var saved = stack.action;
+        ref var top   = ref stack.Peek();
+        var     saved = top.action;
         if (action.TryGetValue(ref stack, out var h))
         {
             head = f(h);
-            if (ReferenceEquals(stack.action, saved)) return true;
-            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref stack.action);
-            stack.action = new MapAction<T, IS, A, B>(a, f);
+            if (ReferenceEquals(top.action, saved)) return true;
+            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref top.action);
+            top.action = new MapAction<T, IS, A, B>(a, f);
             return true;
         }
         else
@@ -56,16 +59,19 @@ public sealed class MapAction<T, IS, A, B>(IteratorAction<A> action, Func<A, B> 
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<T, IS, A, B>.TryGetValue(ref IteratorStack<T, IS, A, B> stack, out B head)
+    bool IteratorAction<T, IS, A, B>.TryGetValue(ref MiniStack<IteratorStack<T, IS, A, B>> stack, out B head)
     {
-        var     saved = stack.action;
-        ref var s1    = ref IteratorStack.From(ref stack);
+        ref var top   = ref stack.Peek();
+        var     saved = top.action;
+        ref var s1    = ref MiniStack<IteratorStack<T, IS, A, B>>.Cast<IteratorStack>(ref stack);
+        
         if (action.TryGetValue(ref s1, out var h))
         {
             head = f(h);
-            if (ReferenceEquals(s1.action, saved)) return true;
-            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref s1.action);
-            s1.action = new MapAction<T, IS, A, B>(a, f);
+            ref var ttop = ref s1.Peek();
+            if (ReferenceEquals(ttop.action, saved)) return true;
+            ref var a = ref Unsafe.As<IteratorAction, IteratorAction<A>>(ref ttop.action);
+            ttop.action = new MapAction<T, IS, A, B>(a, f);
             return true;
         }
         else

@@ -33,7 +33,9 @@ public struct IteratorEnumerator<T, IS, A>
         {
             ref var a     = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action));
             ref var s     = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fs.space));
-            var     stack = new IteratorStack(ref ta, ref a, ref s);
+            var     stack = new MiniStack<IteratorStack>();
+            var     entry = new IteratorStack(ref ta, ref a, ref s);
+            stack.Push(in entry);
             return fs.action.TryGetValue(ref stack, out current);
         }
     }

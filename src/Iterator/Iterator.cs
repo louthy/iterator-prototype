@@ -15,11 +15,15 @@ public readonly struct Iterator<A>
     public bool TryGetValue(out A head, out Iterator<A> tail)
     {
         tail = this;    // Copy
+
+        var stack = new MiniStack<IteratorStack>();
         
-        var stack = new IteratorStack(
+        var entry = new IteratorStack(
             ref Unsafe.AsRef(in tail.fields.ta), 
             ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action)), 
             ref Unsafe.AsRef(in tail.fields.space));
+        
+        stack.Push(in entry);
         
         return fields.action.TryGetValue(ref stack, out head);
     }
@@ -59,6 +63,14 @@ public readonly struct Iterator<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public Iterator<A> Concat(Iterator<A> rhs) =>
         new (fields.ta, fields.action.Concat(rhs), fields.space);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static Iterator<A> operator +(Iterator<A> xs, Iterator<A> ys) =>
+        xs.Concat(ys);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static Iterator<A> operator +(A x, Iterator<A> xs) =>
+        new(xs.fields.ta, xs.fields.action.Cons(x), xs.fields.space);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref object ta, ref Space128 space)
@@ -66,7 +78,11 @@ public readonly struct Iterator<A>
         ref readonly var fs = ref fields;
         ta = fs.ta!;
         space = fs.space;
-    }    
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref MiniStack<IteratorStack> stack) =>
+        Prime(ref stack.Peek());
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref IteratorStack stack)

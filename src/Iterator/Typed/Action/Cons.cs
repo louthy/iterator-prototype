@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Traits;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype;
 
@@ -10,18 +9,18 @@ public sealed class ConsAction<T, IS, A>(A Head, IteratorAction<T, IS, A> Then) 
     where IS : struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack> stack, out A head)
     {
         head = Head;
-        stack.action = Then;
+        stack.Peek().action = Then;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref IteratorStack<T, IS, A> stack, out A head)
+    public bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head)
     {
         head = Head;
-        stack.action = Then;
+        stack.Peek().action = Then;
         return true;
     }
 }

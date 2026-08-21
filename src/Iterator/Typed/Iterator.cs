@@ -35,19 +35,23 @@ public readonly struct Iterator<T, IS, A>
             ref var a = ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action));
             ref var s = ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fs.space));
 
-            var stack = new IteratorStack(ref ta, ref a, ref s);
+            var stack = new MiniStack<IteratorStack>();
+            var entry = new IteratorStack(ref ta, ref a, ref s);
+            stack.Push(in entry);
+            
             return fs.action.TryGetValue(ref stack, out head);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal bool TryGetValueInternal(ref IteratorStack stack, out A head)
+    internal bool TryGetValueInternal(ref MiniStack<IteratorStack> stack, out A head)
     {
-        ref var fs = ref Unsafe.AsRef(in fields);
-        ref var ts = ref Unsafe.As<Space128, IS>(ref stack.space);
+        ref var top = ref stack.Peek();
+        ref var fs  = ref Unsafe.AsRef(in fields);
+        ref var ts  = ref Unsafe.As<Space128, IS>(ref top.space);
         
-        stack.ta = fs.ta;
-        stack.action = fs.action!;
+        top.ta = fs.ta;
+        top.action = fs.action!;
         ts = fs.space;
         
         return fs.action is null 
@@ -56,17 +60,18 @@ public readonly struct Iterator<T, IS, A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal bool TryGetValueInternal(ref IteratorStack<T, IS, A> stack, out A head)
+    internal bool TryGetValueInternal(ref MiniStack<IteratorStack<T, IS, A>> stack, out A head)
     {
-        ref var fs = ref Unsafe.AsRef(in fields);
-        ref var ts = ref stack.space;
-        stack.ta = fs.ta;
-        stack.action = fs.action!;
+        ref var top = ref stack.Peek();
+        ref var fs  = ref Unsafe.AsRef(in fields);
+        ref var ts  = ref top.space;
+        top.ta = fs.ta;
+        top.action = fs.action!;
         ts = fs.space;
         
-        return stack.action is null 
-                   ? T.Next(in stack.ta, ref stack.space, out head) 
-                   : stack.action.TryGetValue(ref IteratorStack.From(ref stack), out head);
+        return top.action is null 
+                   ? T.Next(in top.ta, ref top.space, out head) 
+                   : top.action.TryGetValue(ref MiniStack<IteratorStack<T, IS, A>>.Cast<IteratorStack>(ref stack), out head);
     }
     
     public Iterator<A> Lower
@@ -79,19 +84,49 @@ public readonly struct Iterator<T, IS, A>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public Iterator<B> Map<B>(Func<A, B> f) =>
-        new Iterator2<T, IS, A, B>(
-            fields.ta, 
-            (fields.action ?? PureAction<T, IS, A>.Default).Map(f), 
+        new Iterator<T, IS, A, B>(
+            fields.ta,
+            (fields.action ?? PureAction<T, IS, A>.Default).Map(f),
             fields.space)
            .Lower;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator<B> Bind<B>(Func<A, Iterator<B>> f) =>
+        new Iterator<T, IS, A, B>(
+                fields.ta,
+                (fields.action ?? PureAction<T, IS, A>.Default).Bind(f),
+                fields.space)
+           .Lower;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator<A> Concat(Iterator<A> rhs) =>
+        new Iterator<T, IS, A>(
+                fields.ta,
+                (fields.action ?? PureAction<T, IS, A>.Default).Concat(rhs),
+                fields.space)
+           .Lower;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator<T, IS, A> Concat(Iterator<T, IS, A> rhs) =>
+        new (fields.ta,
+             (fields.action ?? PureAction<T, IS, A>.Default).Concat(rhs.Lower),
+             fields.space);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public IteratorEnumerator<T, IS, A> GetEnumerator() =>
         new (in this);
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iterator<T, IS, A> operator+(A x, Iterator<T, IS, A> xs) =>
-        new (xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
+    public static Iterator<A> operator +(Iterator<T, IS, A> xs, Iterator<A> ys) =>
+        xs.Concat(ys);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static Iterator<T, IS, A> operator +(Iterator<T, IS, A> xs, Iterator<T, IS, A> ys) =>
+        xs.Concat(ys);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static Iterator<T, IS, A> operator +(A x, Iterator<T, IS, A> xs) =>
+        new(xs.fields.ta, (xs.fields.action ?? PureAction<T, IS, A>.Default).Cons(x), xs.fields.space);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref IteratorStack stack)
@@ -110,6 +145,14 @@ public readonly struct Iterator<T, IS, A>
         stack.action = fs.action!;
         stack.space = fs.space;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref MiniStack<IteratorStack> stack) =>
+        Prime(ref stack.Peek());
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal void Prime(ref MiniStack<IteratorStack<T, IS, A>> stack) =>
+        Prime(ref stack.Peek());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Prime(ref object ta, ref IteratorAction action, ref Space128 space)
