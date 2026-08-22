@@ -27,7 +27,7 @@ public ref struct IteratorStack<A, B>
 [SkipLocalsInit]
 public ref struct IteratorStack<T, IS, A, B>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     public ref K<T, A> ta;
     public ref IteratorAction<B> action;

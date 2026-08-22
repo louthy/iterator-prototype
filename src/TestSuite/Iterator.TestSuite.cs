@@ -78,8 +78,9 @@ public static class IteratorTestSuite
     
     public static void BindToString()
     {
-        var iter  = Iterator.from<Arr, ArrState, int>(Arr.create(1, 2, 3, 4, 5))
-                            .Bind(x => Arr.create($"Item 1: {x * 1}", $"Item 2: {x * 2}", $"Item 3: {x * 3}").Forward());
+        var iter = Arr.create(1, 2, 3, 4, 5)
+                      .Forward()
+                      .Bind(x => Arr.create($"Item 1: {x * 1}", $"Item 2: {x * 2}", $"Item 3: {x * 3}").Forward());
         
         foreach (var x in iter)
         {

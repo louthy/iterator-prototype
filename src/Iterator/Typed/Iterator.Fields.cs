@@ -6,7 +6,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct IteratorFields<T, IS, A>
     where T : Tr.IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     public readonly K<T, A> ta;
     public readonly IteratorAction<A>? action;

@@ -7,7 +7,7 @@ namespace IteratorPrototype.Traits;
 [SkipLocalsInit]
 public struct IterableImmutableEnumerator<T, IS, A>(in K<T, A> ta) : IEnumerator<A>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     readonly K<T, A> ta = ta;
     IS state = T.SetupImmutable(ta);

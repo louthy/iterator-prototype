@@ -5,27 +5,29 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct Iterator<A>
 {
-    internal readonly IteratorFields<A> fields;
+    internal readonly MiniStack<IteratorFields<A>> fields;
 
+    /*
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal Iterator(object ta, IteratorAction<A> action, in Space128 space) =>
         fields = new IteratorFields<A>(ta, action, space);
+        */
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal Iterator(in MiniStack<IteratorFields<A>> fields) =>
+        this.fields = fields;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal Iterator(in IteratorFields<A> fields) =>
+        this.fields = MiniStack.singleton(fields);
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out A head, out Iterator<A> tail)
     {
         tail = this;    // Copy
-
-        var stack = new MiniStack<IteratorStack>();
-        
-        var entry = new IteratorStack(
-            ref Unsafe.AsRef(in tail.fields.ta), 
-            ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action)), 
-            ref Unsafe.AsRef(in tail.fields.space));
-        
-        stack.Push(in entry);
-        
-        return fields.action.TryGetValue(ref stack, out head);
+        ref var fs = ref Unsafe.AsRef(in tail.fields);
+        return fs.GetAction()
+                 .TryGetValue(ref fs.Cast<IteratorFields<A>, IteratorFields>(), out head);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -53,16 +55,29 @@ public readonly struct Iterator<A>
         new (in this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Iterator<B> Map<B>(Func<A, B> f) =>
-        new (fields.ta, fields.action.Map(f), fields.space);
+    public Iterator<B> Map<B>(Func<A, B> f)
+    {
+        var fs = fields; // copy
+        return new (fs.Map(f));
+    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Iterator<B> Bind<B>(Func<A, Iterator<B>> f) =>
-        new (fields.ta, fields.action.Bind(f), fields.space);
+    public Iterator<B> Bind<B>(Func<A, Iterator<B>> f)
+    {
+        var fs = fields; // copy
+        return new (fs.Bind(f));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator<A> Concat(in Iterator<A> rhs)
+    {
+        var fs = fields; // copy
+        return new(fs.Concat(in rhs));
+    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Iterator<A> Concat(Iterator<A> rhs) =>
-        new (fields.ta, fields.action.Concat(rhs), fields.space);
+    public Iterator<A> Cons(in A x) =>
+        new (new IteratorFields<A>(null!, new ConsAction<A>(x, this), default));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iterator<A> operator +(Iterator<A> xs, Iterator<A> ys) =>
@@ -70,44 +85,12 @@ public readonly struct Iterator<A>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iterator<A> operator +(A x, Iterator<A> xs) =>
-        new(xs.fields.ta, xs.fields.action.Cons(x), xs.fields.space);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void Prime(ref object ta, ref Space128 space)
-    {
-        ref readonly var fs = ref fields;
-        ta = fs.ta!;
-        space = fs.space;
-    }
+        xs.Cons(x);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void Prime(ref MiniStack<IteratorStack> stack) =>
-        Prime(ref stack.Peek());
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void Prime(ref IteratorStack stack)
+    internal void Prime(ref MiniStack<IteratorFields> stack)
     {
-        ref readonly var fs = ref fields;
-        stack.ta = fs.ta!;
-        stack.action = fs.action!;
-        stack.space = fs.space;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void Prime(ref object ta, ref IteratorAction action, ref Space128 space)
-    {
-        ref readonly var fs = ref fields;
-        ta = fs.ta!;
-        action = fs.action!;
-        space = fs.space;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void Prime(ref object ta, ref IteratorAction<A> action, ref Space128 space)
-    {
-        ref readonly var fs = ref fields;
-        ta = fs.ta!;
-        action = fs.action!;
-        space = fs.space;
+        stack.Pop();
+        stack.PushMany(in fields.Cast<IteratorFields<A>, IteratorFields>());
     }
 }

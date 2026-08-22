@@ -17,20 +17,8 @@ public struct IteratorEnumerator<A>
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool MoveNext()
-    {
-        ref var fs = ref Unsafe.AsRef(in iter.fields);
-        
-        var stack = new MiniStack<IteratorStack>();
-        var entry = new IteratorStack(
-            ref Unsafe.AsRef(in fs.ta), 
-            ref Unsafe.As<IteratorAction<A>, IteratorAction>(ref Unsafe.AsRef(in fs.action)), 
-            ref Unsafe.AsRef(in fs.space));
-        
-        stack.Push(in entry);
-        
-        return fs.action.TryGetValue(ref stack, out current);
-    }
+    public bool MoveNext() =>
+        iter.TryGetValue(out current, out iter);
 
     public A Current
     {

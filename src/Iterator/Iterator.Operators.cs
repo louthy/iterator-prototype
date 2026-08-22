@@ -7,15 +7,21 @@ public static partial class IteratorOperators
     extension<A>(A self)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Iterator<A> operator +(A x, Iterator<A> xs) =>
-            new (xs.fields.ta, xs.fields.action.Cons(x), xs.fields.space);
+        public static Iterator<A> operator +(in A x, in Iterator<A> xs) =>
+            xs.Cons(x);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Iterator<A> operator +(in A x, Func<Iterator<A>> xs)
+        {
+            var fields = new IteratorFields<A>(x!, new LazyIteratorAction<A>(xs), default);
+            return new Iterator<A>(in fields);
+        }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Iterator<A> operator +(A x, Func<Iterator<A>> xs) =>
-            new (x!, new LazyIteratorAction<A>(xs), default);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public Iterator<A> Cons(Func<Iterator<A>> xs) =>
-            new (self!, new LazyIteratorAction<A>(xs), default);
+        public Iterator<A> Cons(Func<Iterator<A>> xs)
+        {
+            var fields = new IteratorFields<A>(null!, new LazyConsIteratorAction<A>(self, xs), default);
+            return new Iterator<A>(in fields);
+        }
     }
 }

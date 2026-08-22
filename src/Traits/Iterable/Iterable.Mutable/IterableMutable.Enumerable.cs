@@ -7,7 +7,7 @@ namespace IteratorPrototype.Traits;
 [SkipLocalsInit]
 public readonly struct IterableMutableEnumerable<T, IS, MS, A>(K<T, A> ta) : IEnumerable<A>
     where T : IterableMutable<T, IS, MS>
-    where IS : struct
+    where IS : unmanaged
     where MS : allows ref struct
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

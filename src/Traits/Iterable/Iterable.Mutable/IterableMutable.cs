@@ -9,7 +9,7 @@ namespace IteratorPrototype.Traits;
 /// </summary>
 public interface IterableMutable<T, IS, MS> : IterableImmutable<T, IS>
     where T : IterableMutable<T, IS, MS>
-    where IS : struct
+    where IS : unmanaged
     where MS : allows ref struct
 {
     static abstract MS SetupMutable<A>(K<T, A> ta);

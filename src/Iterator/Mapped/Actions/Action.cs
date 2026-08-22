@@ -8,15 +8,15 @@ public interface IteratorAction<A, B> : IteratorAction<B>;
 
 public interface IteratorAction<T, IS, A, B> : IteratorAction<A, B>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorStack> stack, out B head)
+    bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
-        ref var s1 = ref MiniStack<IteratorStack>.Cast<IteratorStack<T, IS, A, B>>(ref stack);
+        ref var s1 = ref stack.Cast<IteratorFields, IteratorFields<T, IS, A, B>>();
         return TryGetValue(ref s1, out head);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A, B>> stack, out B head);
+    bool TryGetValue(ref MiniStack<IteratorFields<T, IS, A, B>> stack, out B head);
 }

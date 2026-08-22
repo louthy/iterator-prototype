@@ -7,21 +7,21 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public sealed class ConsAction<T, IS, A, B>(B Head, IteratorAction<T, IS, A, B> Then) : IteratorAction<T, IS, A, B>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref MiniStack<IteratorStack> stack, out B head)
+    public bool TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
         head = Head;
-        stack.Peek().action = Then;
+        stack.SetAction(Then);
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool TryGetValue(ref MiniStack<IteratorStack<T, IS, A, B>> stack, out B head)
+    public bool TryGetValue(ref MiniStack<IteratorFields<T, IS, A, B>> stack, out B head)
     {
         head = Head;
-        stack.Peek().action = Then;
+        stack.SetAction(in Then);
         return true;
     }
 }

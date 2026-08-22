@@ -7,7 +7,7 @@ public interface IteratorAction;
 public interface IteratorAction<A> : IteratorAction
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool TryGetValue(ref MiniStack<IteratorStack> stack, out A head);
+    bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     IteratorAction<B> Map<B>(Func<A, B> f) =>
@@ -16,12 +16,8 @@ public interface IteratorAction<A> : IteratorAction
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     IteratorAction<B> Bind<B>(Func<A, Iterator<B>> f) =>
         new BindAction<A, B>(this, f);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    IteratorAction<A> Cons(A value) =>
-        new ConsAction<A>(value, this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    IteratorAction<A> Concat(Iterator<A> rhs) =>
+    IteratorAction<A> Concat(in Iterator<A> rhs) =>
         new ConcatAction<A>(this, rhs);
 }

@@ -8,7 +8,7 @@ namespace IteratorPrototype.Traits;
 /// Apply this to an instance-type of an `IterableK`
 /// </summary>
 public interface IterableImmutable<T, IS> : Iterable<T>
-    where IS : struct
+    where IS : unmanaged
     where T : IterableImmutable<T, IS>
 {
     static abstract IS SetupImmutable<A>(in K<T, A> ta); 

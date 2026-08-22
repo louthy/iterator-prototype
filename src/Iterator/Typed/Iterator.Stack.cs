@@ -7,7 +7,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public ref struct IteratorStack<T, IS, A>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     public ref K<T, A> ta;
     public ref IteratorAction<A> action;

@@ -7,7 +7,7 @@ public static class IterableImmutableExtensions
 {
     extension<T, IS, A>(K<T, A> ta)
         where T : IterableImmutable<T, IS>
-        where IS : struct
+        where IS : unmanaged
     {
         /// <summary>
         /// Get an enumerator for the immutable-iterable in the inheritance chain

@@ -2,12 +2,10 @@
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
-IteratorTestSuite.BindToString();
+IteratorTest2.Run();
 return;
 
 IteratorTestSuite.Run();
-
-
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
 Bench<IterableVersion>.Mark();

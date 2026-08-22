@@ -3,14 +3,14 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype;
 
 [SkipLocalsInit]
-public sealed class ConsAction<A>(A x, Iterator<A> xs) : IteratorAction<A>
+public record LazyConsIteratorAction<A>(A x, Func<Iterator<A>> xs) : IteratorAction<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         head = x;
-        stack.Pop();
-        stack.PushMany(in Unsafe.As<MiniStack<IteratorFields<A>>, MiniStack<IteratorFields>>(ref Unsafe.AsRef(in xs.fields))); 
+        var iter = xs();
+        stack.PushMany(in Unsafe.As<MiniStack<IteratorFields<A>>, MiniStack<IteratorFields>>(ref Unsafe.AsRef(in iter.fields))); 
         return true;
     }
 }

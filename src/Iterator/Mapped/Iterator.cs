@@ -6,34 +6,49 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct Iterator<T, IS, A, B>
     where T : Tr.IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
-    readonly IteratorFields2<T, IS, A, B> fields;
+    readonly MiniStack<IteratorFields<T, IS, A, B>> fields;
 
+    /*
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal Iterator(K<T, A> ta, IteratorAction<B> action, in IS space) =>
-        fields = new IteratorFields2<T, IS, A, B>(ta, action, in space);
+        fields = new IteratorFields<T, IS, A, B>(ta, action, in space);
+        */
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal Iterator(in IteratorFields<T, IS, A, B> entry) =>
+        fields = MiniStack.singleton(in entry);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal Iterator(in MiniStack<IteratorFields<T, IS, A, B>> fields) =>
+        this.fields = fields;
 
     public Iterator<B> Lower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => new (fields.ta,
-                    (IteratorAction<B>?)fields.action ?? PureAction<T, IS, B>.Default,
-                    Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in fields.space)));
+        get
+        {
+            ref var fs = ref fields.Cast<IteratorFields<T, IS, A, B>, IteratorFields<B>>();
+            return new(in fs);
+        }
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out B head, out Iterator<T, IS, A, B> tail)
     {
-        tail = this;    // Copy
-        
-        var stack = new MiniStack<IteratorStack>();
-        var entry = new IteratorStack(
-            ref Unsafe.As<K<T, A>, object>(ref Unsafe.AsRef(in tail.fields.ta)),
-            ref Unsafe.As<IteratorAction<B>, IteratorAction>(ref Unsafe.AsRef(in tail.fields.action)),
-            ref Unsafe.As<IS, Space128>(ref Unsafe.AsRef(in tail.fields.space)));
-        stack.Push(in entry);
+        tail = this; // Copy
 
-        return fields.action.TryGetValue(ref stack, out head);        
+        ref var fs  = ref Unsafe.AsRef(in tail.fields);
+        ref var top = ref fs.Peek();
+        if (top.action is null)
+        {
+            throw new InvalidOperationException("action is null, which means A -> B can't be done");
+        }
+        else
+        {
+            ref var a = ref Unsafe.AsRef(in top.action);
+            return a.TryGetValue(ref fs.Cast<IteratorFields<T, IS, A, B>, IteratorFields>(), out head);
+        }        
     }
 }

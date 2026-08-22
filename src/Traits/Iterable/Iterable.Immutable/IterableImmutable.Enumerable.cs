@@ -7,7 +7,7 @@ namespace IteratorPrototype.Traits;
 [SkipLocalsInit]
 public readonly struct IterableImmutableEnumerable<T, IS, A>(K<T, A> ta) : IEnumerable<A>
     where T : IterableImmutable<T, IS>
-    where IS : struct
+    where IS : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IterableImmutableEnumerator<T, IS, A> GetEnumerator() =>

@@ -6,7 +6,7 @@ namespace IteratorPrototype.Traits;
 [SkipLocalsInit]
 public ref struct IterableMutableEnumerator<T, IS, MS, A>(K<T, A> ta)
     where T : IterableMutable<T, IS, MS>
-    where IS : struct
+    where IS : unmanaged
     where MS : allows ref struct
 {
     readonly bool valid = true;
