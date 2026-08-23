@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Internal;
 using IteratorPrototype.Internal.Collections;
+using IteratorPrototype.Internal.Source.Factories;
 using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype;
@@ -16,17 +17,36 @@ public static class IteratorExtensions2
             // Consider better ways, but remember, `ta` might also be `tail`, which means doing `tail = default` to
             // initialise it will overwrite `ta`.
             tail = ta; 
-            
-            ref var s1 = ref Unsafe.AsRef(in tail.source);
+            ref var source = ref Unsafe.AsRef(in tail.source);
 
-            var frame = new StackFrame(
-                ref s1,
-                ref Unsafe.AsRef(in tail.ops),
-                ref Unsafe.AsRef(in tail.objs),
-                ref Unsafe.AsRef(in tail.values));
+            while (source is not null)
+            {
+                ref var ops    = ref Unsafe.AsRef(in tail.ops);
+                ref var objs   = ref Unsafe.AsRef(in tail.objs);
+                ref var values = ref Unsafe.AsRef(in tail.values);
+                var     frame  = new StackFrame(ref source, ref ops, ref objs, ref values);
 
-            ref var s2 = ref Unsafe.As<IteratorSource, IteratorSource<A>>(ref s1);
-            return s2.Run(ref frame, out head);
+                if (source!.Run(ref frame))
+                {
+                    var hasValue = true;
+                    while (hasValue && ops.NextPC(out var op))
+                    {
+                        if (!op.Run(ref frame))
+                        {
+                            hasValue = false;
+                        }
+                    }
+                    ops.ResetPC();
+                    
+                    if(hasValue)
+                    {
+                        ValueStack<A>.Instance.Pop(ref frame, out head);
+                        return true;
+                    }
+                }
+            }
+            head = default!;
+            return false;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
