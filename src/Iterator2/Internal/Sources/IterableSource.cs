@@ -12,19 +12,16 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         new IterableSource<T, IS, A>(new EmptyIteratorSource<A>(null!));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override unsafe bool Run(ref StackFrame frame)
     {
-        ref var opsFrame = ref frame.Ops.AtTop;
-        ref var ta       = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in opsFrame.Self)); 
-        ref var space    = ref frame.Values.Peek<IS>();
+        ref var ops   = ref frame.Ops.AtTop;
+        ref var ta    = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in ops.Self)); 
+        ref var space = ref frame.Values.Peek<IS>();
 
-        if (T.Next(in ta, ref space, out var head))
+        if (T.StepImmutable(in ta, in space, out var head, out space))
         {
-            unsafe
-            {
-                ValueStack<A>.Push(ref frame, in head);
-                return true;
-            }
+            ValueStack<A>.Push(ref frame, in head);
+            return true;
         }
         else
         {

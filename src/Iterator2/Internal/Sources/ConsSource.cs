@@ -6,14 +6,11 @@ namespace IteratorPrototype.Internal.Sources;
 sealed record ConsSource<A>(A Head, IteratorSource? Next) : IteratorSource<A>(Next)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override unsafe bool Run(ref StackFrame frame)
     {
-        unsafe
-        {
-            ValueStack<A>.Push(ref frame, Head);
-            frame.Source = Next;
-            return true;
-        }
+        ValueStack<A>.Push(ref frame, Head);
+        frame.Source = Next;
+        return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

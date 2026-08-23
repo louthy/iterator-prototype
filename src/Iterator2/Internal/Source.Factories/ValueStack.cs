@@ -5,6 +5,7 @@ namespace IteratorPrototype.Internal.Source.Factories;
 
 static class ValueStack<A>
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static ValueStack()
     {
         if (Ty<A>.IsUnmanaged)
@@ -29,21 +30,21 @@ static class ValueStack<A>
 static class ManagedValueStack<A>
     where A : class
 {
-    static ManagedValueStack()
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    static unsafe ManagedValueStack()
     {
-        unsafe
-        {
-            ValueStack<A>.Pop = &PopImpl;
-            ValueStack<A>.Push = &PushImpl;
-        }
+        ValueStack<A>.Pop = &PopImpl;
+        ValueStack<A>.Push = &PushImpl;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static void PopImpl(ref StackFrame frame, out A value)
     {
         value = frame.Objs.Peek<A>();
         frame.Objs.Pop();
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static void PushImpl(ref StackFrame frame, in A value) =>
         frame.Objs.Push(value);
 }
@@ -51,21 +52,21 @@ static class ManagedValueStack<A>
 static class UnmanagedValueStack<A>
     where A : unmanaged
 {
-    static UnmanagedValueStack()
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    static unsafe UnmanagedValueStack()
     {
-        unsafe
-        {
-            ValueStack<A>.Pop = &PopImpl;
-            ValueStack<A>.Push = &PushImpl;
-        }
+        ValueStack<A>.Pop = &PopImpl;
+        ValueStack<A>.Push = &PushImpl;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static void PopImpl(ref StackFrame frame, out A value)
     {
         value = frame.Values.Peek<A>();
         frame.Values.Pop();
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static void PushImpl(ref StackFrame frame, in A value) =>
         frame.Values.Push(value);
 }

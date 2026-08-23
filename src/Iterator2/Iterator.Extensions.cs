@@ -87,7 +87,7 @@ public static class IteratorExtensions2
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal void SetSource(in IteratorSource source)
+        internal void SetSource(in IteratorSource? source)
         {
             ref var s = ref Unsafe.AsRef(in ta.source);
             s = source;
