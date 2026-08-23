@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype;
+namespace IteratorPrototype.Internal;
 
 abstract class Op;
 

@@ -59,6 +59,7 @@ public static class Bench
     public const ConsoleColor Baseline = ConsoleColor.Cyan;
     public const ConsoleColor Mutable = ConsoleColor.Yellow;
     public const ConsoleColor Immutable = ConsoleColor.Magenta;
+    public const ConsoleColor Iterator2 = ConsoleColor.Red;
 
     public static void Key()
     {
@@ -82,6 +83,11 @@ public static class Bench
         Console.Write("■");
         Console.ForegroundColor = restore;
         Console.Write(" immutable process   ");
+
+        Console.ForegroundColor = Iterator2;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" iterator2 ideas   ");
 
         Console.WriteLine();        
     }

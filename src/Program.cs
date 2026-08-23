@@ -2,10 +2,10 @@
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
-IteratorTest2.Run();
-return;
+//IteratorTest2.Run();
+//return;
+//IteratorTestSuite.Run();
 
-IteratorTestSuite.Run();
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
 Bench<IterableVersion>.Mark();
@@ -13,8 +13,10 @@ Bench<ForeachVersionRef>.Mark();
 Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
-Bench<MappedIteratorVersion>.Mark();
-Bench<MonadBindIteratorVersion>.Mark();
+Bench<StrongIterator2Version>.Mark();
+
+//Bench<MappedIteratorVersion>.Mark();
+//Bench<MonadBindIteratorVersion>.Mark();
 Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -194,8 +196,8 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
 public class StrongIterator2Version : Bench<StrongIterator2Version>
 {
-    readonly Iterator<Arr, ArrState, int> iterator = 
-        Iterator.from<Arr, ArrState, int>(Arr.create(..Count));
+    readonly Iterator2<Arr, ArrState, int> iterator = 
+        Iterator2.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Strong Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
@@ -213,35 +215,11 @@ public class StrongIterator2Version : Bench<StrongIterator2Version>
     }
 
     protected override ConsoleColor Color => 
-        Bench.Immutable;
+        Bench.Iterator2;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-public class WeakIterator2Version : Bench<WeakIterator2Version>
-{
-    readonly Iterator<int> iterator = 
-        Arr.create(..Count).Forward();
-
-    protected override string Explain =>
-        $"Weak Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
-
-    protected override void Main()
-    {
-        var iter  = iterator;
-        var total = 0;
-        while (iter.TryGetValue(out var x, out iter))
-        {
-            total += x;
-        }
-
-        ignore(total);
-    }
-
-    protected override ConsoleColor Color => 
-        Bench.Immutable;
-}
-
+/*
 //----------------------------------------------------------------------------------------------------------------------
 
 public class MappedIteratorVersion : Bench<MappedIteratorVersion>
@@ -295,3 +273,4 @@ public class MonadBindIteratorVersion : Bench<MonadBindIteratorVersion>
     protected override ConsoleColor Color => 
         Bench.Immutable;
 }
+*/

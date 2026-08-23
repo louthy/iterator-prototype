@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype;
+namespace IteratorPrototype.Internal;
 
 class Map_UnmanagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<B>
     where A : unmanaged

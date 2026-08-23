@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LanguageExt.Traits;
 
-namespace IteratorPrototype;
+namespace IteratorPrototype.Internal.Collections;
 
 /// <summary>
 /// OpFrame is a sequence of Op objects. Basically a highly optimised list.

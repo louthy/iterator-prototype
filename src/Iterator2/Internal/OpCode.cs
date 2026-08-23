@@ -1,4 +1,4 @@
-namespace IteratorPrototype;
+namespace IteratorPrototype.Internal;
 
 public static class OpCode
 {
