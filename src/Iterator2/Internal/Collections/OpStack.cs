@@ -6,6 +6,7 @@ namespace IteratorPrototype.Internal.Collections;
 readonly struct OpStack
 {
     const int MaxCapacity = 4;
+    const int HeaderSize = sizeof(int);
     
     public readonly int Top;
     public readonly OpFrame Frame0;

@@ -3,13 +3,14 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class IteratorManagedSource<T, IS, A>(IteratorSource parent) : IteratorManagedSource<A>
+class IterableManagedToUnmanagedSource<T, IS, A, B>(IteratorSource parent) : IteratorUnmanagedSource<B>
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
     where A : class
+    where B : unmanaged
 {
     public static readonly IteratorSource Instance = 
-        new IteratorManagedSource<T, IS, A>(EmptyIteratorManagedSource<A>.Instance);
+        new IterableManagedToUnmanagedSource<T, IS, A, B>(EmptyIteratorUnmanagedSource<B>.Instance);
 
     public override IteratorSource Parent
     {
@@ -27,7 +28,7 @@ class IteratorManagedSource<T, IS, A>(IteratorSource parent) : IteratorManagedSo
 
         if (T.Next(in ta, ref space, out var head))
         {
-            frame.Objs.Push(head);
+            frame.Objs.Push(in head);
             
             while (opsFrame.NextPC(out var op) && op.Run(ref frame))
                 /* Left empty on purpose */;
@@ -44,6 +45,6 @@ class IteratorManagedSource<T, IS, A>(IteratorSource parent) : IteratorManagedSo
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorSource<A> Prepend(A value) =>
-        new ConsManagedSource<A>(value, this);
+    public override IteratorSource<B> Prepend(B value) =>
+        new ConsUnmanagedSource<B>(value, this);
 }

@@ -1,4 +1,3 @@
-using System.Reflection;
 using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype.Internal.Source.Factories;
@@ -8,44 +7,72 @@ static class Factory<T, IS, A>
     where IS : unmanaged
 {
     public static readonly IteratorSource<A> Instance;
-    
+
     static Factory()
     {
-        var isUnmanaged = IsUnmanaged(typeof(A));
-        if(isUnmanaged)
+        if (Ty<A>.IsUnmanaged)
         {
-            var ty = typeof(IteratorUnmanagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
+            var ty = typeof(IterableUnmanagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
             var f  = ty.GetFields().First(f => f.Name == "Instance");
-            Instance = (IteratorSource<A>?)f.GetValue(null) ?? 
-                       throw new InvalidOperationException("IteratorUnmanagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
+            Instance = (IteratorSource<A>?)f.GetValue(null) ??
+                       throw new InvalidOperationException(
+                           "IteratorUnmanagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
         }
         else
         {
-            var ty = typeof(IteratorManagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
+            var ty = typeof(IterableManagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
             var f  = ty.GetFields().First(f => f.Name == "Instance");
-            Instance = (IteratorSource<A>?)f.GetValue(null) ?? 
-                       throw new InvalidOperationException("IteratorManagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
+            Instance = (IteratorSource<A>?)f.GetValue(null) ??
+                       throw new InvalidOperationException(
+                           "IteratorManagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
         }
     }
+}
+
+static class Factory<T, IS, A, B>
+    where T : Tr.IterableImmutable<T, IS>
+    where IS : unmanaged
+{
+    public static readonly IteratorSource<B> Instance;
     
-    public static bool IsUnmanaged(Type type)
+    static Factory()
     {
-        // Unmanaged types must be value types
-        if (!type.IsValueType) return false;
-
-        // Primitive types (int, float, bool, etc.) are unmanaged
-        if (type.IsPrimitive) return true;
-
-        // Enums are unmanaged if their underlying type is unmanaged
-        if (type.IsEnum) 
-            return IsUnmanaged(Enum.GetUnderlyingType(type));
-
-        // For structs, all fields must also be unmanaged
-        foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+        switch (Ty<A>.IsUnmanaged, Ty<B>.IsUnmanaged)
         {
-            if (!IsUnmanaged(field.FieldType)) return false;
-        }
+            case (true, true):
+            {
+                var ty = typeof(IterableUnmanagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(B));
+                var f  = ty.GetFields().First(f => f.Name == "Instance");
+                Instance = (IteratorSource<B>?)f.GetValue(null) ?? throw ShouldntHappenException;
+                break;
+            }
+            
+            case (false, false):
+            {
+                var ty = typeof(IterableManagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(B));
+                var f  = ty.GetFields().First(f => f.Name == "Instance");
+                Instance = (IteratorSource<B>?)f.GetValue(null) ?? throw ShouldntHappenException;
+                break;
+            }
 
-        return true;
+            case (true, false):
+            {
+                var ty = typeof(IterableUnmanagedToManagedSource<,,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A), typeof(B));
+                var f  = ty.GetFields().First(f => f.Name == "Instance");
+                Instance = (IteratorSource<B>?)f.GetValue(null) ?? throw ShouldntHappenException;
+                break;
+            }
+
+            case (false, true):
+            {
+                var ty = typeof(IterableManagedToUnmanagedSource<,,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A), typeof(B));
+                var f  = ty.GetFields().First(f => f.Name == "Instance");
+                Instance = (IteratorSource<B>?)f.GetValue(null) ?? throw ShouldntHappenException;
+                break;
+            }
+        }
     }
+
+    static Exception ShouldntHappenException =>
+        throw new InvalidOperationException("Factory failed to access the IterableSource instance");
 }

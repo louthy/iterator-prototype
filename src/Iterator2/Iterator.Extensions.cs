@@ -38,15 +38,20 @@ public static class IteratorExtensions2
             return iter;
         }
 
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Iterator2<A> Map<B>(Func<A, B> f)
         {
             Iterator2<B> iter = default;
-            ta.CopyTo(ref iter);
+            ref var      tb   = ref Unsafe.As<Iterator2<A>, Iterator2<B>>(ref ta); 
             
-            ref var ops = ref Unsafe.AsRef(in iter.ops);
-            ops.Add(new MapOp<A, B>(f));
-        }*/
+            tb.CopyTo(ref iter);
+
+            ref var src = ref Unsafe.AsRef(in iter.source);
+            ref var srcA = ref Unsafe.As<IteratorSource, IteratorSource<A>>(ref src);
+            src = srcA.Map<B>(f);
+        }
+        */
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(ref Iterator2<A> other)

@@ -80,15 +80,4 @@ readonly struct ObjStack
         
         top++;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ObjStack PushSafe<A>(A value)
-        where A : class
-    {
-        ObjStack stack = default!;
-        CopyTo(ref stack);
-        stack.Push(in value);
-        return stack;
-    }
-    
 }
