@@ -7,12 +7,12 @@ namespace IteratorPrototype;
 public static class Iterator2
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iterator2<T, IS, A> from<T, IS, A>(in K<T, A> ta)
+    public static Iterator2<A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
     {
         var ts = T.SetupImmutable(in ta);
-        Iterator2<T, IS, A> iter = default;
+        Iterator2<A> iter = default;
         
         iter.SetVM(Factory<T, IS, A>.Instance);
         iter.ops.Push(ta);

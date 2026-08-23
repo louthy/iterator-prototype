@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 // ReSharper disable UnassignedReadonlyField
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 

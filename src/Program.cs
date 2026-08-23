@@ -2,9 +2,8 @@
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
-//IteratorTest2.Run();
-//return;
 //IteratorTestSuite.Run();
+IteratorTest2.Run();
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
@@ -13,7 +12,7 @@ Bench<ForeachVersionRef>.Mark();
 Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
-Bench<StrongIterator2Version>.Mark();
+Bench<Iterator2Version>.Mark();
 
 //Bench<MappedIteratorVersion>.Mark();
 //Bench<MonadBindIteratorVersion>.Mark();
@@ -194,13 +193,13 @@ public class WeakIteratorVersion : Bench<WeakIteratorVersion>
 
 //----------------------------------------------------------------------------------------------------------------------
 
-public class StrongIterator2Version : Bench<StrongIterator2Version>
+public class Iterator2Version : Bench<Iterator2Version>
 {
-    readonly Iterator2<Arr, ArrState, int> iterator = 
+    readonly Iterator2<int> iterator = 
         Iterator2.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
-        $"Strong Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
+        $"Iterator2, for Arr, using while TryGetValue ({Count:N0} items)";
 
     protected override void Main()
     {

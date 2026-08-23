@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace IteratorPrototype;
+namespace IteratorPrototype.Internal.Collections;
 
 [SkipLocalsInit]
 [StructLayout(LayoutKind.Explicit, Size = StackSizeInBytes)]

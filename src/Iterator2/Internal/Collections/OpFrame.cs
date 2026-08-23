@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Collections;
 
