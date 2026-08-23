@@ -3,20 +3,11 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class IterableManagedSource<T, IS, A>(IteratorSource parent) : IteratorManagedSource<A>
+record IterableManagedSource<T, IS, A>(IteratorSource? Parent) : IteratorManagedSource<A>(Parent)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
     where A : class
 {
-    public static readonly IteratorSource Instance = 
-        new IterableManagedSource<T, IS, A>(EmptyIteratorManagedSource<A>.Instance);
-
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => parent;
-    }    
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
@@ -37,9 +28,9 @@ class IterableManagedSource<T, IS, A>(IteratorSource parent) : IteratorManagedSo
         }
         else
         {
-            frame.Ops.Pop();                    // Remove the `ops` stack-frame
-            frame.Source = frame.Source.Parent; // Look for an operation to call back to
-            return frame.Source.Run(ref frame);
+            frame.Ops.Pop();                     // Remove the `ops` stack-frame
+            frame.Source = frame.Source?.Parent; // Look for an operation to call back to
+            return frame.Source?.Run(ref frame) ?? false;
         }
     }
     

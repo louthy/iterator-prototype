@@ -14,7 +14,7 @@ public static class Iterator2
         var ts = T.SetupImmutable(in ta);
         Iterator2<A> iter = default;
         
-        iter.SetSource(Factory<T, IS, A>.Instance);
+        iter.SetSource(IterableFactory<T, IS, A>.Instance);
         iter.ops.Push(ta);
         iter.values.Push(ts);
         return iter;

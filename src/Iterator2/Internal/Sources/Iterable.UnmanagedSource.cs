@@ -3,21 +3,11 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class IterableUnmanagedToManagedSource<T, IS, A, B>(IteratorSource parent) : IteratorManagedSource<B>
+record IterableUnmanagedSource<T, IS, A>(IteratorSource? Parent) : IteratorUnmanagedSource<A>(Parent)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
     where A : unmanaged
-    where B : class
 {
-    public static readonly IteratorSource Instance = 
-        new IterableUnmanagedToManagedSource<T, IS, A, B>(EmptyIteratorManagedSource<B>.Instance);
-
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => parent;
-    }    
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
@@ -38,13 +28,13 @@ class IterableUnmanagedToManagedSource<T, IS, A, B>(IteratorSource parent) : Ite
         }
         else
         {
-            frame.Ops.Pop();                    // Remove the `ops` stack-frame
-            frame.Source = frame.Source.Parent; // Look for an operation to call back to
-            return frame.Source.Run(ref frame);
+            frame.Ops.Pop();                     // Remove the `ops` stack-frame
+            frame.Source = frame.Source?.Parent; // Look for an operation to call back to
+            return frame.Source?.Run(ref frame) ?? false;
         }
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorSource<B> Prepend(B value) =>
-        new ConsManagedSource<B>(value, this);
+    public override IteratorSource<A> Prepend(A value) =>
+        new ConsUnmanagedSource<A>(value, this);
 }

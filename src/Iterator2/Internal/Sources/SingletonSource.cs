@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class SingletonManagedSource<A>(A Head) : IteratorSource<A>
+record SingletonManagedSource<A>(A Head, IteratorSource Parent) : IteratorSource<A>(Parent, false)
     where A : class
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -11,16 +11,10 @@ class SingletonManagedSource<A>(A Head) : IteratorSource<A>
         return false;
     }
 
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => this;
-    }
-
     public override bool Run(ref StackFrame frame, out A head)
     {
         head = Head;
-        frame.Source = EmptyIteratorManagedSource<A>.Instance;
+        frame.Source = Parent;
         return true;
     }
 
@@ -28,7 +22,7 @@ class SingletonManagedSource<A>(A Head) : IteratorSource<A>
         new ConsManagedSource<A>(value, this); 
 }
 
-class SingletonUnmanagedSource<A>(A Head) : IteratorSource<A>
+record SingletonUnmanagedSource<A>(A Head, IteratorSource Parent) : IteratorSource<A>(Parent, true)
     where A : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -37,16 +31,10 @@ class SingletonUnmanagedSource<A>(A Head) : IteratorSource<A>
         return false;
     }
 
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => this;
-    }
-
     public override bool Run(ref StackFrame frame, out A head)
     {
         head = Head;
-        frame.Source = EmptyIteratorUnmanagedSource<A>.Instance;
+        frame.Source = Parent;
         return true;
     }
 

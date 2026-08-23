@@ -3,20 +3,12 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class IterableUnmanagedSource<T, IS, A>(IteratorSource parent) : IteratorUnmanagedSource<A>
+record IterableManagedToManagedSource<T, IS, A, B>(IteratorSource? Parent) : IteratorManagedSource<B>(Parent)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
-    where A : unmanaged
+    where A : class
+    where B : class
 {
-    public static readonly IteratorSource Instance = 
-        new IterableUnmanagedSource<T, IS, A>(EmptyIteratorUnmanagedSource<A>.Instance);
-
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => parent;
-    }    
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
@@ -27,7 +19,7 @@ class IterableUnmanagedSource<T, IS, A>(IteratorSource parent) : IteratorUnmanag
 
         if (T.Next(in ta, ref space, out var head))
         {
-            frame.Values.Push(in head);
+            frame.Objs.Push(in head);
             
             while (opsFrame.NextPC(out var op) && op.Run(ref frame))
                 /* Left empty on purpose */;
@@ -37,13 +29,13 @@ class IterableUnmanagedSource<T, IS, A>(IteratorSource parent) : IteratorUnmanag
         }
         else
         {
-            frame.Ops.Pop();                    // Remove the `ops` stack-frame
-            frame.Source = frame.Source.Parent; // Look for an operation to call back to
-            return frame.Source.Run(ref frame);
+            frame.Ops.Pop();                     // Remove the `ops` stack-frame
+            frame.Source = frame.Source?.Parent; // Look for an operation to call back to
+            return frame.Source?.Run(ref frame) ?? false;
         }
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorSource<A> Prepend(A value) =>
-        new ConsUnmanagedSource<A>(value, this);
+    public override IteratorSource<B> Prepend(B value) =>
+        new ConsManagedSource<B>(value, this);
 }

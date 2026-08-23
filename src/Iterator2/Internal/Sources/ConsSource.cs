@@ -1,21 +1,16 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal.Sources;
 
-sealed class ConsManagedSource<A>(A Head, IteratorSource Tail) : IteratorManagedSource<A>
+sealed record ConsManagedSource<A>(A Head, IteratorSource? Parent) : IteratorManagedSource<A>(Parent)
     where A : class
 {
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => Tail;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
         frame.Objs.Push(Head);
-        frame.Source = Tail;
+        frame.Source = Parent;
         return true;
     }
 
@@ -24,20 +19,14 @@ sealed class ConsManagedSource<A>(A Head, IteratorSource Tail) : IteratorManaged
         new ConsManagedSource<A>(value, this);
 }
 
-sealed class ConsUnmanagedSource<A>(A Head, IteratorSource Tail) : IteratorUnmanagedSource<A>
+sealed record ConsUnmanagedSource<A>(A Head, IteratorSource? Parent) : IteratorUnmanagedSource<A>(Parent)
     where A : unmanaged
 {
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => Tail;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
         frame.Values.Push(Head);
-        frame.Source = Tail;
+        frame.Source = Parent;
         return true;
     }
 

@@ -3,21 +3,12 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-class IterableManagedToUnmanagedSource<T, IS, A, B>(IteratorSource parent) : IteratorUnmanagedSource<B>
+record IterableUnmanagedToUnmanagedSource<T, IS, A, B>(IteratorSource? Parent) : IteratorUnmanagedSource<B>(Parent)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
-    where A : class
+    where A : unmanaged
     where B : unmanaged
 {
-    public static readonly IteratorSource Instance = 
-        new IterableManagedToUnmanagedSource<T, IS, A, B>(EmptyIteratorUnmanagedSource<B>.Instance);
-
-    public override IteratorSource Parent
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => parent;
-    }    
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
@@ -28,7 +19,7 @@ class IterableManagedToUnmanagedSource<T, IS, A, B>(IteratorSource parent) : Ite
 
         if (T.Next(in ta, ref space, out var head))
         {
-            frame.Objs.Push(in head);
+            frame.Values.Push(in head);
             
             while (opsFrame.NextPC(out var op) && op.Run(ref frame))
                 /* Left empty on purpose */;
@@ -38,9 +29,9 @@ class IterableManagedToUnmanagedSource<T, IS, A, B>(IteratorSource parent) : Ite
         }
         else
         {
-            frame.Ops.Pop();                    // Remove the `ops` stack-frame
-            frame.Source = frame.Source.Parent; // Look for an operation to call back to
-            return frame.Source.Run(ref frame);
+            frame.Ops.Pop();                     // Remove the `ops` stack-frame
+            frame.Source = frame.Source?.Parent; // Look for an operation to call back to
+            return frame.Source?.Run(ref frame) ?? false;
         }
     }
     
