@@ -6,6 +6,7 @@ public class IteratorTest2
     {
         Test1();
         Test2();
+        Test3();
     }
     
     public static void Test1()
@@ -26,6 +27,18 @@ public class IteratorTest2
         var arr   = Arr.create("One", "Two", "Three", "Four", "Five");
         var iter1 = Iterator2.from<Arr, ArrState, string>(arr);
         var iter  = iter1.Prepend("Zero");
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        Console.WriteLine();
+    }
+        
+    public static void Test3()
+    {
+        var arr  = Arr.create(1..6);
+        var iter = Iterator2.from<Arr, ArrState, int>(arr).Map(x => $"Item {x}");
         
         while(iter.TryGetValue(out var head, out iter))
         {
