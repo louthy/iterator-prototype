@@ -15,7 +15,7 @@ public static class Iterator2
         Iterator2<A> iter = default;
         
         iter.SetSource(IterableSource<T, IS, A>.Instance);
-        iter.ops.Push(ta);
+        iter.objs.Push(ta);
         iter.values.Push(ts);
         return iter;
     }

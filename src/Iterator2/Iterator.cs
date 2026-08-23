@@ -19,7 +19,7 @@ namespace IteratorPrototype;
 public readonly struct Iterator2<A>
 {
     internal readonly IteratorSource? source;
-    internal readonly OpStack ops;
+    internal readonly OpFrame ops;
     internal readonly ObjStack objs;
     internal readonly ByteStack values;
 }

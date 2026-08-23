@@ -15,10 +15,8 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override unsafe bool Run(ref StackFrame frame)
     {
-        ref var ops   = ref frame.Ops.AtTop;
-        ref var ta    = ref Unsafe.As<object, K<T, A>>(ref Unsafe.AsRef(in ops.Self)); 
+        ref var ta    = ref frame.Objs.Peek<K<T, A>>();
         ref var space = ref frame.Values.Peek<IS>();
-
         if (T.StepImmutable(in ta, in space, out var head, out space))
         {
             ValueStack<A>.Push(ref frame, in head);

@@ -15,63 +15,59 @@ readonly struct OpFrame
     const int MaxCapacity = 16;
     
     [FieldOffset(0)]
-    public readonly object Self;
-    [FieldOffset(8)]
     public readonly short PC;
-    [FieldOffset(12)]
+    [FieldOffset(2)]
     public readonly short Count;
-    [FieldOffset(16)]
+    [FieldOffset(8)]
     public readonly Op Op0;
-    [FieldOffset(24)]
+    [FieldOffset(16)]
     public readonly Op Op1;
-    [FieldOffset(32)]
+    [FieldOffset(24)]
     public readonly Op Op2;
-    [FieldOffset(40)]
+    [FieldOffset(32)]
     public readonly Op Op3;
-    [FieldOffset(48)]
+    [FieldOffset(40)]
     public readonly Op Op4;
-    [FieldOffset(56)]
+    [FieldOffset(48)]
     public readonly Op Op5;
-    [FieldOffset(64)]
+    [FieldOffset(56)]
     public readonly Op Op6;
-    [FieldOffset(72)]
+    [FieldOffset(64)]
     public readonly Op Op7;
-    [FieldOffset(80)]
+    [FieldOffset(72)]
     public readonly Op Op8;
-    [FieldOffset(88)]
+    [FieldOffset(80)]
     public readonly Op Op9;
-    [FieldOffset(96)]
+    [FieldOffset(88)]
     public readonly Op OpA;
-    [FieldOffset(104)]
+    [FieldOffset(96)]
     public readonly Op OpB;
-    [FieldOffset(112)]
+    [FieldOffset(104)]
     public readonly Op OpC;
-    [FieldOffset(120)]
+    [FieldOffset(112)]
     public readonly Op OpD;
-    [FieldOffset(128)]
+    [FieldOffset(120)]
     public readonly Op OpE;
-    [FieldOffset(136)]
+    [FieldOffset(128)]
     public readonly Op OpF;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpFrame(object self, params ReadOnlySpan<Op> ops)
+    public OpFrame(params ReadOnlySpan<Op> ops)
     {
         var     size = Unsafe.SizeOf<Op>() * ops.Length;
         ref var dst  = ref Unsafe.As<Op, byte>(ref Unsafe.AsRef(in Op0)!);
         ref var src  = ref Unsafe.As<Op, byte>(ref Unsafe.AsRef(in ops.GetPinnableReference()));
         Unsafe.CopyBlock(ref dst, ref src, (uint)size);
         Count = (short)ops.Length;
-        Self = self;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpFrame(object self, short pc, params ReadOnlySpan<Op> ops)
+    public OpFrame(short pc, params ReadOnlySpan<Op> ops)
     {
         var     size = Unsafe.SizeOf<Op>() * ops.Length;
         ref var dst  = ref Unsafe.As<Op, byte>(ref Unsafe.AsRef(in Op0)!);
         ref var src  = ref Unsafe.As<Op, byte>(ref Unsafe.AsRef(in ops.GetPinnableReference()));
         Unsafe.CopyBlock(ref dst, ref src, (uint)size);
-        Self = self;
         PC = pc;
         Count = (short)ops.Length;
     }

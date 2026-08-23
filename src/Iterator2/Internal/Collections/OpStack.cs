@@ -89,24 +89,12 @@ readonly struct OpStack
         if (Top == 0) throw new StackUnderflowException();
         AtTop.Add(op);   
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpStack AddSafe(Op op)
-    {
-        if (Top == 0) throw new StackUnderflowException();
-        OpStack stack = default;
-        CopyTo(ref stack);
-        stack.Add(op);   
-        return stack;
-    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Push(in object ta)
+    public void Push()
     {
         ref var top = ref Unsafe.AsRef(in Top);
         if(top == MaxCapacity) throw new InvalidOperationException("OpStack is full");
-        ref var frame = ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), top);
-        Unsafe.AsRef(in frame.Self) = ta;
         top++;
     }
     
@@ -118,14 +106,5 @@ readonly struct OpStack
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), top);
         entry = frame;
         top++;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpStack PushSafe(OpFrame value)
-    {
-        OpStack stack = default;
-        CopyTo(ref stack);
-        stack.Push(value);
-        return stack;
     }
 }

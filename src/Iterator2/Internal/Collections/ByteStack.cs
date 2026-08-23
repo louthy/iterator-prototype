@@ -50,15 +50,9 @@ readonly struct ByteStack
     public ref A Peek<A>()
         where A : unmanaged
     {
-        var top = Top;
-        top -= sizeof(int);
-        
         ref var stack  = ref Unsafe.AsRef(in Stack);
-        var     sizeOf = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref stack, top));
-        
-        top -= sizeOf;
-
-        return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, top));
+        var     sizeOf = sizeof(int) + Unsafe.SizeOf<A>();
+        return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Top - sizeOf));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
