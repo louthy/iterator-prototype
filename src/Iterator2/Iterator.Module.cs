@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Internal.VM;
+using IteratorPrototype.Internal.Source.Factories;
 using LanguageExt.Traits;
 
 namespace IteratorPrototype;
@@ -14,7 +14,7 @@ public static class Iterator2
         var ts = T.SetupImmutable(in ta);
         Iterator2<A> iter = default;
         
-        iter.SetVM(Factory<T, IS, A>.Instance);
+        iter.SetSource(Factory<T, IS, A>.Instance);
         iter.ops.Push(ta);
         iter.values.Push(ts);
         return iter;

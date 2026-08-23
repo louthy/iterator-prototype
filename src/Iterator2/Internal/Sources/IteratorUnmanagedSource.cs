@@ -1,17 +1,17 @@
 using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
-namespace IteratorPrototype.Internal.VM;
+namespace IteratorPrototype.Internal.Sources;
 
-class IteratorUnmanagedVM<T, IS, A>(IteratorVM parent) : IteratorUnmanagedVM<A>
+class IteratorUnmanagedSource<T, IS, A>(IteratorSource parent) : IteratorUnmanagedSource<A>
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
     where A : unmanaged
 {
-    public static readonly IteratorVM Instance = 
-        new IteratorUnmanagedVM<T, IS, A>(EmptyIteratorUnmanagedVM<A>.Instance);
+    public static readonly IteratorSource Instance = 
+        new IteratorUnmanagedSource<T, IS, A>(EmptyIteratorUnmanagedSource<A>.Instance);
 
-    public override IteratorVM Parent
+    public override IteratorSource Parent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => parent;
@@ -29,7 +29,7 @@ class IteratorUnmanagedVM<T, IS, A>(IteratorVM parent) : IteratorUnmanagedVM<A>
         {
             frame.Values.Push(head);
             
-            while (opsFrame.NextPC<A>(out var op) && op.Run(ref frame))
+            while (opsFrame.NextPC(out var op) && op.Run(ref frame))
                 /* Left empty on purpose */;
             
             opsFrame.ResetPC();
@@ -37,13 +37,13 @@ class IteratorUnmanagedVM<T, IS, A>(IteratorVM parent) : IteratorUnmanagedVM<A>
         }
         else
         {
-            frame.Ops.Pop();            // Remove the `ops` stack-frame
-            frame.VM = frame.VM.Parent; // Look for an operation to call back to
-            return frame.VM.Run(ref frame);
+            frame.Ops.Pop();                    // Remove the `ops` stack-frame
+            frame.Source = frame.Source.Parent; // Look for an operation to call back to
+            return frame.Source.Run(ref frame);
         }
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorVM<A> Prepend(A value) =>
-        new ConsUnmanagedVM<A>(value, this);
+    public override IteratorSource<A> Prepend(A value) =>
+        new ConsUnmanagedSource<A>(value, this);
 }

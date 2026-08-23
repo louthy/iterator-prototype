@@ -1,12 +1,12 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype.Internal.VM;
+namespace IteratorPrototype.Internal.Sources;
 
-class EmptyIteratorManagedVM<A> : IteratorVM<A>
+class EmptyIteratorManagedSource<A> : IteratorSource<A>
     where A : class
 {
-    public static readonly IteratorVM Instance = 
-        new EmptyIteratorManagedVM<A>();
+    public static readonly IteratorSource Instance = 
+        new EmptyIteratorManagedSource<A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
@@ -14,7 +14,7 @@ class EmptyIteratorManagedVM<A> : IteratorVM<A>
         return false;
     }
 
-    public override IteratorVM Parent
+    public override IteratorSource Parent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => this;
@@ -26,15 +26,15 @@ class EmptyIteratorManagedVM<A> : IteratorVM<A>
         return false;
     }
 
-    public override IteratorVM<A> Prepend(A value) =>
-        new SingletonManagedVM<A>(value);
+    public override IteratorSource<A> Prepend(A value) =>
+        new SingletonManagedSource<A>(value);
 }
 
-class EmptyIteratorUnmanagedVM<A> : IteratorVM<A>
+class EmptyIteratorUnmanagedSource<A> : IteratorSource<A>
     where A : unmanaged
 {
-    public static readonly IteratorVM Instance = 
-        new EmptyIteratorUnmanagedVM<A>();
+    public static readonly IteratorSource Instance = 
+        new EmptyIteratorUnmanagedSource<A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
@@ -42,7 +42,7 @@ class EmptyIteratorUnmanagedVM<A> : IteratorVM<A>
         return false;
     }
 
-    public override IteratorVM Parent
+    public override IteratorSource Parent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => this;
@@ -54,6 +54,6 @@ class EmptyIteratorUnmanagedVM<A> : IteratorVM<A>
         return false;
     }
 
-    public override IteratorVM<A> Prepend(A value) =>
-        new SingletonUnmanagedVM<A>(value);
+    public override IteratorSource<A> Prepend(A value) =>
+        new SingletonUnmanagedSource<A>(value);
 }

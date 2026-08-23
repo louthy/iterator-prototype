@@ -80,18 +80,6 @@ readonly struct OpStack
         ref var top = ref AtTop;
         return top.NextPC(out op);
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool NextPC<A>(out Op<A> op)
-    {
-        if (Top == 0)
-        {
-            op = null!;
-            return false;
-        }
-        ref var top = ref AtTop;
-        return top.NextPC(out op);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void Add(Op op)

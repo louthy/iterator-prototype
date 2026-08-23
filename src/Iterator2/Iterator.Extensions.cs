@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Internal;
-using IteratorPrototype.Internal.VM;
+using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype;
 
@@ -16,16 +16,16 @@ public static class IteratorExtensions2
             // initialise it will overwrite `ta`.
             tail = ta; 
             
-            ref var vm1 = ref Unsafe.AsRef(in tail.vm);
+            ref var s1 = ref Unsafe.AsRef(in tail.source);
 
             var frame = new StackFrame(
-                ref vm1,
+                ref s1,
                 ref Unsafe.AsRef(in tail.ops),
                 ref Unsafe.AsRef(in tail.objs),
                 ref Unsafe.AsRef(in tail.values));
 
-            ref var vm2 = ref Unsafe.As<IteratorVM, IteratorVM<A>>(ref vm1);
-            return vm2.Run(ref frame, out head);
+            ref var s2 = ref Unsafe.As<IteratorSource, IteratorSource<A>>(ref s1);
+            return s2.Run(ref frame, out head);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -33,31 +33,35 @@ public static class IteratorExtensions2
         {
             Iterator2<A> iter = default;
             ta.CopyTo(ref iter);
-            ref var vm1 = ref Unsafe.AsRef(in iter.vm);
-            vm1 = ((IteratorVM<A>)iter.vm).Prepend(head);
+            ref var s1 = ref Unsafe.AsRef(in iter.source);
+            s1 = ((IteratorSource<A>)iter.source).Prepend(head);
             return iter;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Iterator2<A> Map<B>(Func<A, B> f)
         {
-            throw new NotImplementedException();
-        }
+            Iterator2<B> iter = default;
+            ta.CopyTo(ref iter);
+            
+            ref var ops = ref Unsafe.AsRef(in iter.ops);
+            ops.Add(new MapOp<A, B>(f));
+        }*/
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(ref Iterator2<A> other)
         {
-            other.SetVM(in ta.vm);
+            other.SetSource(in ta.source);
             ta.ops.CopyTo(ref Unsafe.AsRef(in other.ops));
             ta.objs.CopyTo(ref Unsafe.AsRef(in other.objs));
             ta.values.CopyTo(ref Unsafe.AsRef(in other.values));
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal void SetVM(in IteratorVM tvm)
+        internal void SetSource(in IteratorSource source)
         {
-            ref var vm = ref Unsafe.AsRef(in ta.vm);
-            vm = tvm;
+            ref var s = ref Unsafe.AsRef(in ta.source);
+            s = source;
         }
     }
 }

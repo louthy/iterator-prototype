@@ -1,27 +1,30 @@
 using System.Reflection;
+using IteratorPrototype.Internal.Sources;
 
-namespace IteratorPrototype.Internal.VM;
+namespace IteratorPrototype.Internal.Source.Factories;
 
 static class Factory<T, IS, A>
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    public static readonly IteratorVM<A> Instance;
+    public static readonly IteratorSource<A> Instance;
     
     static Factory()
     {
         var isUnmanaged = IsUnmanaged(typeof(A));
         if(isUnmanaged)
         {
-            var ty = typeof(IteratorUnmanagedVM<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
+            var ty = typeof(IteratorUnmanagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
             var f  = ty.GetFields().First(f => f.Name == "Instance");
-            Instance = (IteratorVM<A>?)f.GetValue(null) ?? throw new InvalidOperationException("IteratorUnmanagedVM<,,> should have a static field named Instance that is of type IteratorVM<A>");
+            Instance = (IteratorSource<A>?)f.GetValue(null) ?? 
+                       throw new InvalidOperationException("IteratorUnmanagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
         }
         else
         {
-            var ty = typeof(IteratorManagedVM<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
+            var ty = typeof(IteratorManagedSource<,,>).MakeGenericType(typeof(T), typeof(IS), typeof(A));
             var f  = ty.GetFields().First(f => f.Name == "Instance");
-            Instance = (IteratorVM<A>?)f.GetValue(null) ?? throw new InvalidOperationException("IteratorManagedVM<,,> should have a static field named Instance that is of type IteratorVM<A>");
+            Instance = (IteratorSource<A>?)f.GetValue(null) ?? 
+                       throw new InvalidOperationException("IteratorManagedSource<,,> should have a static field named Instance that is of type IteratorSource<A>");
         }
     }
     

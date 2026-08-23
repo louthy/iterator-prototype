@@ -126,23 +126,6 @@ readonly struct OpFrame
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool NextPC<A>(out Op<A> op)
-    {
-        ref var pc = ref Unsafe.AsRef(in PC);
-        if (pc < Count)
-        {
-            op = Unsafe.As<Op, Op<A>>(ref AtPC);
-            pc++;
-            return true;
-        }
-        else
-        {
-            op = null!;
-            return false;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void ResetPC()
     {
         ref var pc = ref Unsafe.AsRef(in PC);

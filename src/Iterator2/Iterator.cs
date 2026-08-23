@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Internal.Collections;
-using IteratorPrototype.Internal.VM;
+using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype;
 
@@ -18,7 +18,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public readonly struct Iterator2<A>
 {
-    internal readonly IteratorVM vm;
+    internal readonly IteratorSource source;
     internal readonly OpStack ops;
     internal readonly ObjStack objs;
     internal readonly ByteStack values;

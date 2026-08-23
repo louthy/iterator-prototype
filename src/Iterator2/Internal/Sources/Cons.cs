@@ -1,11 +1,11 @@
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype.Internal.VM;
+namespace IteratorPrototype.Internal.Sources;
 
-sealed class ConsManagedVM<A>(A Head, IteratorVM Tail) : IteratorManagedVM<A>
+sealed class ConsManagedSource<A>(A Head, IteratorSource Tail) : IteratorManagedSource<A>
     where A : class
 {
-    public override IteratorVM Parent
+    public override IteratorSource Parent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => Tail;
@@ -15,19 +15,19 @@ sealed class ConsManagedVM<A>(A Head, IteratorVM Tail) : IteratorManagedVM<A>
     public override bool Run(ref StackFrame frame)
     {
         frame.Objs.Push(Head);
-        frame.VM = Tail;
+        frame.Source = Tail;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorVM<A> Prepend(A value) =>
-        new ConsManagedVM<A>(value, this);
+    public override IteratorSource<A> Prepend(A value) =>
+        new ConsManagedSource<A>(value, this);
 }
 
-sealed class ConsUnmanagedVM<A>(A Head, IteratorVM Tail) : IteratorUnmanagedVM<A>
+sealed class ConsUnmanagedSource<A>(A Head, IteratorSource Tail) : IteratorUnmanagedSource<A>
     where A : unmanaged
 {
-    public override IteratorVM Parent
+    public override IteratorSource Parent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => Tail;
@@ -37,11 +37,11 @@ sealed class ConsUnmanagedVM<A>(A Head, IteratorVM Tail) : IteratorUnmanagedVM<A
     public override bool Run(ref StackFrame frame)
     {
         frame.Values.Push(Head);
-        frame.VM = Tail;
+        frame.Source = Tail;
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override IteratorVM<A> Prepend(A value) =>
-        new ConsUnmanagedVM<A>(value, this);
+    public override IteratorSource<A> Prepend(A value) =>
+        new ConsUnmanagedSource<A>(value, this);
 }

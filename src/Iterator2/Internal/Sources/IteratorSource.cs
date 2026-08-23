@@ -1,18 +1,18 @@
-namespace IteratorPrototype.Internal.VM;
+namespace IteratorPrototype.Internal.Sources;
 
-abstract class IteratorVM
+abstract class IteratorSource
 {
     public abstract bool Run(ref StackFrame frame);
-    public abstract IteratorVM Parent { get; }
+    public abstract IteratorSource Parent { get; }
 }
 
-abstract class IteratorVM<A> : IteratorVM
+abstract class IteratorSource<A> : IteratorSource
 {
     public abstract bool Run(ref StackFrame frame, out A head);
-    public abstract IteratorVM<A> Prepend(A value);
+    public abstract IteratorSource<A> Prepend(A value);
 }
 
-abstract class IteratorManagedVM<A> : IteratorVM<A>
+abstract class IteratorManagedSource<A> : IteratorSource<A>
     where A : class
 {
     public override bool Run(ref StackFrame frame, out A head)
@@ -32,7 +32,7 @@ abstract class IteratorManagedVM<A> : IteratorVM<A>
     }
 }
 
-abstract class IteratorUnmanagedVM<A> : IteratorVM<A>
+abstract class IteratorUnmanagedSource<A> : IteratorSource<A>
     where A : unmanaged
 {
     public override bool Run(ref StackFrame frame, out A head)

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Internal;
 
-class Map_UnmanagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<B>
+class Map_UnmanagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     where A : unmanaged
     where B : unmanaged
 {
@@ -17,7 +17,7 @@ class Map_UnmanagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<B>
     }
 }
 
-class Map_UnmanagedManaged_Op<A, B>(Func<A, B> f) : Op<B>
+class Map_UnmanagedManaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     where A : unmanaged
     where B : class
 {
@@ -32,7 +32,7 @@ class Map_UnmanagedManaged_Op<A, B>(Func<A, B> f) : Op<B>
     }
 }
 
-class Map_ManagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<B>
+class Map_ManagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     where A : class
     where B : unmanaged
 {
@@ -47,7 +47,7 @@ class Map_ManagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<B>
     }
 }
 
-class Map_ManagedManaged_Op<A, B>(Func<A, B> f) : Op<B>
+class Map_ManagedManaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     where A : class
     where B : class
 {
