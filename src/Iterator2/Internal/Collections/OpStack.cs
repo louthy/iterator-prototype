@@ -23,6 +23,7 @@ readonly struct OpStack
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void CopyTo(ref OpStack dest)
     {
+       
         Frame0.CopyTo(ref Unsafe.AsRef(in dest.Frame0));
         Frame1.CopyTo(ref Unsafe.AsRef(in dest.Frame1));
         Frame2.CopyTo(ref Unsafe.AsRef(in dest.Frame2));

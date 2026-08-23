@@ -142,9 +142,9 @@ readonly struct OpFrame
     public void CopyTo(ref OpFrame dest)
     {
         var blockSize = Unsafe.SizeOf<Op>() * Count + HeaderSize;
-        
-        Unsafe.CopyBlock(ref Unsafe.As<OpFrame, byte>(ref Unsafe.AsRef(in dest)), 
-                         ref Unsafe.As<OpFrame, byte>(ref Unsafe.AsRef(in this)), 
+
+        Unsafe.CopyBlock(ref Unsafe.As<OpFrame, byte>(ref Unsafe.AsRef(in dest)),
+                         ref Unsafe.As<OpFrame, byte>(ref Unsafe.AsRef(in this)),
                          (uint)blockSize);
     }
 }

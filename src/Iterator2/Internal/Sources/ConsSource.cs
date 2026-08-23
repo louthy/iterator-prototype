@@ -3,6 +3,7 @@ using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal.Sources;
 
+[SkipLocalsInit]
 sealed record ConsSource<A>(A Head, IteratorSource? Next) : IteratorSource<A>(Next)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

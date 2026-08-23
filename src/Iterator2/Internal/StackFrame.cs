@@ -4,6 +4,7 @@ using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype.Internal;
 
+[SkipLocalsInit]
 readonly ref struct StackFrame
 {
     public readonly ref IteratorSource? Source;

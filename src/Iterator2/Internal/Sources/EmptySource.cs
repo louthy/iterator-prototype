@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Internal.Sources;
 
+[SkipLocalsInit]
 record EmptyIteratorSource<A>(IteratorSource? Next) : IteratorSource<A>(Next)
 {
     public static readonly IteratorSource<A> Instance = new EmptyIteratorSource<A>(null!);

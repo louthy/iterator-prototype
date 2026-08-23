@@ -4,6 +4,7 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
+[SkipLocalsInit]
 record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
