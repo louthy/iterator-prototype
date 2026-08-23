@@ -20,7 +20,8 @@ public class IteratorTest2
     public static void Run()
     {
         var arr = Arr.create(1..6);
-        var iter = Iterator2.fromUnmanaged<Arr, ArrState, int>(arr);
+        var iter1 = Iterator2.fromUnmanaged<Arr, ArrState, int>(arr);
+        var iter = iter1.Prepend(0);
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -49,7 +50,19 @@ public readonly struct Iterator2<T, IS, A>
             ref Unsafe.AsRef(in tail.objs), 
             ref Unsafe.AsRef(in tail.values));
 
-        return vm.Run(ref frame, out head);
+        ref var self = ref Unsafe.AsRef(in tail.vm); 
+        return self.Run(ref self, ref frame, out head);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public Iterator2<T, IS, A> Prepend(A head)
+    {
+        Iterator2<T, IS, A> iter = default;
+        CopyTo(ref iter);
+
+        ref var self = ref Unsafe.AsRef(in iter.vm);
+        self = new ConsVM<T, IS, A>(head, vm);
+        return iter;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -208,7 +221,7 @@ class PureUnmanaged<T, IS, A> : Op<A>
 
 internal abstract class IteratorVM<A>
 {
-    public abstract bool Run(ref StackFrame frame, out A head);
+    public abstract bool Run(ref IteratorVM<A> self, ref StackFrame frame, out A head);
 }
 
 internal class IteratorManagedVM<T, IS, A> : IteratorVM<A>
@@ -217,12 +230,11 @@ internal class IteratorManagedVM<T, IS, A> : IteratorVM<A>
     public static readonly IteratorVM<A> Instance = new IteratorManagedVM<T, IS, A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame, out A head)
+    public override bool Run(ref IteratorVM<A> self, ref StackFrame frame, out A head)
     {
         do
         {
-            var op = frame.Ops.AtPC;
-            if (!op.Run(ref frame))
+            if (!frame.Ops.AtPC.Run(ref frame))
             {
                 // Reset - may need something more advanced
                 frame.Ops.ResetPC();
@@ -244,17 +256,18 @@ internal class IteratorManagedVM<T, IS, A> : IteratorVM<A>
 }
 
 internal class IteratorUnmanagedVM<T, IS, A> : IteratorVM<A>
+    where T : Tr.IterableImmutable<T, IS>
+    where IS : unmanaged
     where A : unmanaged
 {
     public static readonly IteratorVM<A> Instance = new IteratorUnmanagedVM<T, IS, A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame, out A head)
+    public override bool Run(ref IteratorVM<A> self, ref StackFrame frame, out A head)
     {
         do
         {
-            var op = frame.Ops.AtPC;
-            if (!op.Run(ref frame))
+            if (!frame.Ops.AtPC.Run(ref frame))
             {
                 // Reset - may need something more advanced
                 frame.Ops.ResetPC();
@@ -271,6 +284,19 @@ internal class IteratorUnmanagedVM<T, IS, A> : IteratorVM<A>
         frame.Values.Pop();
         frame.Ops.ResetPC();
         
+        return true;
+    }
+}
+
+internal class ConsVM<T, IS, A>(A Head, IteratorVM<A> Tail) : IteratorVM<A>
+    where T : Tr.IterableImmutable<T, IS>
+    where IS : unmanaged
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override bool Run(ref IteratorVM<A> self, ref StackFrame frame, out A head)
+    {
+        head = Head;
+        self = Tail;
         return true;
     }
 }

@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace IteratorPrototype;
 
+[SkipLocalsInit]
 readonly struct ObjStack<A>
     where A : class
 {

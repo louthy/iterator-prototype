@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace IteratorPrototype;
 
+[SkipLocalsInit]
 [StructLayout(LayoutKind.Explicit, Size = StackSizeInBytes)]
 readonly struct ByteStack
 {
