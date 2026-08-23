@@ -62,7 +62,7 @@ static class UnmanagedValueStack<A>
     static void PopImpl(ref StackFrame frame, out A value)
     {
         value = frame.Values.Peek<A>();
-        frame.Values.Pop();
+        frame.Values.Pop<A>();
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

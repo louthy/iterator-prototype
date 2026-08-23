@@ -24,26 +24,12 @@ readonly struct ByteStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Pop()
+    public void Pop<A>()
     {
-        if(Top == 0) throw new StackUnderflowException("ObjStack underflow");
-        
-        ref var top = ref Unsafe.AsRef(in Top);
-
-        top -= sizeof(int);
-        
         ref var stack  = ref Unsafe.AsRef(in Stack);
-        var     sizeOf = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref stack, top));
-        
+        var     sizeOf = Unsafe.SizeOf<A>();
+        ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ByteStack PopSafe()
-    {
-        var stack = this; // Copy
-        stack.Pop();
-        return stack;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -51,7 +37,7 @@ readonly struct ByteStack
         where A : unmanaged
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
-        var     sizeOf = sizeof(int) + Unsafe.SizeOf<A>();
+        var     sizeOf = Unsafe.SizeOf<A>();
         return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Top - sizeOf));
     }
 
@@ -63,21 +49,6 @@ readonly struct ByteStack
         ref var stack = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Top);
         ref var entry = ref Unsafe.As<byte, A>(ref stack);
         entry = value;
-
-        var     sizeOf = Unsafe.SizeOf<A>();
-        ref var size   = ref Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref stack, sizeOf));
-        size = sizeOf;
-        
-        top += sizeOf + sizeof(int);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ByteStack PushSafe<A>(A value)
-        where A : unmanaged
-    {
-        ByteStack stack = default!;
-        CopyTo(ref stack);
-        stack.Push(in value);
-        return stack;
+        top += Unsafe.SizeOf<A>();
     }
 }
