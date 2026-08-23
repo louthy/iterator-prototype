@@ -1,20 +1,20 @@
 namespace IteratorPrototype.Internal.Sources;
 
-abstract record IteratorSource(IteratorSource? Parent, bool IsUnmanaged)
+abstract record IteratorSource(IteratorSource? Next, bool IsUnmanaged)
 {
     public abstract bool Run(ref StackFrame frame);
     
     public IteratorSource SetParent(IteratorSource parent) =>
-        this with { Parent = parent };
+        this with { Next = parent };
 }
 
-abstract record  IteratorSource<A>(IteratorSource? Parent, bool IsUnmanaged) : IteratorSource(Parent, IsUnmanaged)
+abstract record  IteratorSource<A>(IteratorSource? Next, bool IsUnmanaged) : IteratorSource(Next, IsUnmanaged)
 {
     public abstract bool Run(ref StackFrame frame, out A head);
     public abstract IteratorSource<A> Prepend(A value);
 }
 
-abstract record IteratorManagedSource<A>(IteratorSource? Parent) : IteratorSource<A>(Parent, false)
+abstract record IteratorManagedSource<A>(IteratorSource? Next) : IteratorSource<A>(Next, false)
     where A : class
 {
     public override bool Run(ref StackFrame frame, out A head)
@@ -34,7 +34,7 @@ abstract record IteratorManagedSource<A>(IteratorSource? Parent) : IteratorSourc
     }
 }
 
-abstract record IteratorUnmanagedSource<A>(IteratorSource? Parent) : IteratorSource<A>(Parent, true)
+abstract record IteratorUnmanagedSource<A>(IteratorSource? Next) : IteratorSource<A>(Next, true)
     where A : unmanaged
 {
     public override bool Run(ref StackFrame frame, out A head)

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Internal.Sources;
 
-record EmptyIteratorManagedSource<A>(IteratorSource? Parent) : IteratorSource<A>(Parent, false)
+record EmptyIteratorManagedSource<A>(IteratorSource? Next) : IteratorSource<A>(Next, false)
     where A : class
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -21,7 +21,7 @@ record EmptyIteratorManagedSource<A>(IteratorSource? Parent) : IteratorSource<A>
         new SingletonManagedSource<A>(value, this);
 }
 
-record EmptyIteratorUnmanagedSource<A>(IteratorSource? Parent) : IteratorSource<A>(Parent, true)
+record EmptyIteratorUnmanagedSource<A>(IteratorSource? Next) : IteratorSource<A>(Next, true)
     where A : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

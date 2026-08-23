@@ -11,8 +11,8 @@ class Map_UnmanagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     {
         ref var x = ref frame.Values.Peek<A>();
         var y = f(x);
-        frame.Values.Push(in y);
         frame.Values.Pop();
+        frame.Values.Push(in y);
         return true;
     }
 }
@@ -26,8 +26,8 @@ class Map_UnmanagedManaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     {
         ref var x = ref frame.Values.Peek<A>();
         var     y = f(x);
-        frame.Objs.Push(in y);
         frame.Values.Pop();
+        frame.Objs.Push(in y);
         return true;
     }
 }
@@ -41,8 +41,8 @@ class Map_ManagedUnmanaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     {
         ref var x = ref frame.Objs.Peek<A>();
         var     y = f(x);
-        frame.Values.Push(in y);
         frame.Objs.Pop();
+        frame.Values.Push(in y);
         return true;
     }
 }
@@ -56,8 +56,8 @@ class Map_ManagedManaged_Op<A, B>(Func<A, B> f) : Op<A, B>
     {
         ref var x = ref frame.Objs.Peek<A>();
         var     y = f(x);
-        frame.Objs.Push(in y);
         frame.Objs.Pop();
+        frame.Objs.Push(in y);
         return true;
     }
 }

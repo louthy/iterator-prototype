@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Internal;
+using IteratorPrototype.Internal.Collections;
 using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype;
@@ -38,8 +39,7 @@ public static class IteratorExtensions2
             return iter;
         }
 
-        /*
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Iterator2<A> Map<B>(Func<A, B> f)
         {
             Iterator2<B> iter = default;
@@ -47,11 +47,12 @@ public static class IteratorExtensions2
             
             tb.CopyTo(ref iter);
 
-            ref var src = ref Unsafe.AsRef(in iter.source);
-            ref var srcA = ref Unsafe.As<IteratorSource, IteratorSource<A>>(ref src);
-            src = srcA.Map<B>(f);
-        }
-        */
+            ref var opStack = ref Unsafe.AsRef(in iter.ops);
+            ref var objs    = ref Unsafe.AsRef(in iter.objs);
+            ref var values  = ref Unsafe.AsRef(in iter.values);
+
+            opStack.Add();
+        }*/
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(ref Iterator2<A> other)

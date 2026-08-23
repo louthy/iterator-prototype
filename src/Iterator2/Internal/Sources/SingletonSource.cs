@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Internal.Sources;
 
-record SingletonManagedSource<A>(A Head, IteratorSource Parent) : IteratorSource<A>(Parent, false)
+record SingletonManagedSource<A>(A Head, IteratorSource Next) : IteratorSource<A>(Next, false)
     where A : class
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -14,7 +14,7 @@ record SingletonManagedSource<A>(A Head, IteratorSource Parent) : IteratorSource
     public override bool Run(ref StackFrame frame, out A head)
     {
         head = Head;
-        frame.Source = Parent;
+        frame.Source = Next;
         return true;
     }
 
@@ -22,7 +22,7 @@ record SingletonManagedSource<A>(A Head, IteratorSource Parent) : IteratorSource
         new ConsManagedSource<A>(value, this); 
 }
 
-record SingletonUnmanagedSource<A>(A Head, IteratorSource Parent) : IteratorSource<A>(Parent, true)
+record SingletonUnmanagedSource<A>(A Head, IteratorSource Next) : IteratorSource<A>(Next, true)
     where A : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -34,7 +34,7 @@ record SingletonUnmanagedSource<A>(A Head, IteratorSource Parent) : IteratorSour
     public override bool Run(ref StackFrame frame, out A head)
     {
         head = Head;
-        frame.Source = Parent;
+        frame.Source = Next;
         return true;
     }
 

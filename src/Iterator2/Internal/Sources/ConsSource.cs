@@ -3,14 +3,14 @@ using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal.Sources;
 
-sealed record ConsManagedSource<A>(A Head, IteratorSource? Parent) : IteratorManagedSource<A>(Parent)
+sealed record ConsManagedSource<A>(A Head, IteratorSource? Next) : IteratorManagedSource<A>(Next)
     where A : class
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
         frame.Objs.Push(Head);
-        frame.Source = Parent;
+        frame.Source = Next;
         return true;
     }
 
@@ -19,14 +19,14 @@ sealed record ConsManagedSource<A>(A Head, IteratorSource? Parent) : IteratorMan
         new ConsManagedSource<A>(value, this);
 }
 
-sealed record ConsUnmanagedSource<A>(A Head, IteratorSource? Parent) : IteratorUnmanagedSource<A>(Parent)
+sealed record ConsUnmanagedSource<A>(A Head, IteratorSource? Next) : IteratorUnmanagedSource<A>(Next)
     where A : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
         frame.Values.Push(Head);
-        frame.Source = Parent;
+        frame.Source = Next;
         return true;
     }
 

@@ -3,7 +3,7 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Internal.Sources;
 
-record IterableUnmanagedToManagedSource<T, IS, A, B>(IteratorSource? Parent) : IteratorManagedSource<B>(Parent)
+record IterableUnmanagedToManagedSource<T, IS, A, B>(IteratorSource? Next) : IteratorManagedSource<B>(Next)
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
     where A : unmanaged
@@ -30,7 +30,7 @@ record IterableUnmanagedToManagedSource<T, IS, A, B>(IteratorSource? Parent) : I
         else
         {
             frame.Ops.Pop();                     // Remove the `ops` stack-frame
-            frame.Source = frame.Source?.Parent; // Look for an operation to call back to
+            frame.Source = frame.Source?.Next; // Look for an operation to call back to
             return frame.Source?.Run(ref frame) ?? false;
         }
     }
