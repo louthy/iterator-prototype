@@ -70,20 +70,27 @@ readonly struct OpStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool NextPC()
+    public bool NextPC(out Op op)
     {
-        if (Top == 0) return false;
+        if (Top == 0)
+        {
+            op = null!;
+            return false;
+        }
         ref var top = ref AtTop;
-        return top.NextPC();
+        return top.NextPC(out op);
     }
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpStack NextPCSafe()
+    public bool NextPC<A>(out Op<A> op)
     {
-        OpStack stack = default;
-        CopyTo(ref stack);
-        stack.NextPC();
-        return stack;
+        if (Top == 0)
+        {
+            op = null!;
+            return false;
+        }
+        ref var top = ref AtTop;
+        return top.NextPC(out op);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

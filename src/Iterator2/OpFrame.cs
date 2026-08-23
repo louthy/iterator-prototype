@@ -110,11 +110,37 @@ readonly struct OpFrame
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool NextPC()
+    public bool NextPC(out Op op)
     {
         ref var pc = ref Unsafe.AsRef(in PC);
-        pc++;
-        return pc < Count;
+        if (pc < Count)
+        {
+            op = AtPC;
+            pc++;
+            return true;
+        }
+        else
+        {
+            op = null!;
+            return false;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool NextPC<A>(out Op<A> op)
+    {
+        ref var pc = ref Unsafe.AsRef(in PC);
+        if (pc < Count)
+        {
+            op = Unsafe.As<Op, Op<A>>(ref AtPC);
+            pc++;
+            return true;
+        }
+        else
+        {
+            op = null!;
+            return false;
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
