@@ -22,7 +22,7 @@ public static class IteratorExtensions2
             ref var ops    = ref Unsafe.AsRef(in tail.ops);
             ref var objs   = ref Unsafe.AsRef(in tail.objs);
             ref var values = ref Unsafe.AsRef(in tail.values);
-            var     frame  = new StackFrame(ref source, ref ops, ref objs, ref values);
+            var     frame  = new StackFrame(ref source, ref objs, ref values);
 
             while (source is not null)
             {
