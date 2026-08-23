@@ -11,41 +11,36 @@ public static class IteratorExtensions2
     extension<A>(ref Iterator2<A> ta)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public bool TryGetValue(out A head, out Iterator2<A> tail)
+        public unsafe bool TryGetValue(out A head, out Iterator2<A> tail)
         {
             // Copy
             // Consider better ways, but remember, `ta` might also be `tail`, which means doing `tail = default` to
             // initialise it will overwrite `ta`.
-            tail = ta; 
+            tail = ta;
+
             ref var source = ref Unsafe.AsRef(in tail.source);
+            ref var ops    = ref Unsafe.AsRef(in tail.ops);
+            ref var objs   = ref Unsafe.AsRef(in tail.objs);
+            ref var values = ref Unsafe.AsRef(in tail.values);
+            var     frame  = new StackFrame(ref source, ref ops, ref objs, ref values);
 
             while (source is not null)
             {
-                ref var ops    = ref Unsafe.AsRef(in tail.ops);
-                ref var objs   = ref Unsafe.AsRef(in tail.objs);
-                ref var values = ref Unsafe.AsRef(in tail.values);
-                var     frame  = new StackFrame(ref source, ref ops, ref objs, ref values);
-
-                if (source!.Run(ref frame))
+                if(!source.Run(ref frame)) continue;
+                
+                var hasValue = true;
+                while (ops.NextPC(out var op))
                 {
-                    var hasValue = true;
-                    while (hasValue && ops.NextPC(out var op))
-                    {
-                        if (!op.Run(ref frame))
-                        {
-                            hasValue = false;
-                        }
-                    }
-                    ops.ResetPC();
+                    if (op.Run(ref frame)) continue;
+                    hasValue = false;
+                    break;
+                }
+                ops.ResetPC();
                     
-                    if(hasValue)
-                    {
-                        unsafe
-                        {
-                            ValueStack<A>.Pop(ref frame, out head);
-                            return true;
-                        }
-                    }
+                if(hasValue)
+                {
+                    ValueStack<A>.Pop(ref frame, out head);
+                    return true;
                 }
             }
             head = default!;
