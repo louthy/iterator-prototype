@@ -1,59 +1,71 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
 namespace IteratorPrototype.Internal.Source.Factories;
 
-abstract class ValueStack<A>
+static class ValueStack<A>
 {
-    public static readonly ValueStack<A> Instance;
-    
-    static ValueStack() =>
-        Instance = MakeInstance();
-    
-    public abstract void Pop(ref StackFrame frame, out A value);
-    public abstract void Push(ref StackFrame frame, in A value);
-
-    public static ValueStack<A> MakeInstance()
+    static ValueStack()
     {
         if (Ty<A>.IsUnmanaged)
         {
-            var ty = typeof(UnmanagedValueStack<>).MakeGenericType(typeof(A));
-            var c  = ty.GetConstructors().First(c => c.GetParameters().Length == 0);
-            var i  = c.Invoke([]);
-            return (ValueStack<A>?)i ?? throw ShouldntHappenException;
+            var type = typeof(UnmanagedValueStack<>).MakeGenericType(typeof(A));
+            RuntimeHelpers.RunClassConstructor(type.TypeHandle);
         }
         else
         {
-            var ty = typeof(ManagedValueStack<>).MakeGenericType(typeof(A));
-            var c  = ty.GetConstructors().First(c => c.GetParameters().Length == 0);
-            var i  = c.Invoke([]);
-            return (ValueStack<A>?)i ?? throw ShouldntHappenException;
+            var type = typeof(ManagedValueStack<>).MakeGenericType(typeof(A));
+            RuntimeHelpers.RunClassConstructor(type.TypeHandle);
         }
     }
+
+    public static unsafe delegate*<ref StackFrame, out A, void> Pop;
+    public static unsafe delegate*<ref StackFrame, in A, void> Push;
 
     static Exception ShouldntHappenException =>
         throw new InvalidOperationException("Factory failed to access the ValueStack instance");    
 }
 
-class ManagedValueStack<A> : ValueStack<A>
+static class ManagedValueStack<A>
     where A : class
 {
-    public override void Pop(ref StackFrame frame, out A value)
+    static ManagedValueStack()
+    {
+        unsafe
+        {
+            ValueStack<A>.Pop = &PopImpl;
+            ValueStack<A>.Push = &PushImpl;
+        }
+    }
+    
+    static void PopImpl(ref StackFrame frame, out A value)
     {
         value = frame.Objs.Peek<A>();
         frame.Objs.Pop();
     }
     
-    public override void Push(ref StackFrame frame, in A value) =>
+    static void PushImpl(ref StackFrame frame, in A value) =>
         frame.Objs.Push(value);
 }
 
-class UnmanagedValueStack<A> : ValueStack<A>
+static class UnmanagedValueStack<A>
     where A : unmanaged
 {
-    public override void Pop(ref StackFrame frame, out A value)
+    static UnmanagedValueStack()
+    {
+        unsafe
+        {
+            ValueStack<A>.Pop = &PopImpl;
+            ValueStack<A>.Push = &PushImpl;
+        }
+    }
+    
+    static void PopImpl(ref StackFrame frame, out A value)
     {
         value = frame.Values.Peek<A>();
         frame.Values.Pop();
     }
     
-    public override void Push(ref StackFrame frame, in A value) =>
+    static void PushImpl(ref StackFrame frame, in A value) =>
         frame.Values.Push(value);
 }

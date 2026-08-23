@@ -8,9 +8,12 @@ record SingletonSource<A>(A Head, IteratorSource Next) : IteratorSource<A>(Next)
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
-        ValueStack<A>.Instance.Push(ref frame, Head);
-        frame.Source = Next;
-        return false;
+        unsafe
+        {
+            ValueStack<A>.Push(ref frame, Head);
+            frame.Source = Next;
+            return false;
+        }
     }
 
     public override IteratorSource<A> Prepend(A value) =>

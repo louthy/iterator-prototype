@@ -8,9 +8,12 @@ sealed record ConsSource<A>(A Head, IteratorSource? Next) : IteratorSource<A>(Ne
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
-        ValueStack<A>.Instance.Push(ref frame, Head);
-        frame.Source = Next;
-        return true;
+        unsafe
+        {
+            ValueStack<A>.Push(ref frame, Head);
+            frame.Source = Next;
+            return true;
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

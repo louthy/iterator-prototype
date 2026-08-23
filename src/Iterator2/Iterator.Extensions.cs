@@ -40,8 +40,11 @@ public static class IteratorExtensions2
                     
                     if(hasValue)
                     {
-                        ValueStack<A>.Instance.Pop(ref frame, out head);
-                        return true;
+                        unsafe
+                        {
+                            ValueStack<A>.Pop(ref frame, out head);
+                            return true;
+                        }
                     }
                 }
             }
@@ -55,7 +58,7 @@ public static class IteratorExtensions2
             Iterator2<A> iter = default;
             ta.CopyTo(ref iter);
             ref var s1 = ref Unsafe.AsRef(in iter.source);
-            s1 = ((IteratorSource<A>)iter.source).Prepend(head);
+            s1 = ((IteratorSource<A>?)iter.source)?.Prepend(head);
             return iter;
         }
 

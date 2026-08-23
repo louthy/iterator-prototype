@@ -20,8 +20,11 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
 
         if (T.Next(in ta, ref space, out var head))
         {
-            ValueStack<A>.Instance.Push(ref frame, in head);
-            return true;
+            unsafe
+            {
+                ValueStack<A>.Push(ref frame, in head);
+                return true;
+            }
         }
         else
         {
