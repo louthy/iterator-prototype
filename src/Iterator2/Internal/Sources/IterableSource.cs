@@ -19,6 +19,7 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         ref var ta    = ref frame.objs.Peek<K<T, A>>();
         ref var space = ref frame.values.Peek<IS>();
         if (T.StepImmutable(in ta, in space, out var head, out space))
+        //if (T.Next(in ta, ref space, out var head))
         {
             ValueStack<A>.Push(ref frame, in head);
             return true;

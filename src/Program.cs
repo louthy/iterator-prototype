@@ -13,6 +13,7 @@ Bench<ForeachVersionNonRef>.Mark();
 Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
 Bench<Iterator2Version>.Mark();
+Bench<Iterator2ForEachVersion>.Mark();
 
 //Bench<MappedIteratorVersion>.Mark();
 //Bench<MonadBindIteratorVersion>.Mark();
@@ -206,6 +207,30 @@ public class Iterator2Version : Bench<Iterator2Version>
         var iter  = iterator;
         var total = 0;
         while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Iterator2;
+}
+
+public class Iterator2ForEachVersion : Bench<Iterator2ForEachVersion>
+{
+    readonly Iterator2<int> iterator = 
+        Iterator2.from<Arr, ArrState, int>(Arr.create(..Count));
+
+    protected override string Explain =>
+        $"Iterator2, for Arr, using foreach ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        foreach (var x in iter)
         {
             total += x;
         }

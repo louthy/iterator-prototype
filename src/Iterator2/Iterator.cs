@@ -25,12 +25,18 @@ public readonly struct Iterator2<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out A head, out Iterator2<A> tail)
     {
-        // Copy
-        // Consider better ways, but remember, `ta` might also be `tail`, which means doing `tail = default` to
-        // initialise it will overwrite `ta`.
-        tail = this;
-        
-        ref var stack1 = ref Unsafe.AsRef(in tail.stack);
+        tail = this;    // Copy --- this has to do quite a lot of work!!!
+        return tail.MoveNext(out head);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public IteratorEnumerator2<A> GetEnumerator() =>
+        new (in this);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal bool MoveNext(out A head)
+    {
+        ref var stack1 = ref Unsafe.AsRef(in stack);
         if (stack1.Run())
         {
             ValueStack<A>.Pop(ref stack1.AtTop, out head);
@@ -43,20 +49,11 @@ public readonly struct Iterator2<A>
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void CopyTo(ref Iterator2<A> other)
+    internal ref IteratorSource<A>? Source
     {
-        // TODO: Decide if a manual copy is faster than a struct assignment.
-        other = this;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref stack.GetSource<A>();
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal void SetSource(in IteratorSource<A> source) =>
-        stack.SetSource(source);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal ref IteratorSource<A>? GetSource() =>
-        ref stack.GetSource<A>();    
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void Add(Op<A> op) =>

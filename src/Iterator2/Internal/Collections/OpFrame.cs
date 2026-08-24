@@ -19,7 +19,7 @@ readonly struct OpFrame
     public bool Run()
     {
         ref var frame = ref Unsafe.AsRef(in this);
-        return (source?.Run(ref frame) ?? false) && ops.Run(ref frame);
+        return source!.Run(ref frame) && ops.Run(ref frame);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -51,6 +51,13 @@ readonly struct OpFrame
     public void CopyTo(ref OpFrame dest)
     {
         // TODO: Decide if a manual copy is faster than a struct assignment.
-        dest = this;
+        //dest = this;
+
+        ref var dsrc = ref Unsafe.AsRef(in dest.source);
+        dsrc = source;
+        
+        if(ops.Count != 0) ops.CopyTo(ref Unsafe.AsRef(in dest.ops));
+        if(objs.Top  != 0) objs.CopyTo(ref Unsafe.AsRef(in dest.objs));
+        if(objs.Top  != 0) values.CopyTo(ref Unsafe.AsRef(in dest.values));
     }
 }

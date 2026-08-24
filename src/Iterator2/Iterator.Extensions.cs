@@ -10,21 +10,17 @@ public static partial class IteratorExtensions2
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Iterator2<A> Prepend(A head)
         {
-            Iterator2<A> iter = default;
-            ta.CopyTo(ref iter);
-            
-            ref var s1 = ref iter.GetSource();
+            var iter = ta;
+            ref var s1 = ref iter.Source;
             s1 = s1?.Prepend(head);
-            
             return iter;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Iterator2<B> Map<B>(Func<A, B> f)
         {
-            Iterator2<B> iter = default;
-            ref var      tb   = ref Unsafe.As<Iterator2<A>, Iterator2<B>>(ref ta);
-            tb.CopyTo(ref iter);
+            ref var tb   = ref Unsafe.As<Iterator2<A>, Iterator2<B>>(ref ta);
+            var     iter = tb;
             iter.Add(new MapOp<A, B>(f));
             return iter;
         }

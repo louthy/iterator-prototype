@@ -85,10 +85,10 @@ readonly struct Ops
             default: throw new InvalidOperationException("Frame is bigger than the storage!");
         }
         
-        /*
-         Looped instead of switched
-         
-        ref var pc  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+         /*
+         //Looped instead of switched
+
+        ref var pc = ref Unsafe.AsRef(in Op0);
         ref var end = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * Count);
 
         while (!Unsafe.AreSame(ref pc, ref end))
@@ -104,6 +104,14 @@ readonly struct Ops
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    static bool RunOp(ref OpFrame frame, ref Op op)
+    {
+        var cont = op.Run(ref frame);
+        op = ref Unsafe.AddByteOffset(ref op, PointerSize);
+        return cont;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run0(ref OpFrame frame) =>
         true;
 
@@ -111,315 +119,210 @@ readonly struct Ops
     public bool Run1(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run2(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run3(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run4(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run5(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run6(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run7(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run8(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run9(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunA(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunB(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunC(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunD(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunE(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunF(ref OpFrame frame)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        if (!pc.Run(ref frame)) return false;
-        pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
-        return pc.Run(ref frame);
+        return RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc) && 
+               RunOp(ref frame, ref pc);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

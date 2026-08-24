@@ -35,7 +35,7 @@ readonly struct ByteStack
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
-        if (Top < sizeOf) return false;
+        //if (Top < sizeOf) return false;
         ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
         return true;
@@ -46,11 +46,13 @@ readonly struct ByteStack
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
+        /*
         if (Top < sizeOf)
         {
             value = default!;
             return false;
         }
+        */
         ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, top));

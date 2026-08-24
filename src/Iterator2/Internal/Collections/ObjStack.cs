@@ -55,8 +55,6 @@ readonly struct ObjStack
     public bool Pop()
     {
         ref var top = ref Unsafe.AsRef(in Top);
-        if(top == 0) return false;
-        
         top--;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         entry = null!;
@@ -67,12 +65,6 @@ readonly struct ObjStack
     public bool Pop<A>(out A value)
     {
         ref var top = ref Unsafe.AsRef(in Top);
-        if(top == 0)
-        {
-            value = default!;
-            return false;
-        }
-        
         top--;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         value = Unsafe.As<object, A>(ref entry);

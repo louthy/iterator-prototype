@@ -32,11 +32,40 @@ readonly struct OpStack
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void CopyTo(ref OpStack dest)
     {
-       
-        Frame0.CopyTo(ref Unsafe.AsRef(in dest.Frame0));
-        Frame1.CopyTo(ref Unsafe.AsRef(in dest.Frame1));
-        Frame2.CopyTo(ref Unsafe.AsRef(in dest.Frame2));
-        Frame3.CopyTo(ref Unsafe.AsRef(in dest.Frame3));
+        ref var df0 = ref Unsafe.AsRef(in dest.Frame0);
+        ref var df1 = ref Unsafe.AsRef(in dest.Frame1);
+        ref var df2 = ref Unsafe.AsRef(in dest.Frame2);
+        ref var df3 = ref Unsafe.AsRef(in dest.Frame3);
+        
+        switch (Top)
+        {
+            case 0: 
+                break;
+            
+            case 1: 
+                df0 = Frame0;
+                break;
+            case 2:                 
+                df0 = Frame0;
+                df1 = Frame1;
+                break;
+
+            case 3: 
+                df0 = Frame0;
+                df1 = Frame1;
+                df2 = Frame2;
+                break;
+
+            case 4: 
+                df0 = Frame0;
+                df1 = Frame1;
+                df2 = Frame2;
+                df3 = Frame3;
+                break;
+
+            default:
+                throw new InvalidOperationException("Invalid OpStack top");
+        }
         ref var dtop = ref Unsafe.AsRef(in dest.Top);
         dtop = Top;
     }
@@ -66,8 +95,8 @@ readonly struct OpStack
         ref var frame0 = ref Unsafe.AsRef(in Frame0);
         while (top > 0)
         {
-            ref var frame  = ref Unsafe.Add(ref frame0, top - 1);
-            if (frame.Run())
+            ref var frame = ref Unsafe.Add(ref frame0, top - 1);
+            if (frame.source is not null && frame.Run())
             {
                 return true;
             }
