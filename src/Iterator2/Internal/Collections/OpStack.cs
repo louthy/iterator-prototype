@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype.Internal.Collections;
 
@@ -19,6 +20,14 @@ readonly struct OpStack
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), index);
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void SetSource(in IteratorSource? src) =>
+        AtTop.SetSource(in src);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public ref IteratorSource<A>? GetSource<A>() =>
+        ref AtTop.GetSource<A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void CopyTo(ref OpStack dest)
@@ -49,33 +58,26 @@ readonly struct OpStack
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), Top - 1);
     }
 
-    public ref Op AtPC
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref AtTop.AtPC;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run(ref StackFrame frame) =>
-        AtTop.Run(ref frame);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void ResetPC()
+    public bool Run()
     {
-        ref var top = ref AtTop;
-        top.ResetPC();
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool NextPC(out Op op)
-    {
-        if (Top == 0)
+        if (Top == 0) return false;
+        ref var top    = ref Unsafe.AsRef(in Top);
+        ref var frame0 = ref Unsafe.AsRef(in Frame0);
+        while (top > 0)
         {
-            op = null!;
-            return false;
+            ref var frame  = ref Unsafe.Add(ref frame0, top - 1);
+            if (frame.Run())
+            {
+                return true;
+            }
+            else
+            {
+                top--;
+                frame.Clear();
+            }
         }
-        ref var top = ref AtTop;
-        return top.NextPC(out op);
+        return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -86,11 +88,12 @@ readonly struct OpStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Push()
+    public ref OpFrame Push()
     {
         ref var top = ref Unsafe.AsRef(in Top);
         if(top == MaxCapacity) throw new InvalidOperationException("OpStack is full");
         top++;
+        return ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), top - 1);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

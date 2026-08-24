@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Internal.Collections;
 using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal.Sources;
@@ -7,10 +8,10 @@ namespace IteratorPrototype.Internal.Sources;
 record SingletonSource<A>(A Head, IteratorSource Next) : IteratorSource<A>(Next)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override bool Run(ref OpFrame frame)
     {
         ValueStack<A>.Push(ref frame, Head);
-        frame.Source = Next;
+        frame.SetSource(Next);
         return false;
     }
 

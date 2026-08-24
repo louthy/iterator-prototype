@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Internal.Collections;
 using IteratorPrototype.Internal.Source.Factories;
 using LanguageExt.Traits;
 
@@ -13,10 +14,10 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         new IterableSource<T, IS, A>(new EmptyIteratorSource<A>(null!));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override bool Run(ref OpFrame frame)
     {
-        ref var ta    = ref frame.Objs.Peek<K<T, A>>();
-        ref var space = ref frame.Values.Peek<IS>();
+        ref var ta    = ref frame.objs.Peek<K<T, A>>();
+        ref var space = ref frame.values.Peek<IS>();
         if (T.StepImmutable(in ta, in space, out var head, out space))
         {
             ValueStack<A>.Push(ref frame, in head);
@@ -24,7 +25,7 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         }
         else
         {
-            frame.Source = Next;
+            frame.SetSource(Next);
             return false;
         }
     }

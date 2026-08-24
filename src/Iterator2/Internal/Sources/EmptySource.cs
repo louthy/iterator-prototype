@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Internal.Collections;
 
 namespace IteratorPrototype.Internal.Sources;
 
@@ -8,9 +9,9 @@ record EmptyIteratorSource<A>(IteratorSource? Next) : IteratorSource<A>(Next)
     public static readonly IteratorSource<A> Instance = new EmptyIteratorSource<A>(null!);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override bool Run(ref OpFrame frame)
     {
-        frame.Source = Next;
+        frame.SetSource(Next);
         return false;
     }
     

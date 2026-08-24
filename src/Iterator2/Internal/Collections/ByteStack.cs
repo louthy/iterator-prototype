@@ -22,7 +22,14 @@ readonly struct ByteStack
         ref var dtop = ref Unsafe.AsRef(in dest.Top);
         dtop = Top;
     }
-    
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void Clear()
+    {
+        ref var self = ref Unsafe.AsRef(in this);
+        Unsafe.InitBlock(ref Unsafe.As<ByteStack, byte>(ref self), 0, Capacity);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop<A>()
     {

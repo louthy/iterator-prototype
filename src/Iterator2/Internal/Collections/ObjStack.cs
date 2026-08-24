@@ -45,6 +45,13 @@ readonly struct ObjStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void Clear()
+    {
+        ref var self = ref Unsafe.AsRef(in this);
+        Unsafe.InitBlock(ref Unsafe.As<ObjStack, byte>(ref self), 0, (uint)Unsafe.SizeOf<ObjStack>());
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop()
     {
         ref var top = ref Unsafe.AsRef(in Top);
