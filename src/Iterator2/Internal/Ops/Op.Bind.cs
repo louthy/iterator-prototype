@@ -3,14 +3,14 @@ using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal;
 
-class MapOp<A, B>(Func<A, B> f) : Op<A, B>
+class MapBind<A, B>(Func<A, Iterator2<B>> f) : Op<A, B>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public override bool Run(ref StackFrame frame)
     {
-        ValueStack<A>.Pop(ref frame, out var x);
-        var y = f(x);
-        ValueStack<B>.Push(ref frame, in y);
+        ValueStack<A>.Pop(ref frame, out var a);
+        var tb = f(a);
+        ValueStack<Iterator2<B>>.Push(ref frame, in tb);
         return true;
     }
 }

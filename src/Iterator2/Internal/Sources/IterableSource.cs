@@ -13,7 +13,7 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         new IterableSource<T, IS, A>(new EmptyIteratorSource<A>(null!));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override unsafe bool Run(ref StackFrame frame)
+    public override bool Run(ref StackFrame frame)
     {
         ref var ta    = ref frame.Objs.Peek<K<T, A>>();
         ref var space = ref frame.Values.Peek<IS>();

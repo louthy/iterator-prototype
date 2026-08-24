@@ -43,15 +43,6 @@ readonly struct OpStack
         frame.Clear();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public OpStack PopSafe()
-    {
-        OpStack stack = default;
-        CopyTo(ref stack);
-        stack.Pop();
-        return stack;
-    }
-
     public ref OpFrame AtTop
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -63,6 +54,10 @@ readonly struct OpStack
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref AtTop.AtPC;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool Run(ref StackFrame frame) =>
+        AtTop.Run(ref frame);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void ResetPC()

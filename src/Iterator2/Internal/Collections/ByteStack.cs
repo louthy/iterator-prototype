@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 namespace IteratorPrototype.Internal.Collections;
 
 [SkipLocalsInit]
-[StructLayout(LayoutKind.Explicit, Size = StackSizeInBytes)]
+[StructLayout(LayoutKind.Explicit, Size = Capacity)]
 readonly struct ByteStack
 {
-    const int StackSizeInBytes = 128 - sizeof(int);
+    const int Capacity = 128 - sizeof(int);
     
     [FieldOffset(0)]
     public readonly int Top;
@@ -24,12 +24,30 @@ readonly struct ByteStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Pop<A>()
+    public bool Pop<A>()
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
+        if (Top < sizeOf) return false;
         ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
+        return true;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool Pop<A>(out A value)
+    {
+        ref var stack  = ref Unsafe.AsRef(in Stack);
+        var     sizeOf = Unsafe.SizeOf<A>();
+        if (Top < sizeOf)
+        {
+            value = default!;
+            return false;
+        }
+        ref var top    = ref Unsafe.AsRef(in Top);
+        top -= sizeOf;
+        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, top));
+        return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -42,13 +60,16 @@ readonly struct ByteStack
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Push<A>(in A value)
+    public bool Push<A>(in A value)
         where A : unmanaged
     {
+        var sizeOf = Unsafe.SizeOf<A>();
+        if (Top + sizeOf > Capacity) return false;
         ref var top   = ref Unsafe.AsRef(in Top);
         ref var stack = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Top);
         ref var entry = ref Unsafe.As<byte, A>(ref stack);
         entry = value;
-        top += Unsafe.SizeOf<A>();
+        top += sizeOf;
+        return true;
     }
 }

@@ -26,33 +26,29 @@ public readonly struct Iterator2<A>
     internal readonly ByteStack values;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public unsafe bool TryGetValue(out A head, out Iterator2<A> tail)
+    public bool TryGetValue(out A head, out Iterator2<A> tail)
     {
         // Copy
         // Consider better ways, but remember, `ta` might also be `tail`, which means doing `tail = default` to
         // initialise it will overwrite `ta`.
         tail = this;
 
-        ref var source = ref Unsafe.AsRef(in tail.source);
-        ref var ops    = ref Unsafe.AsRef(in tail.ops);
-        ref var objs   = ref Unsafe.AsRef(in tail.objs);
-        ref var values = ref Unsafe.AsRef(in tail.values);
-        var     frame  = new StackFrame(ref source, ref objs, ref values);
+        ref var source1 = ref Unsafe.AsRef(in tail.source);
+        ref var ops1    = ref Unsafe.AsRef(in tail.ops);
+        ref var objs1   = ref Unsafe.AsRef(in tail.objs);
+        ref var values1 = ref Unsafe.AsRef(in tail.values);
+        var     frame   = new StackFrame(ref source1, ref objs1, ref values1);
 
-        while (source is not null)
+        while (source1 is not null)
         {
-            if(!source.Run(ref frame)) continue;
-                
-            var hasValue = true;
-            while (ops.NextPC(out var op))
+            if(!source1.Run(ref frame))
             {
-                if (op.Run(ref frame)) continue;
-                hasValue = false;
-                break;
+                // The `Run` method needs to set the subsequent source or set it to `null` so that we 
+                // either move onto the next item or return `false`.
+                continue;
             }
-            ops.ResetPC();
                     
-            if(hasValue)
+            if(ops1.Run(ref frame))
             {
                 ValueStack<A>.Pop(ref frame, out head);
                 return true;

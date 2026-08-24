@@ -45,22 +45,32 @@ readonly struct ObjStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Pop()
+    public bool Pop()
     {
         ref var top = ref Unsafe.AsRef(in Top);
-        if(top == 0) throw new StackUnderflowException("ObjStack underflow");
+        if(top == 0) return false;
         
         top--;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         entry = null!;
+        return true;
     }
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ObjStack PopSafe()
+    public bool Pop<A>(out A value)
     {
-        var stack = this; // Copy
-        stack.Pop();
-        return stack;
+        ref var top = ref Unsafe.AsRef(in Top);
+        if(top == 0)
+        {
+            value = default!;
+            return false;
+        }
+        
+        top--;
+        ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
+        value = Unsafe.As<object, A>(ref entry);
+        entry = null!;
+        return true;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -69,15 +79,14 @@ readonly struct ObjStack
         ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), Top - 1));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Push<A>(in A value)
+    public bool Push<A>(in A value)
         where A : class 
     {
         ref var top = ref Unsafe.AsRef(in Top);
-        if(top == StackSize) throw new StackOverflowException("ObjStack underflow");
-        
+        if(top == StackSize) return false;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         entry = value;
-        
         top++;
+        return true;
     }
 }
