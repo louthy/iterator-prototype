@@ -16,9 +16,9 @@ readonly struct OpFrame
     const int PointerSize = 8;
     
     [FieldOffset(0)]
-    public readonly short PC;
-    [FieldOffset(2)]
-    public readonly short Count;
+    public readonly int PC;
+    [FieldOffset(4)]
+    public readonly int Count;
     [FieldOffset(HeaderSize + PointerSize * 0)]
     public readonly Op Op0;
     [FieldOffset(HeaderSize + PointerSize * 1)]
@@ -97,7 +97,10 @@ readonly struct OpFrame
             default: throw new InvalidOperationException("Frame is bigger than the storage!");
         }
         
-        /*ref var pc  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        /*
+         Looped instead of switched
+         
+        ref var pc  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
         ref var end = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * Count);
 
         while (!Unsafe.AreSame(ref pc, ref end))
@@ -108,7 +111,8 @@ readonly struct OpFrame
             }
             pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         }
-        return true;*/
+        return true;
+        */
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -118,14 +122,16 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run1(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         return pc.Run(ref frame);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run2(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         return pc.Run(ref frame);
@@ -134,7 +140,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run3(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -145,7 +152,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run4(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -158,7 +166,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run5(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -173,7 +182,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run6(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -190,7 +200,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run7(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -209,7 +220,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run8(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -230,7 +242,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Run9(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -253,7 +266,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunA(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -278,7 +292,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunB(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -305,7 +320,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunC(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -334,7 +350,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunD(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -365,7 +382,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunE(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
@@ -398,7 +416,8 @@ readonly struct OpFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool RunF(ref StackFrame frame)
     {
-        ref var pc = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * PC);
+        ref var ops = ref Unsafe.AsRef(in Op0);
+        ref var pc  = ref Unsafe.AddByteOffset(ref ops, PointerSize * PC);
         if (!pc.Run(ref frame)) return false;
         pc = ref Unsafe.AddByteOffset(ref pc, PointerSize);
         if (!pc.Run(ref frame)) return false;
