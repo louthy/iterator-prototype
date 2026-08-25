@@ -251,7 +251,7 @@ public class Iterator2ForEachVersion : Bench<Iterator2ForEachVersion>
 
 public class Iterator3Version : Bench<Iterator3Version>
 {
-    readonly Iter<ArrState, int> iterator = 
+    readonly Iter<int> iterator = 
         Iter.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
