@@ -13,8 +13,16 @@ abstract class ValueStack<A>
         Instance.PopImpl(ref frame, out top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool Pop(ref StackFrame stack, out A top) =>
+        Instance.PopImpl(ref stack.frame, out top);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool Push(ref OpFrame frame, in A top) =>
         Instance.PushImpl(ref frame, in top);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool Push(ref StackFrame stack, in A top) =>
+        Instance.PushImpl(ref stack.frame, in top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static ValueStack()

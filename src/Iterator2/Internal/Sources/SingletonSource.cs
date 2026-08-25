@@ -8,10 +8,10 @@ namespace IteratorPrototype.Internal.Sources;
 record SingletonSource<A>(A Head, IteratorSource Next) : IteratorSource<A>(Next)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref OpFrame frame)
+    public override bool Run(ref StackFrame stack)
     {
-        ValueStack<A>.Push(ref frame, Head);
-        frame.SetSource(Next);
+        ValueStack<A>.Push(ref stack, Head);
+        stack.frame.SetSource(Next);
         return false;
     }
 

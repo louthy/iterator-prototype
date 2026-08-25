@@ -9,9 +9,9 @@ record EmptyIteratorSource<A>(IteratorSource? Next) : IteratorSource<A>(Next)
     public static readonly IteratorSource<A> Instance = new EmptyIteratorSource<A>(null!);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref OpFrame frame)
+    public override bool Run(ref StackFrame stack)
     {
-        frame.SetSource(Next);
+        stack.frame.SetSource(Next);
         return false;
     }
     

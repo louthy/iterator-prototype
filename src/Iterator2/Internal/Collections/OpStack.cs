@@ -91,12 +91,14 @@ readonly struct OpStack
     public bool Run()
     {
         if (Top == 0) return false;
+        ref var self   = ref Unsafe.AsRef(in this);
         ref var top    = ref Unsafe.AsRef(in Top);
         ref var frame0 = ref Unsafe.AsRef(in Frame0);
         while (top > 0)
         {
             ref var frame = ref Unsafe.Add(ref frame0, top - 1);
-            if (frame.source is not null && frame.Run())
+            var     stack = new StackFrame(ref self, ref frame);
+            if (frame.Run(ref stack))
             {
                 return true;
             }

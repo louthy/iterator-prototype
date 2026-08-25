@@ -25,7 +25,7 @@ public readonly struct Iterator2<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out A head, out Iterator2<A> tail)
     {
-        tail = this;    // Copy --- this has to do quite a lot of work!!!
+        tail = this;                        // Copy
         return tail.MoveNext(out head);
     }
     

@@ -1,17 +1,24 @@
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal;
 
-/*
-class FlattenOp<A, B> : Op<A, B>
+class FlattenOp<A>(Iterator2<Iterator2<A>> tta) : Op<A>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref StackFrame frame)
+    public override bool Run(ref StackFrame stack)
     {
-        ValueStack<Iterator2<Iterator2<A>>>.Pop(ref frame, out var ta);
-        
-        ValueStack<B>.Push(ref frame, in y);
+        throw new NotImplementedException();
         return true;
+        
+        // Process
+        //
+        // We get a new Iterator2<B>
+        // The remaining operations in the current OpFrame need to be run for each item in `tb`, before resetting for the
+        // next `A` to give to `f` for subsequent `tb` ops.
+        //
+        //      How:
+        //
+        //          - We need future calls to `TryGetItem` to start with the state in `tb`
+        //          - We need to put a pin in the current PC, so we can run each item in `tb`
     }
-}*/
+}

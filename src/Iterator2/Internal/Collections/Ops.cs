@@ -62,26 +62,26 @@ readonly struct Ops
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run(ref OpFrame frame)
+    public bool Run(ref StackFrame stack)
     {
         switch (Count)
         {
-            case 0:  return Run0(ref frame);
-            case 1:  return Run1(ref frame);
-            case 2:  return Run2(ref frame);
-            case 3:  return Run3(ref frame);
-            case 4:  return Run4(ref frame);
-            case 5:  return Run5(ref frame);
-            case 6:  return Run6(ref frame);
-            case 7:  return Run7(ref frame);
-            case 8:  return Run8(ref frame);
-            case 9:  return Run9(ref frame);
-            case 10: return RunA(ref frame);
-            case 11: return RunB(ref frame);
-            case 12: return RunC(ref frame);
-            case 13: return RunD(ref frame);
-            case 14: return RunE(ref frame);
-            case 15: return RunF(ref frame);
+            case 0:  return Run0(ref stack);
+            case 1:  return Run1(ref stack);
+            case 2:  return Run2(ref stack);
+            case 3:  return Run3(ref stack);
+            case 4:  return Run4(ref stack);
+            case 5:  return Run5(ref stack);
+            case 6:  return Run6(ref stack);
+            case 7:  return Run7(ref stack);
+            case 8:  return Run8(ref stack);
+            case 9:  return Run9(ref stack);
+            case 10: return RunA(ref stack);
+            case 11: return RunB(ref stack);
+            case 12: return RunC(ref stack);
+            case 13: return RunD(ref stack);
+            case 14: return RunE(ref stack);
+            case 15: return RunF(ref stack);
             default: throw new InvalidOperationException("Frame is bigger than the storage!");
         }
         
@@ -104,225 +104,225 @@ readonly struct Ops
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    static bool RunOp(ref OpFrame frame, ref Op op)
+    static bool RunOp(ref StackFrame stack, ref Op op)
     {
-        var cont = op.Run(ref frame);
+        var cont = op.Run(ref stack);
         op = ref Unsafe.AddByteOffset(ref op, PointerSize);
         return cont;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run0(ref OpFrame frame) =>
+    public bool Run0(ref StackFrame stack) =>
         true;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run1(ref OpFrame frame)
+    public bool Run1(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run2(ref OpFrame frame)
+    public bool Run2(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run3(ref OpFrame frame)
+    public bool Run3(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run4(ref OpFrame frame)
+    public bool Run4(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run5(ref OpFrame frame)
+    public bool Run5(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run6(ref OpFrame frame)
+    public bool Run6(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run7(ref OpFrame frame)
+    public bool Run7(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run8(ref OpFrame frame)
+    public bool Run8(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run9(ref OpFrame frame)
+    public bool Run9(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunA(ref OpFrame frame)
+    public bool RunA(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunB(ref OpFrame frame)
+    public bool RunB(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunC(ref OpFrame frame)
+    public bool RunC(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunD(ref OpFrame frame)
+    public bool RunD(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunE(ref OpFrame frame)
+    public bool RunE(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool RunF(ref OpFrame frame)
+    public bool RunF(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
-        return RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc) && 
-               RunOp(ref frame, ref pc);
+        return RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc) && 
+               RunOp(ref stack, ref pc);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

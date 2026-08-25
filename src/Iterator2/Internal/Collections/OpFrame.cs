@@ -10,16 +10,17 @@ namespace IteratorPrototype.Internal.Collections;
 [SkipLocalsInit]
 readonly struct OpFrame
 {
+    public readonly int pc;
     public readonly IteratorSource? source;
     public readonly Ops ops; 
     public readonly ObjStack objs;
     public readonly ByteStack values;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run()
+    public bool Run(ref StackFrame stack)
     {
         ref var frame = ref Unsafe.AsRef(in this);
-        return source!.Run(ref frame) && ops.Run(ref frame);
+        return source!.Run(ref stack) && ops.Run(ref stack);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

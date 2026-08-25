@@ -1,21 +1,18 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Internal.Collections;
-using IteratorPrototype.Internal.Sources;
 
 namespace IteratorPrototype.Internal;
 
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    public readonly ref IteratorSource? Source;
-    public readonly ref ObjStack Objs;
-    public readonly ref ByteStack Values;
+    public readonly ref OpStack stack;
+    public readonly ref OpFrame frame;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public StackFrame(ref IteratorSource? source, ref ObjStack objs, ref ByteStack values)
+    public StackFrame(ref OpStack stack, ref OpFrame frame)
     {
-        Source = ref source;
-        Objs = ref objs;
-        Values = ref values;
+        this.stack = ref stack;
+        this.frame = ref frame;
     }
 }

@@ -7,7 +7,7 @@ namespace IteratorPrototype.Internal.Sources;
 abstract record IteratorSource(IteratorSource? Next, LE.Unit Dummy)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public abstract bool Run(ref OpFrame frame);
+    public abstract bool Run(ref StackFrame stack);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public IteratorSource SetParent(IteratorSource parent) =>

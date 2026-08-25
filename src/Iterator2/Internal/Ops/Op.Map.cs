@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Internal.Collections;
 using IteratorPrototype.Internal.Source.Factories;
 
 namespace IteratorPrototype.Internal;
@@ -7,11 +6,11 @@ namespace IteratorPrototype.Internal;
 class MapOp<A, B>(Func<A, B> f) : Op<A, B>
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool Run(ref OpFrame frame)
+    public override bool Run(ref StackFrame stack)
     {
-        ValueStack<A>.Pop(ref frame, out var x);
+        ValueStack<A>.Pop(ref stack, out var x);
         var y = f(x);
-        ValueStack<B>.Push(ref frame, in y);
+        ValueStack<B>.Push(ref stack, in y);
         return true;
     }
 }
