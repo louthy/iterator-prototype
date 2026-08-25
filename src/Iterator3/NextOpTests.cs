@@ -5,11 +5,13 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
+[SkipLocalsInit]
 readonly struct Vars
 {
     public readonly ObjStack objs;
     public readonly ByteStack values;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal Vars(in ObjStack objs, in ByteStack values)
     {
         this.objs = objs;
@@ -17,6 +19,7 @@ readonly struct Vars
     }
 }
 
+[SkipLocalsInit]
 public readonly struct Iter<S, A>
 {
     readonly Ops ops;
@@ -39,6 +42,7 @@ public readonly struct Iter<S, A>
 
         var tmpVars = tail.vars;
         var frame   = tail.Frame(in tmpVars); // Copy
+        
         return ops.Run(ref frame) && frame.Pop(out head);
     }
 

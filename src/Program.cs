@@ -1,4 +1,5 @@
 ﻿using IteratorPrototype;
+using IteratorPrototype.Iterator3;
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
@@ -6,7 +7,6 @@ using static LanguageExt.Prelude;
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
 IteratorPrototype.Iterator3.NextOpTests.Tests();
-return;
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
@@ -17,6 +17,8 @@ Bench<StrongIteratorVersion>.Mark();
 Bench<WeakIteratorVersion>.Mark();
 Bench<Iterator2Version>.Mark();
 Bench<Iterator2ForEachVersion>.Mark();
+Bench<Iterator3Version>.Mark();
+//Bench<Iterator3ForEachVersion>.Mark();
 
 //Bench<MappedIteratorVersion>.Mark();
 //Bench<MonadBindIteratorVersion>.Mark();
@@ -244,6 +246,58 @@ public class Iterator2ForEachVersion : Bench<Iterator2ForEachVersion>
     protected override ConsoleColor Color => 
         Bench.Iterator2;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+public class Iterator3Version : Bench<Iterator3Version>
+{
+    readonly Iter<ArrState, int> iterator = 
+        Iter.from<Arr, ArrState, int>(Arr.create(..Count));
+
+    protected override string Explain =>
+        $"Iter3, for Arr, using while TryGetValue ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Iterator3;
+}
+
+/*
+public class Iterator3ForEachVersion : Bench<Iterator3ForEachVersion>
+{
+    readonly Iter<ArrState, int> iterator = 
+        Iter.from<Arr, ArrState, int>(Arr.create(..Count));
+
+    protected override string Explain =>
+        $"Iter3, for Arr, using foreach ({Count:N0} items)";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        foreach (var x in iter)
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Iterator3;
+}
+*/
 
 
 /*
