@@ -4,7 +4,8 @@ using static LanguageExt.Prelude;
 
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
-IteratorPrototype.Iterator3.Iterator.Tests();
+//IteratorPrototype.Iterator3.Iterator.Tests();
+IteratorPrototype.Iterator3.NextOpTests.Tests();
 return;
 
 Bench<CSharpVersion>.Mark();
