@@ -15,7 +15,7 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
     {
         ref var top   = ref stack.Cast<IteratorFields, IteratorFields<T, IS, A>>().Peek();
         ref var space = ref Unsafe.AsRef(in top.space);
-        return T.Next(in top.ta, ref space, out head);
+        return T.StepImmutable(in top.ta, in space, out head, out space);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -23,6 +23,6 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
     {
         ref var top   = ref stack.Peek();
         ref var space = ref Unsafe.AsRef(in top.space);
-        return T.Next(in top.ta, ref space, out head);
+        return T.StepImmutable(in top.ta, in space, out head, out space);
     }
 }

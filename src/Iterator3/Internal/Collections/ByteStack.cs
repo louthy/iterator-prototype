@@ -5,7 +5,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
 [StructLayout(LayoutKind.Explicit, Size = Capacity)]
-readonly struct ByteStack
+public readonly struct ByteStack
 {
     const int Capacity = 128 - sizeof(int);
     
@@ -33,9 +33,7 @@ readonly struct ByteStack
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop<A>()
     {
-        ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
-        //if (Top < sizeOf) return false;
         ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
         return true;
@@ -44,18 +42,10 @@ readonly struct ByteStack
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop<A>(out A value)
     {
-        ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
-        /*
-        if (Top < sizeOf)
-        {
-            value = default!;
-            return false;
-        }
-        */
         ref var top    = ref Unsafe.AsRef(in Top);
         top -= sizeOf;
-        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, top));
+        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
         return true;
     }
 
@@ -68,6 +58,11 @@ readonly struct ByteStack
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Top - sizeOf));
         return true;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public ref A PeekAt<A>()
+        where A : unmanaged =>
+        ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Top - Unsafe.SizeOf<A>()));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Push<A>(in A value)

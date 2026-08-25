@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-readonly unsafe struct Ops
+public readonly unsafe struct Ops
 {
     public const int Capacity = 32;
     public readonly int Count;

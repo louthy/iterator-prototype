@@ -42,7 +42,7 @@ public readonly struct Iterator<T, IS, A>
         if (top.action is null)
         {
             ref var s = ref Unsafe.AsRef(in top.space);
-            return T.Next(in top.ta, ref s, out head);
+            return T.StepImmutable(in top.ta, in s, out head, out s);
         }
         else
         {
@@ -61,7 +61,7 @@ public readonly struct Iterator<T, IS, A>
         if (top.action is null)
         {
             ref var s = ref Unsafe.AsRef(in top.space);
-            return T.Next(in top.ta, ref s, out head);
+            return T.StepImmutable(in top.ta, in s, out head, out s);
         }
         else
         {
@@ -79,7 +79,7 @@ public readonly struct Iterator<T, IS, A>
         if (top.action is null)
         {
             ref var s = ref Unsafe.AsRef(in top.space);
-            return T.Next(in top.ta, ref s, out head);
+            return T.StepImmutable(in top.ta, in s, out head, out s);
         }
         else
         {

@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using IteratorPrototype.Iterator3.Internal;
 using LanguageExt;
 using LanguageExt.Traits;
 
@@ -88,23 +89,29 @@ public partial class Arr :
         return true;    
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-    public static bool Next<A>(in K<Arr, A> ta, ref ArrState state, out A head)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Next<A>(ref StackFrame frame)
     {
-        ref var          index = ref Unsafe.AsRef(in state.Index);
-        ref readonly var count = ref state.Count;
-        
+        // Take the state value off the stack
+        ref var ts = ref frame.state.PeekAt<ArrState>();
+
+        // Take the iterable instance off the stack
+        frame.objs.Pop<Arr<A>>(out var ta);
+
+        // Step the iterable
+        var index = ts.Index;
+        var count = ts.Count;
         if (index >= count)
         {
-            head = default!;
+            frame.state.Pop<ArrState>();
             return false;
         }
 
-        ref var arr   = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
-        ref var items = ref MemoryMarshal.GetArrayDataReference(arr.Values);
-        ref var item  = ref Unsafe.Add(ref items, index);
-        head = item;
-        index++;
+        ts = new ArrState(index + 1, count);
+
+        // Push the acquired head value onto the stack
+        frame.Push(in ta.Values[index]);
+        
         return true;
     }
 

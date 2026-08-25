@@ -43,12 +43,13 @@ static class Pull
         // Take the state value off the top of the stack, which will leave the
         // constant state behind 
         frame.PopState<S>();
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static bool iterable<T, IS, A>(ref StackFrame frame) 
+    public static bool iterable<T, IS, A>(ref StackFrame frame)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged =>
-        
+        T.Next<A>(ref frame);
+        /*
         // Take the state value off the stack
         frame.PopState<IS>(out var s) &&
 
@@ -56,13 +57,15 @@ static class Pull
         frame.PopObj<K<T, A>>(out var ta) &&
 
         // Step the iterable
-        T.StepImmutable(in ta, in s, out var head, out var ns) &&
+        T.StepImmutable(in ta, in s, out var head, out s) &&
 
         // Push the new state on the stack
-        frame.PushState(in ns) &&
+        frame.PushState(in s) &&
 
         // Push the acquired head value onto the stack
         frame.Push(in head);
+        */
+    
 }
 
 static unsafe class Push
@@ -91,11 +94,11 @@ static unsafe class Push
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged  =>
         
-        // Push the iterable instance onto the stack
-        frame.UnshiftObj(in ta) &&
-        
         // Push the initial iterable state onto the stack
         frame.UnshiftState(T.SetupImmutable(in ta)) &&
+        
+        // Push the iterable instance onto the stack
+        frame.UnshiftObj(in ta) &&
         
         // Push the operation
         frame.Add(&Pull.iterable<T, IS, A>);

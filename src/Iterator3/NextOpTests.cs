@@ -6,7 +6,7 @@ using LanguageExt.Traits;
 namespace IteratorPrototype.Iterator3;
 
 [SkipLocalsInit]
-readonly struct Vars
+public readonly struct Vars
 {
     public readonly ObjStack objs;
     public readonly ByteStack values;

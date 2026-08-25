@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-readonly struct ObjStack
+public readonly struct ObjStack
 {
     const int Capacity = 16;
     
@@ -66,9 +66,9 @@ readonly struct ObjStack
     {
         ref var top = ref Unsafe.AsRef(in Top);
         top--;
-        ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
-        value = Unsafe.As<object, A>(ref entry);
-        entry = null!;
+        ref var entry = ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top));
+        value = entry;
+        entry = default!;
         return true;
     }
 

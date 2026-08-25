@@ -4,7 +4,7 @@ using IteratorPrototype.Iterator3.Internal.Collections;
 namespace IteratorPrototype.Iterator3.Internal;
 
 [SkipLocalsInit]
-readonly ref struct StackFrame
+public readonly ref struct StackFrame
 {
     public readonly ref Ops ops;
     public readonly ref ObjStack objs;
@@ -44,6 +44,11 @@ readonly ref struct StackFrame
     public bool PeekState<S>(out S value)
         where S : unmanaged =>
         state.Peek(out value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public ref S RefState<S>()
+        where S : unmanaged =>
+        ref state.PeekAt<S>();
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Push<A>(in A value) =>
