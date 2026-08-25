@@ -77,7 +77,7 @@ public record Iterator<S, A>(Cont<S, A> cont, S state)
 {
     public bool TryGetValue(out A head, out Iterator<S, A> tail)
     {
-        if (cont.TryGetValue(state, out head, out var next, out var nextState))
+        if (cont.TryGetValue(state, out var nextState, out head, out var next))
         {
             tail = new Iterator<S, A>(next, nextState);
             return true;
@@ -96,10 +96,10 @@ public record Iterator<S, A>(Cont<S, A> cont, S state)
         new (Cont.yield(value, cont), state);
 
     public Iterator<S, B> Map<B>(Func<A, B> f) =>
-        new (cont.Map(f), state);
+        new (Cont.map(cont, f), state);
 
     public Iterator<S, B> Bind<B>(Func<A, Iterator<S, B>> f) =>
-        new (cont.Bind(x => f(x).Await), state);
+        new (Cont.bind(cont, f), state);
 
     public IEnumerable<A> AsEnumerable() =>
         Await.AsEnumerable(state);
@@ -110,20 +110,23 @@ public static class Cont
     public static Cont<S, A> constant<S, A>(S state, Cont<S, A> next) =>
         new ConstantCont<S, A>(state, next);
     
-    public static Cont<S, A> yield<S, A>(Func<S, Cont<S, A>> next) =>
-        new YieldLazy<S, A>(next);
-    
-    public static Cont<S, A> yield<S, A>(A value, Func<S, Cont<S, A>> next) =>
-        new YieldCont<S, A>(value, next);
-    
     public static Cont<S, A> yield<S, A>(A value, Cont<S, A> next) =>
         new YieldCont2<S, A>(value, next);
     
+    public static Cont<S, B> map<S, A, B>(Cont<S, A> sa, Func<A, B> f) =>
+        new MapCont<S, A, B>(sa, f);
+    
     public static Cont<S, A> flatten<S, A>(Cont<S, Cont<S, A>> continuations) =>
         new FlattenCont<S, A>(continuations);
-    
+
+    public static Cont<S, A> flatten<S, A>(Cont<S, Iterator<S, A>> continuations) =>
+        new FlattenIteratorCont<S, A>(continuations);
+
     public static Cont<S, B> bind<S, A, B>(Cont<S, A> sa, Func<A, Cont<S, B>> f) =>
-        new BindCont<S, A, B>(sa, f);
+        flatten(map(sa, f));
+
+    public static Cont<S, B> bind<S, A, B>(Cont<S, A> sa, Func<A, Iterator<S, B>> f) =>
+        flatten(map(sa, f));
     
     public static Cont<S, A> concat<S, A>(Cont<S, A> left, Cont<S, A> right) =>
         new ConcatCont<S, A>(left, right);
@@ -141,18 +144,12 @@ public readonly struct ContBreak;
 
 public abstract record Cont<S, A>
 {
-    public abstract bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S nextState);
-    
-    public Cont<S, B> Map<B>(Func<A, B> f) =>
-        new MapCont<S, A, B>(this, f);
-    
-    public Cont<S, B> Bind<B>(Func<A, Cont<S, B>> f) =>
-        new BindCont<S, A, B>(this, f);
+    public abstract bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail);
     
     public IEnumerable<A> AsEnumerable(S state)
     {
         var iter = this;
-        while (iter.TryGetValue(in state, out var head, out iter, out state))
+        while (iter.TryGetValue(in state, out state, out var head, out iter))
         {
             yield return head;
         }
@@ -162,20 +159,9 @@ public abstract record Cont<S, A>
         new BreakCont<S, A>();
 }
 
-public record YieldCont<S, A>(A Value, Func<S, Cont<S, A>> Next) : Cont<S, A>
-{
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S nextState)
-    {
-        head = Value;
-        tail = Next(state);
-        nextState = state;
-        return true;
-    }
-}
-
 public record YieldCont2<S, A>(A Value, Cont<S, A> Next) : Cont<S, A>
 {
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S nextState)
+    public override bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail)
     {
         head = Value;
         tail = Next;
@@ -184,23 +170,17 @@ public record YieldCont2<S, A>(A Value, Cont<S, A> Next) : Cont<S, A>
     }
 }
 
-public record YieldLazy<S, A>(Func<S, Cont<S, A>> Next) : Cont<S, A>
-{
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S nextState) =>
-        Next(state).TryGetValue(in state, out head, out tail, out nextState);
-}
-
 public record ConstantCont<S, A>(S state, Cont<S, A> Next) : Cont<S, A>
 {
-    public override bool TryGetValue(in S _, out A head, out Cont<S, A> tail, out S nextState) =>
-        Next.TryGetValue(state, out head, out tail, out nextState);
+    public override bool TryGetValue(in S _, out S nextState, out A head, out Cont<S, A> tail) =>
+        Next.TryGetValue(state, out nextState, out head, out tail);
 }
 
 public record MapCont<S, A, B>(Cont<S, A> ca, Func<A, B> f) : Cont<S, B>
 {
-    public override bool TryGetValue(in S state, out B head, out Cont<S, B> tail, out S nextState)
+    public override bool TryGetValue(in S state, out S nextState, out B head, out Cont<S, B> tail)
     {
-        if (ca.TryGetValue(in state, out var ha, out var ta, out nextState))
+        if (ca.TryGetValue(in state, out nextState, out var ha, out var ta))
         {
             head = f(ha);
             tail = new MapCont<S, A, B>(ta, f);
@@ -215,14 +195,14 @@ public record MapCont<S, A, B>(Cont<S, A> ca, Func<A, B> f) : Cont<S, B>
     }
 }
 
-public record BindCont<S, A, B>(Cont<S, A> sa, Func<A, Cont<S, B>> f) : Cont<S, B>
+public record FlattenCont<S, A>(Cont<S, Cont<S, A>> Many) : Cont<S, A>
 {
-    public override bool TryGetValue(in S state, out B head, out Cont<S, B> tail, out S nextState)
+    public override bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail)
     {
-        if (sa.TryGetValue(in state, out var a, out var ta, out nextState))
+        if(Many.TryGetValue(in state, out nextState, out var first, out var remaining))
         {
-            return Cont.concat(f(a), Cont.constant(nextState, Cont.bind(ta, f)))
-                       .TryGetValue(in nextState, out head, out tail, out nextState);
+            return Cont.concat(first, Cont.constant(nextState, Cont.flatten(remaining)))
+                       .TryGetValue(in nextState, out nextState, out head, out tail);
         }
         else
         {
@@ -232,14 +212,15 @@ public record BindCont<S, A, B>(Cont<S, A> sa, Func<A, Cont<S, B>> f) : Cont<S, 
         }
     }
 }
-public record FlattenCont<S, A>(Cont<S, Cont<S, A>> Many) : Cont<S, A>
+
+public record FlattenIteratorCont<S, A>(Cont<S, Iterator<S, A>> Many) : Cont<S, A>
 {
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S nextState)
+    public override bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail)
     {
-        if(Many.TryGetValue(in state, out var first, out var remaining, out nextState))
+        if(Many.TryGetValue(in state, out nextState, out var first, out var remaining))
         {
-            return Cont.concat(first, Cont.constant(nextState, Cont.flatten(remaining)))
-                       .TryGetValue(in nextState, out head, out tail, out nextState);
+            return Cont.concat(first.Await, Cont.constant(nextState, Cont.flatten(remaining)))
+                       .TryGetValue(in nextState, out nextState, out head, out tail);
         }
         else
         {
@@ -252,27 +233,27 @@ public record FlattenCont<S, A>(Cont<S, Cont<S, A>> Many) : Cont<S, A>
 
 public record ConcatCont<S, A>(Cont<S, A> Head, Cont<S, A> Tail) : Cont<S, A>
 {
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S outState)
+    public override bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail)
     {
-        if (Head.TryGetValue(in state, out head, out var t, out outState))
+        if (Head.TryGetValue(in state, out nextState, out head, out var t))
         {
             tail = new ConcatCont<S, A>(t, Tail);
             return true;
         }
         else
         {
-            return Tail.TryGetValue(in state, out head, out tail, out outState);
+            return Tail.TryGetValue(in state, out nextState, out head, out tail);
         }
     }
 }
 
 public record BreakCont<S, A> : Cont<S, A>
 {
-    public override bool TryGetValue(in S state, out A head, out Cont<S, A> tail, out S outState)
+    public override bool TryGetValue(in S state, out S nextState, out A head, out Cont<S, A> tail)
     {
         head = default!;
         tail = new BreakCont<S, A>();
-        outState = state;
+        nextState = state;
         return false;
     }
 }
@@ -281,7 +262,7 @@ public record IterableCont<T, IS, A>(K<T, A> ta) : Cont<IS, A>
     where T : Tr.IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    public override bool TryGetValue(in IS state, out A head, out Cont<IS, A> tail, out IS nextState)
+    public override bool TryGetValue(in IS state, out IS nextState, out A head, out Cont<IS, A> tail)
     {
         if (T.StepImmutable(ta, state, out head, out nextState))
         {
