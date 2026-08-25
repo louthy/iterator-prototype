@@ -93,24 +93,27 @@ public partial class Arr :
     public static bool Next<A>(ref StackFrame frame)
     {
         // Take the state value off the stack
-        ref var ts = ref frame.state.PeekAt<ArrState>();
+        ref var ts = ref frame.RefState<ArrState>();
 
         // Take the iterable instance off the stack
-        frame.objs.Pop<Arr<A>>(out var ta);
+        frame.PopObj<Arr<A>>(out var ta);
 
         // Step the iterable
-        var index = ts.Index;
-        var count = ts.Count;
+        ref var index = ref Unsafe.AsRef(in ts.Index);
+        var     count = ts.Count;
         if (index >= count)
         {
-            frame.state.Pop<ArrState>();
+            frame.PopState<ArrState>();
             return false;
         }
 
-        ts = new ArrState(index + 1, count);
-
+        // Get the value
+        ref var vs = ref MemoryMarshal.GetArrayDataReference(ta.Values);
+        ref var v  = ref Unsafe.Add(ref vs, index);
+        
         // Push the acquired head value onto the stack
-        frame.Push(in ta.Values[index]);
+        frame.Push(in v);
+        index++;
         
         return true;
     }
