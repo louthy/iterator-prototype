@@ -3,7 +3,9 @@ using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
 
 //IteratorTestSuite.Run();
-IteratorTest2.Run();
+//IteratorTest2.Run();
+IteratorPrototype.Iterator3.Iterator.Tests();
+return;
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();

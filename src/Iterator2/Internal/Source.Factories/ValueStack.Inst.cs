@@ -17,12 +17,28 @@ abstract class ValueStack<A>
         Instance.PopImpl(ref stack.frame, out top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool Pop(ref OpFrame frame) =>
+        Instance.PopImpl(ref frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static bool Pop(ref StackFrame stack) =>
+        Instance.PopImpl(ref stack.frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool Push(ref OpFrame frame, in A top) =>
         Instance.PushImpl(ref frame, in top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool Push(ref StackFrame stack, in A top) =>
         Instance.PushImpl(ref stack.frame, in top);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static ref A Peek(ref OpFrame frame) =>
+        ref Instance.PeekImpl(ref frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static ref A Peek(ref StackFrame stack) =>
+        ref Instance.PeekImpl(ref stack.frame);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static ValueStack()
@@ -40,7 +56,9 @@ abstract class ValueStack<A>
     }
 
     protected abstract bool PopImpl(ref OpFrame frame, out A top);
+    protected abstract bool PopImpl(ref OpFrame frame);
     protected abstract bool PushImpl(ref OpFrame frame, in A top);
+    protected abstract ref A PeekImpl(ref OpFrame frame);
 
     static Exception ShouldntHappenException =>
         throw new InvalidOperationException("Factory failed to access the ValueStack instance");    
@@ -57,8 +75,16 @@ class ManagedValueStack<A> : ValueStack<A>
         frame.objs.Pop(out top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    protected override bool PopImpl(ref OpFrame frame) =>
+        frame.objs.Pop();
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected override bool PushImpl(ref OpFrame frame, in A top) =>
         frame.objs.Push(top);
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    protected override ref A PeekImpl(ref OpFrame frame) =>
+        ref frame.objs.Peek<A>();
 }
 
 class UnmanagedValueStack<A> : ValueStack<A>
@@ -72,6 +98,14 @@ class UnmanagedValueStack<A> : ValueStack<A>
         frame.values.Pop(out top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    protected override bool PopImpl(ref OpFrame frame) =>
+        frame.values.Pop<A>();
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected override bool PushImpl(ref OpFrame frame, in A top) =>
         frame.values.Push(top);
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    protected override ref A PeekImpl(ref OpFrame frame) =>
+        ref frame.values.Peek<A>();
 }
