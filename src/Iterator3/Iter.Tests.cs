@@ -6,8 +6,8 @@ public static class IterTests
 {
     public static void Tests()
     {
-        Basic0();
-        //Basic1();
+        //Basic0();
+        Basic0_1();
         /*
         Test0();
         Test3();
@@ -50,6 +50,7 @@ public static class IterTests
                     */
         
         var iter = singleton(1) 
+                     | await 
                      | map<int, string>(x => $"'{x}'") 
                      | pure;
         

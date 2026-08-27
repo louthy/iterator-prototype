@@ -109,7 +109,7 @@ readonly struct Tops
         ref var t = ref Unsafe.AsRef(in top);
         t--;
         Current = Top;
-        return true;
+        return Top > 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
