@@ -1,15 +1,76 @@
 namespace IteratorPrototype.Iterator3;
 
+using static IteratorPrototype.Iterator3.Iter;
+
 public static class IterTests
 {
     public static void Tests()
     {
+        Basic0();
+        //Basic1();
+        /*
         Test0();
         Test3();
-        /*
         Test1();
         Test2();
         Test4();*/
+    }
+
+    public static void Basic0()
+    {
+        /*
+        var iter = singleton(1) 
+                    | yield 
+                    | map<int, string>(x => $"{x}") 
+                    | await 
+                    | pure;
+                    */
+        
+        var iter = forever(1)
+                      | await 
+                      | map<int, string>(x => $"'{x}'")
+                      | pure;
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic0_1()
+    {
+        /*
+        var iter = singleton(1)
+                    | yield
+                    | map<int, string>(x => $"{x}")
+                    | await
+                    | pure;
+                    */
+        
+        var iter = singleton(1) 
+                     | map<int, string>(x => $"'{x}'") 
+                     | pure;
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic1()
+    {
+        var iter = pair(1, 2) | pure;
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
     }
     
     public static void Test0()
@@ -24,19 +85,18 @@ public static class IterTests
         Console.WriteLine();
     }
     
+    /*
     public static void Test1()
     {
-        /*var arr   = Arr.create(1..6);
-
-        var iter1 = Iter.from<Arr, ArrState, int>(arr);
-        var iter  = iter1.Prepend(0);
+        var arr  = Arr.create(1..6);
+        var iter = Iter.from<Arr, ArrState, int>(arr).Prepend(0);
         
         while(iter.TryGetValue(out var head, out iter))
         {
             Console.Write($"{head} ");
         }
-        Console.WriteLine();*/
-    }
+        Console.WriteLine();
+    }*/
     
     public static void Test2()
     {

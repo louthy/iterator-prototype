@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 // ReSharper disable UnassignedReadonlyField
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
@@ -9,7 +10,6 @@ public readonly struct ObjStack
 {
     const int Capacity = 16;
     
-    public readonly int Top;
     public readonly object Object00;
     public readonly object Object01;
     public readonly object Object02;
@@ -26,7 +26,8 @@ public readonly struct ObjStack
     public readonly object Object0D;
     public readonly object Object0E;
     public readonly object Object0F;
-
+    public readonly int Top;
+    
     public ref object this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -45,10 +46,21 @@ public readonly struct ObjStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Clear()
+    public bool PopToTop(int top)
     {
-        ref var self = ref Unsafe.AsRef(in this);
-        Unsafe.InitBlock(ref Unsafe.As<ObjStack, byte>(ref self), 0, (uint)Unsafe.SizeOf<ObjStack>());
+        Debug.Assert(top <= Top);
+        if(top == Top) return true;
+        
+        ref var tref  = ref Unsafe.AsRef(in Top);
+        ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), tref - 1);
+        
+        while(tref > top)
+        {
+            tref--;
+            entry = null!;
+            entry = ref Unsafe.Add(ref entry, -1);
+        }
+        return true;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -94,7 +106,7 @@ public readonly struct ObjStack
     }
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Unshift<A>(in A value)
+    public bool Prepend<A>(in A value)
         where A : class
     {
         if (Top + 1 > Capacity) return false;

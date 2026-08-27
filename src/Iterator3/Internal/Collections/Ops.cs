@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-public readonly unsafe struct Ops
+readonly unsafe struct Ops
 {
     public const int Capacity = 32;
     public readonly int Count;
@@ -39,27 +39,9 @@ public readonly unsafe struct Ops
     public readonly nint Ptr1D;
     public readonly nint Ptr1E;
     public readonly nint Ptr1F;
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void CopyTo(ref Ops dest)
-    {
-        var     sizeOf = (uint)(Unsafe.SizeOf<nint>() * Count);
-        ref var d      = ref Unsafe.As<nint, byte>(ref Unsafe.AsRef(in dest.Ptr00));
-        ref var s      = ref Unsafe.As<nint, byte>(ref Unsafe.AsRef(in Ptr00));
-        Unsafe.CopyBlock(ref d, in s, sizeOf);
-        ref var dtop = ref Unsafe.AsRef(in dest.Count);
-        dtop = Count;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Clear()
-    {
-        ref var self = ref Unsafe.AsRef(in this);
-        self = default;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Add(in delegate*<ref StackFrame, bool> value)
+    public bool Add(in delegate*<ref StackFrame, PullState> value)
     {
         if (Count + 1 > Capacity) return false;
         ref var count = ref Unsafe.AsRef(in Count);
@@ -70,17 +52,88 @@ public readonly unsafe struct Ops
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Run(ref StackFrame frame)
+    public bool Prepend(in delegate*<ref StackFrame, PullState> value)
     {
-        var     count = Count;
-        ref var ptr   = ref Unsafe.AsRef(in Ptr00);
+        if (Count + 1 > Capacity) return false;
+        ref var count = ref Unsafe.AsRef(in Count);
+
+        ref var start = ref Unsafe.AsRef(in Ptr00);
+        ref var next = ref Unsafe.Add(ref start, 1);
         
-        for(var i = 0; i < count; i++)
-        {
-            var op = (delegate*<ref StackFrame, bool>)ptr;
-            if(!op(ref frame)) return false;
-            ptr = ref Unsafe.Add(ref ptr, 1);
-        }
+        Unsafe.CopyBlock(
+            ref Unsafe.As<nint, byte>(ref next), 
+            ref Unsafe.As<nint, byte>(ref start), 
+            (uint)(Unsafe.SizeOf<nint>() * count));
+        
+        start = (nint)value;
+        count++;
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool Run<A>(ref StackFrame frame, out A head)
+    {
+        // If there are no tops, then this is an empty stack, i.e. empty iterator
+        if (frame.IsVoid)
+        {
+            head = default!;
+            return false;
+        }
+        
+        // Reference the top program-counter
+        ref var pc = ref frame.tops.CurrentPC;
+
+        // If we're at the end of the ops, then jump up the stack to a previous 
+        // program-counter, so other values can be yielded.
+        while (pc >= Count)
+        {
+            frame.Pop();
+            if (frame.IsVoid)
+            {
+                head = default!;
+                return false;
+            }
+        }
+        
+        while(true)
+        {
+            if (pc == Count)
+            {
+                frame.vars.Pop(out head);
+                frame.Pop();
+                return true;
+            }
+            
+            // Read the current instruction
+            ref var ptr = ref Unsafe.Add(ref Unsafe.AsRef(in Ptr00), pc);
+            var     op  = (delegate*<ref StackFrame, PullState>)ptr;
+
+            // Move the program-counter *before* executing the instruction, this allows
+            // tests like frame.IsReturn to work properly.
+            pc++;
+
+            // Run the instruction
+            var r = op(ref frame);
+            
+            switch (r.Value)
+            {
+                // Void
+                case 0:
+                    head = default!;
+                    return false;
+                
+                // Continue 
+                case 1: 
+                    continue;
+                
+                // Pure 
+                case 2:
+                    frame.vars.Pop(out head);
+                    return true;
+                
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
     }
 }

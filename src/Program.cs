@@ -6,7 +6,7 @@ using static LanguageExt.Prelude;
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-IteratorPrototype.Iterator3.IterTests.Tests();
+IterTests.Tests();
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();

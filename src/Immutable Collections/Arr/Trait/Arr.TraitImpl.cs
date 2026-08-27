@@ -89,35 +89,6 @@ public partial class Arr :
         return true;    
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Next<A>(ref StackFrame frame)
-    {
-        // Take the state value off the stack
-        ref var ts = ref frame.RefState<ArrState>();
-
-        // Take the iterable instance off the stack
-        frame.PopObj<Arr<A>>(out var ta);
-
-        // Step the iterable
-        ref var index = ref Unsafe.AsRef(in ts.Index);
-        var     count = ts.Count;
-        if (index >= count)
-        {
-            frame.PopState<ArrState>();
-            return false;
-        }
-
-        // Get the value
-        ref var vs = ref MemoryMarshal.GetArrayDataReference(ta.Values);
-        ref var v  = ref Unsafe.Add(ref vs, index);
-        
-        // Push the acquired head value onto the stack
-        frame.Push(in v);
-        index++;
-        
-        return true;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ArrStateRef Tr.IterableMutable<Arr, ArrState, ArrStateRef>.SetupMutable<A>(K<Arr, A> ta)
     {

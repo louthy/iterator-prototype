@@ -4,122 +4,118 @@ using IteratorPrototype.Iterator3.Internal.Collections;
 namespace IteratorPrototype.Iterator3.Internal;
 
 [SkipLocalsInit]
-public readonly ref struct StackFrame
+readonly ref struct StackFrame
 {
+    public readonly ref Tops tops;
     public readonly ref Ops ops;
-    public readonly ref ObjStack objs;
-    public readonly ref ByteStack values;
-    public readonly ref ByteStack state;
+    public readonly ref VStack vars;
+    public readonly ref VStack yields;
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public StackFrame(ref Ops ops, ref Vars vars, ref ByteStack state)
+    public StackFrame(ref Tops tops, ref Ops ops, ref VStack vars, ref VStack yields)
     {
+        this.tops = ref tops;
         this.ops = ref ops;
-        objs = ref Unsafe.AsRef(in vars.objs);
-        values = ref Unsafe.AsRef(in vars.values);
-        this.state = ref state;
+        this.vars = ref vars;
+        this.yields = ref yields;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PushState<S>(in S value)
-        where S : unmanaged =>
-        state.Push(in value);
+    public bool StartCoRoutine<A>() =>
+        
+        // Get the result type off the stack
+        vars.Pop<A>(out var x) &&
+
+        // Create a new scope
+        Push() &&
+
+        // Push the input type into the new co-routine scope
+        vars.Push(in x);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool UnshiftState<S>(in S value)
-        where S : unmanaged =>
-        state.Unshift(in value);
+    public bool StartYield<A>() =>
+
+        // Get the result type off the stack
+        vars.Pop<A>(out var x) &&
+
+        // Create a new scope
+        Push() &&
+
+        // Yield
+        yields.Push(in x);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopState<S>(out S value)
-        where S : unmanaged =>
-        state.Pop(out value);
+    public bool StartYield<A>(in A value) =>
+
+        // Create a new scope
+        Push() &&
+
+        // Yield
+        yields.Push(in value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopState<S>()
-        where S : unmanaged =>
-        state.Pop<S>();
+    public bool EndCoRoutine<A>() =>
+        
+        // Get the return value
+        vars.Pop(out A result) &&
+        
+        // Pop the current scope
+        Pop() &&
+        
+        // Push the result
+        vars.Push(in result);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PeekState<S>(out S value)
-        where S : unmanaged =>
-        state.Peek(out value);
+    public bool VoidCoRoutine() =>
+        
+        // Pop the current scope
+        Pop();
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool Push() =>
+        
+        // Make sure the tops are in-sync with live object and value stacks; so that we can safely pop later.
+        tops.Sync(in vars.objs, in vars.values) &&
+        
+        // Push the current tops onto the stack
+        tops.Push();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ref S RefState<S>()
-        where S : unmanaged =>
-        ref state.PeekAt<S>();
+    public bool Pop()
+    {
+        if (tops.Pop())
+        {
+            vars.objs.PopToTop(tops.CurrentObj);
+            vars.values.PopToTop(tops.CurrentValue);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AddArg<A>(in A top) =>
+        vars.Prepend(in top);
+
+    public bool IsVoid
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => tops.IsEmpty;
+    }
+
+    public bool IsReturn
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => tops.CurrentPC == ops.Count;
+    }
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Push<A>(in A value) =>
-        ValueStack<A>.Push(ref Unsafe.AsRef(in this), in value);
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Unshift<A>(in A value) =>
-        ValueStack<A>.Unshift(ref Unsafe.AsRef(in this), in value);
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public unsafe bool Add(delegate*<ref StackFrame, bool> f) =>
+    public unsafe bool Add(delegate*<ref StackFrame, PullState> f) =>
         ops.Add(f);
-    
+        
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PushValue<A>(in A value)
-        where A : unmanaged =>
-        values.Push(in value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool UnshiftValue<A>(in A value)
-        where A : unmanaged =>
-        values.Unshift(in value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PushObj<A>(in A value)
-        where A : class =>
-        objs.Push(in value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool UnshiftObj<A>(in A value)
-        where A : class =>
-        objs.Unshift(in value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Pop<A>(out A value) =>
-        ValueStack<A>.Pop(ref Unsafe.AsRef(in this), out value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Pop<A>() =>
-        ValueStack<A>.Pop(ref Unsafe.AsRef(in this));
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopValue<A>(out A value)
-        where A : unmanaged =>
-        values.Pop(out value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopValue<A>()
-        where A : unmanaged =>
-        values.Pop<A>();
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopObj<A>(out A value)
-        where A : class =>
-        objs.Pop(out value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PopObj() =>
-        objs.Pop();
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Peek<A>(out A value) =>
-        ValueStack<A>.Peek(ref Unsafe.AsRef(in this), out value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PeekValue<A>(out A value)
-        where A : unmanaged =>
-        values.Peek(out value);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool PeekObj<A>(out A value)
-        where A : class =>
-        objs.Peek(out value);
+    public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>
+        ops.Prepend(f);
 }

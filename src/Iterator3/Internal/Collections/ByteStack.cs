@@ -31,6 +31,14 @@ public readonly struct ByteStack
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool PopToTop(int top)
+    {
+        ref var t = ref Unsafe.AsRef(in Top);
+        t = top;
+        return true;
+    }
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop<A>()
     {
         var     sizeOf = Unsafe.SizeOf<A>();
@@ -79,7 +87,7 @@ public readonly struct ByteStack
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Unshift<A>(in A value)
+    public bool Prepend<A>(in A value)
         where A : unmanaged
     {
         var sizeOf = Unsafe.SizeOf<A>();

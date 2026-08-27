@@ -1,4 +1,4 @@
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+/*#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Iterator3.Internal;
@@ -16,8 +16,8 @@ abstract class ValueStack<A>
         Instance.PopImpl(ref stack);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static bool Unshift(ref StackFrame stack, in A top) =>
-        Instance.UnshiftImpl(ref stack, in top);
+    public static bool Prepend(ref StackFrame stack, in A top) =>
+        Instance.PrependImpl(ref stack, in top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool Push(ref StackFrame stack, in A top) =>
@@ -26,7 +26,7 @@ abstract class ValueStack<A>
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool Peek(ref StackFrame stack, out A top) =>
         Instance.PeekImpl(ref stack, out top);
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     static ValueStack()
     {
@@ -44,7 +44,7 @@ abstract class ValueStack<A>
 
     protected abstract bool PopImpl(ref StackFrame frame, out A top);
     protected abstract bool PopImpl(ref StackFrame frame);
-    protected abstract bool UnshiftImpl(ref StackFrame frame, in A top);
+    protected abstract bool PrependImpl(ref StackFrame frame, in A top);
     protected abstract bool PushImpl(ref StackFrame frame, in A top);
     protected abstract bool PeekImpl(ref StackFrame frame, out A top);
 }
@@ -68,8 +68,8 @@ class ManagedValueStack<A> : ValueStack<A>
         frame.objs.Push(top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    protected override bool UnshiftImpl(ref StackFrame frame, in A top) =>
-        frame.objs.Unshift(top);
+    protected override bool PrependImpl(ref StackFrame frame, in A top) =>
+        frame.objs.Prepend(top);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected override bool PeekImpl(ref StackFrame frame, out A top) =>
@@ -81,7 +81,7 @@ class UnmanagedValueStack<A> : ValueStack<A>
 {
     static UnmanagedValueStack() =>
         Instance = new UnmanagedValueStack<A>();
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected override bool PopImpl(ref StackFrame frame, out A top) =>
         frame.values.Pop(out top);
@@ -95,10 +95,10 @@ class UnmanagedValueStack<A> : ValueStack<A>
         frame.values.Push(top);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    protected override bool UnshiftImpl(ref StackFrame frame, in A top) =>
-        frame.values.Unshift(top);
+    protected override bool PrependImpl(ref StackFrame frame, in A top) =>
+        frame.values.Prepend(top);
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected override bool PeekImpl(ref StackFrame frame, out A top) =>
         frame.values.Peek(out top);
-}
+}*/

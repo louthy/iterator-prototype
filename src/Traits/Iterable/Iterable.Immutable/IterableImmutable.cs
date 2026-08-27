@@ -44,23 +44,6 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         }
         return default;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static virtual bool Next<A>(ref StackFrame frame)  =>
-        // Take the state value off the stack
-        frame.PopState<IS>(out var s) &&
-
-        // Take the iterable instance off the stack
-        frame.PopObj<K<T, A>>(out var ta) &&
-
-        // Step the iterable
-        T.StepImmutable(in ta, in s, out var head, out s) &&
-
-        // Push the acquired head value onto the stack
-        frame.Push(in head) &&
-        
-        // Push the new state on the stack
-        frame.PushState(in s);
     
     static string Iterable<T>.ToString<A>(K<T, A> ta, string separator)
     {
