@@ -39,10 +39,6 @@ public readonly struct Iter<A>
         */
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iter<A> operator |(Iter<A> lhs, Iter<A> rhs) =>
-        Iter.product(in lhs, in rhs);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iter<A> operator |(Iter<A> lhs, IterAwait rhs) =>
         IterAction.await(in lhs);
 
@@ -56,7 +52,7 @@ public readonly struct Iter<A>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iter<A> operator |(Iter<A> lhs, IterTake rhs) =>
-        IterAction.take(rhs.Amount, in lhs);
+        IterAction.take(rhs.amount, in lhs);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal static StackFrame Default(out Iter<A> self)

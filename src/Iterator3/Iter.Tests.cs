@@ -8,6 +8,7 @@ public static class IterTests
     {
         Basic0();
         Basic1();
+        Basic2();
         /*
         Test0();
         Test3();
@@ -43,9 +44,11 @@ public static class IterTests
         Console.WriteLine();
     }
 
-    public static void Basic()
+    public static void Basic2()
     {
-        var iter = pair(1, 2);
+        var iter = from(1, 2, 3)
+                 | from(1, 2, 3)
+                 | bimap((int x, int y) => x * y);
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -55,6 +58,22 @@ public static class IterTests
         Console.WriteLine();
     }
     
+    /*
+    public static void Basic3()
+    {
+        var iter = singleton(1)
+                 | singleton("Hello")
+                 | pair<int, string>()
+                 | bimap<int, string, string>((x, y) => $"'{x}' '{y}'");
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }*/
+
     public static void Test0()
     {
         var arr  = Arr.create(1..6);

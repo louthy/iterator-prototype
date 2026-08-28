@@ -109,6 +109,13 @@ readonly struct Tops
     }
   
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void PopPC()
+    {
+        CurrentPC = HasLast ? LastPC : (byte)0;
+        Top = Current;
+    }
+  
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop()
     {
         ref var t = ref Unsafe.AsRef(in top);

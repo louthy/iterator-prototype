@@ -4,7 +4,16 @@ namespace IteratorPrototype.Iterator3.Internal;
 
 public static class Ty<A>
 {
-    public static readonly bool IsUnmanaged = IsTypeUnmanaged(typeof(A));
+    public static readonly bool IsManaged;
+    public static readonly bool IsUnmanaged;
+    public static readonly bool IsValue;
+
+    static Ty()
+    {
+        IsUnmanaged = IsTypeUnmanaged(typeof(A));
+        IsValue = typeof(A).IsValueType;
+        IsManaged = !IsValue && !IsUnmanaged;
+    }
 
     static bool IsTypeUnmanaged(Type type)
     {

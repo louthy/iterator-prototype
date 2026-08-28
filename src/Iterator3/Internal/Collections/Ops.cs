@@ -104,8 +104,15 @@ readonly unsafe struct Ops
         {
             if (pc == Count)
             {
+                // Pop the result of the co-routine. We will return that to the caller.
                 frame.vars.Pop(out head);
-                frame.Pop();
+                
+                // Return to the start of this co-routine
+                // Note, we don't pop the rest of the state because we only want to return to 
+                // parent co-routines once all the values have been yielded.  This can only
+                // be known by the yielding functions (they should return `Void` when done)
+                frame.tops.PopPC();
+                
                 return true;
             }
             
@@ -124,6 +131,9 @@ readonly unsafe struct Ops
             {
                 // Void
                 case 0:
+                    
+                    // This is a return from a co-routine, so we need to pop everything.
+                    frame.tops.Pop();
                     head = default!;
                     return false;
                 

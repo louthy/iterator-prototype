@@ -27,12 +27,22 @@ public static class Iter
         new (amount);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<A> from<A>(params ReadOnlySpan<A> ta)
+    {
+        var array = Arr.create(ta);
+        var frame = Iter<A>.Default(out var iter);
+        return Push.iterable<Arr, ArrState, A>(ref frame, array)
+                   ? iter
+                   : default;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.iterable<T, IS, A>(ref frame, ta)
+        return Push.iterable<T, IS, A>(ref frame, in ta)
                    ? iter
                    : default;
     }
@@ -56,19 +66,47 @@ public static class Iter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> pair<A>(in A item1, in A item2) =>
-        singleton(in item1) | singleton(in item2);
+    public static Iter<(A First, B Second)> product<A, B>(in Iter<A> ta, in Iter<B> tb)
+    {
+        var frame = ta.Next<A, (A, B)>(out var ta1);
+        return Push.iterator(ref frame, in tb) 
+             | Push.tuple<A, B>(ref frame)
+                   ? ta1
+                   : default;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<(A, B)> tab, in Iter<C> tc)
+    {
+        var frame = tab.Next<(A, B), (A, B, C)>(out var ta1);
+        return Push.iterator(ref frame, in tab) 
+             | Push.iterator(ref frame, in tc) 
+             | Push.tuple1<A, B, C>(ref frame)
+                   ? ta1
+                   : default;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<A> ta, in Iter<B> tb, in Iter<C> tc)
+    {
+        var frame = ta.Next<A, (A, B, C)>(out var ta1);
+        return Push.iterator(ref frame, in ta) 
+             | Push.iterator(ref frame, in tb) 
+             | Push.iterator(ref frame, in tc) 
+             | Push.tuple<A, B, C>(ref frame)
+                   ? ta1
+                   : default;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterPair<A, B> pair<A, B>() =>
+        default;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterBimap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
+        new(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
-                    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> product<A>(in Iter<A> tx, in Iter<A> ty)
-    {
-        var frame = tx.Next(out var tx1);
-        return Push.iter(ref frame, in ty)
-                   ? tx1
-                   : default;
-    }
 }

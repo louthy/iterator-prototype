@@ -121,6 +121,123 @@ static class Pull
         
             ? @continue(ref frame)
             : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState bimap<A, B, C>(ref StackFrame frame) =>
+        
+        // Peek at the map function
+        frame.vars.Pop<Func<A, B, C>>(out var f) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<B>(out var b) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<A>(out var a) &&
+
+        // Push the mapped value on the stack
+        frame.vars.Push(f(a, b))
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState bimap1<A, B, C>(ref StackFrame frame) =>
+        
+        // Peek at the map function
+        frame.vars.Pop<Func<A, B, C>>(out var f) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<(A, B)>(out var ab) &&
+
+        // Push the mapped value on the stack
+        frame.vars.Push(f(ab.Item1, ab.Item2))
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState trimap<A, B, C, D>(ref StackFrame frame) =>
+        
+        // Peek at the map function
+        frame.vars.Pop<Func<A, B, C, D>>(out var f) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<C>(out var c) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<B>(out var b) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<A>(out var a) &&
+
+        // Push the mapped value on the stack
+        frame.vars.Push(f(a, b, c))
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState trimap1<A, B, C, D>(ref StackFrame frame) =>
+        
+        // Peek at the map function
+        frame.vars.Pop<Func<A, B, C, D>>(out var f) &&
+
+        // Take the value off the stack
+        frame.vars.Pop<(A, B, C)>(out var abc) &&
+
+        // Push the mapped value on the stack
+        frame.vars.Push(f(abc.Item1, abc.Item2, abc.Item3))
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState tuple<A, B>(ref StackFrame frame) =>
+        
+        // Pop the second element
+        frame.vars.Pop<B>(out var b) &&
+        
+        // Pop the first element
+        frame.vars.Pop<A>(out var a) &&
+        
+        // Push the tuple
+        frame.vars.Push((a, b)) 
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState tuple<A, B, C>(ref StackFrame frame) =>
+        
+        // Pop the second element
+        frame.vars.Pop<C>(out var c) &&
+        
+        // Pop the second element
+        frame.vars.Pop<B>(out var b) &&
+        
+        // Pop the first element
+        frame.vars.Pop<A>(out var a) &&
+        
+        // Push the tuple
+        frame.vars.Push((a, b, c)) 
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState tuple1<A, B, C>(ref StackFrame frame) =>
+        
+        // Pop the second element
+        frame.vars.Pop<C>(out var c) &&
+        
+        // Pop the second element
+        frame.vars.Pop<(A, B)>(out var ab) &&
+        
+        // Push the tuple
+        frame.vars.Push((ab.Item1, ab.Item2, c)) 
+        
+            ? @continue(ref frame)
+            : empty(ref frame);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState take(ref StackFrame frame) =>
@@ -182,7 +299,6 @@ static class Pull
 
             ? @continue(ref frame)
             : empty(ref frame);
-
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState iterable<T, IS, A>(ref StackFrame frame)
@@ -205,16 +321,16 @@ static class Pull
             : empty(ref frame);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState iter<A>(ref StackFrame frame) =>
+    public static PullState iterator<A>(ref StackFrame frame) =>
 
         // Pop the iterator
-        globalM<Iter<A>>(ref frame, out var iter) &&
+        globalM<Iter<A>>(ref frame, out var ta) &&
 
         // Read the next value
-        iter.Value(ref frame).TryGetValue(out var head, out var iter1) &&
+        ta.Value(ref frame).TryGetValue(out var head, out var ta1) &&
 
         // Push the updated iterator
-        iter.Update(ref frame, in iter1) &&
+        ta.Update(ref frame, in ta1) &&
         
         // Push the value
         frame.vars.Push(in head)

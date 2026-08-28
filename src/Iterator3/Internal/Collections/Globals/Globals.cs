@@ -30,7 +30,7 @@ readonly struct Globals
             get => (Value & IsObjFlag) == IsObjFlag;
         }
 
-        public bool IsValue
+        public bool IsUnmanaged
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (Value & IsObjFlag) == 0;
@@ -60,28 +60,43 @@ readonly struct Globals
         ref Unsafe.Add(ref Unsafe.AsRef(in data00), ix);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public ref A At<A>(ushort ix)
+    public ref A AtUnmanaged<A>(ushort ix)
+        where A : unmanaged
     {
         ref var index = ref Ix(in ix);
-        if (index.IsValue)
-        {
-            ref var vt = ref Unsafe.AsRef(in values.Stack);
-            return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref vt, index.Offset));
-        }
-        else
-        {
-            ref var ot = ref Unsafe.AsRef(in objs.Object00);
-            return ref Unsafe.As<object, A>(ref Unsafe.Add(ref ot, index.Offset));
-        }
+        ref var vt = ref Unsafe.AsRef(in values.Stack);
+        return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref vt, index.Offset));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool At<A>(in ushort ix, out A value)
+    public ref A AtManaged<A>(ushort ix)
+        where A : class
     {
-        if(ix < Count)
+        ref var index = ref Ix(in ix);
+        ref var ot    = ref Unsafe.AsRef(in objs.Object00);
+        return ref Unsafe.As<object, A>(ref Unsafe.Add(ref ot, index.Offset));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public ref A AtStruct<A>(ushort ix)
+        where A : struct
+    {
+        ref var index = ref Ix(in ix);
+        ref var ot    = ref Unsafe.AsRef(in objs.Object00);
+        ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
+        return ref box.Ref;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AtUnmanaged<A>(in ushort ix, out A value)
+        where A : unmanaged
+    {
+        if (ix < Count)
         {
-            ref var entry = ref At<A>(ix);
-            value = entry;
+            ref var index = ref Ix(in ix);
+            ref var vt    = ref Unsafe.AsRef(in values.Stack);
+            ref var val   = ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref vt, index.Offset));
+            value = val;
             return true;
         }
         else
@@ -90,14 +105,63 @@ readonly struct Globals
             return false;
         }
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool AddObject<A>(in A value)
-        where A : class =>
-        AddObject(in value, out _);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool AddObject<A>(in A value, out ushort index)
+    public bool AtManaged<A>(in ushort ix, out A value)
+        where A : class
+    {
+        if (ix < Count)
+        {
+            ref var index = ref Ix(in ix);
+            ref var ot    = ref Unsafe.AsRef(in objs.Object00);
+            ref var val   = ref Unsafe.As<object, A>(ref Unsafe.Add(ref ot, index.Offset));
+            value = val;
+            return true;
+        }
+        else
+        {
+            value = null!;
+            return false;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AtStruct<A>(in ushort ix, out A value)
+        where A : struct
+    {
+        if (ix < Count)
+        {
+            ref var index = ref Ix(in ix);
+            ref var ot    = ref Unsafe.AsRef(in objs.Object00);
+            ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
+            value = box.Ref;
+            return true;
+        }
+        else
+        {
+            value = default!;
+            return false;
+        }
+    }
+
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AddStruct<A>(in A value)
+        where A : struct =>
+        AddManaged(new Box<A>(in value), out _);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AddStruct<A>(in A value, out ushort index)
+        where A : struct =>
+        AddManaged(new Box<A>(in value), out index);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AddManaged<A>(in A value)
+        where A : class =>
+        AddManaged(in value, out _);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool AddManaged<A>(in A value, out ushort index)
         where A : class
     {
         ref var c = ref Unsafe.AsRef(in Count);

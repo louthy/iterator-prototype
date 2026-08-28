@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3;
 
