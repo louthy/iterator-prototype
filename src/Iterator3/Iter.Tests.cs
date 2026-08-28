@@ -19,10 +19,8 @@ public static class IterTests
     public static void Basic0()
     {
         var iter = forever(1)
-                      | await 
                       | map<int, string>(x => $"'{x}'")
-                      | take(10)
-                      | pure;
+                      | take(10);
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -35,9 +33,7 @@ public static class IterTests
     public static void Basic1()
     {
         var iter = singleton(1) 
-                     | await 
-                     | map<int, string>(x => $"'{x}'") 
-                     | pure;
+                     | map<int, string>(x => $"'{x}'");
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -49,7 +45,7 @@ public static class IterTests
 
     public static void Basic()
     {
-        var iter = pair(1, 2) | pure;
+        var iter = pair(1, 2);
         
         while(iter.TryGetValue(out var head, out iter))
         {

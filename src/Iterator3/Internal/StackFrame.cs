@@ -26,12 +26,6 @@ readonly ref struct StackFrame
         get => ref Unsafe.AsRef(in fields.globals);
     } 
     
-    public ref Args args 
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AsRef(in fields.args);
-    } 
-    
     public ref Vars vars
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -59,6 +53,12 @@ readonly ref struct StackFrame
 
         // Push the input type into the new co-routine scope
         vars.Push(in x);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool StartNoArgCoRoutine() =>
+        
+        // Create a new scope
+        Push();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool StartYield<A>() =>

@@ -6,7 +6,7 @@ using static LanguageExt.Prelude;
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-//IterTests.Tests();
+IterTests.Tests();
 
 Bench<CSharpVersion>.Mark();
 Bench<CurrentLanguageExtArrVersion>.Mark();
@@ -252,9 +252,7 @@ public class Iterator2ForEachVersion : Bench<Iterator2ForEachVersion>
 public class Iterator3Version : Bench<Iterator3Version>
 {
     readonly Iter<int> iterator = 
-        Iter.from<Arr, ArrState, int>(Arr.create(..Count)) 
-            | Iter.await 
-            | Iter.pure;
+        Iter.from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Iter3, for Arr, using while TryGetValue ({Count:N0} items)";

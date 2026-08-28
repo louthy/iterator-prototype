@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
 using IteratorPrototype.Iterator3.Internal.Collections;
@@ -21,6 +20,12 @@ static class Pull
         PullState.Continue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState coroutine(ref StackFrame frame) =>
+        frame.StartNoArgCoRoutine() 
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState coroutine<A>(ref StackFrame frame) =>
         frame.StartCoRoutine<A>() 
             ? @continue(ref frame)
@@ -33,53 +38,10 @@ static class Pull
         frame.vars.Pop(out global);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static bool global<A>(ref StackFrame frame, out A global)
-    {
-        if(frame.vars.Pop<Global<A>>(out var g))
-        {
-            global = g.Value(ref frame);
-            return true;
-        }
-        else
-        {
-            global = default!;
-            return false;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool global<A>(ref StackFrame frame) =>
         frame.vars.Pop<Global<A>>(out var g) &&
         frame.vars.Push(in g.Value(ref frame));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState arg<A>(ref StackFrame frame) =>
-
-        // Load arg index
-        frame.vars.Pop<ushort>(out var index) &&
-        
-        // Load the arg
-        frame.args.At<A>(in index, out var c) &&
-        
-        // Push it onto the variables-stack
-        frame.vars.Push(in c)
-            
-            ? @continue(ref frame)
-            : empty(ref frame);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState arg<A>(ref StackFrame frame, in ushort id) =>
-        
-        // Load the arg
-        frame.args.At<A>(in id, out var c) &&
-        
-        // Push it onto the variables-stack
-        frame.vars.Push(in c)
-            
-            ? @continue(ref frame)
-            : empty(ref frame);
-
-    /*
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState dup<A>(ref StackFrame frame) =>
         
@@ -91,7 +53,6 @@ static class Pull
 
             ? @continue(ref frame)
             : empty(ref frame);
-            */
             
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -150,7 +111,7 @@ static class Pull
     public static PullState map<A, B>(ref StackFrame frame) =>
         
         // Peek at the map function
-        global<Func<A, B>>(ref frame, out var f) &&
+        frame.vars.Pop<Func<A, B>>(out var f) &&
 
         // Take the value off the stack
         frame.vars.Pop<A>(out var a) &&
@@ -177,38 +138,17 @@ static class Pull
     public static PullState bind<A, B>(ref StackFrame frame) =>
         
         // Peek at the bind function
-        global<Func<A, Iter<B>>>(ref frame, out var f) &&
+        frame.vars.Pop<Func<A, Iter<B>>>(out var f) &&
 
         // Take the value off the stack
         frame.vars.Pop<A>(out var a) &&
 
         // Push the mapped value on the stack
         // TODO: This should create a new source from f(a) than they yields all
+        
+        // Push the value
         frame.vars.Push(f(a))
-                
-            ? yield<B>(ref frame)       
-            : empty(ref frame);
-    
-    /// <summary>
-    /// Ignore the input value `A` and return the constant value `C`. Where `C` is the
-    /// type of the constant value on the stack.
-    /// </summary>
-    /// <remarks>
-    /// <code>
-    ///     C -> A -> C 
-    /// </code>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState constant<A, C>(ref StackFrame frame) =>
-        
-        // Put the constant value on the stack
-        global<C>(ref frame, out var c) &&
-        
-        // Pop the non-constant value off the stack
-        frame.vars.Pop<A>() && 
-        
-        frame.vars.Push(in c)
-                
+
             ? @continue(ref frame)
             : empty(ref frame);
 
@@ -216,10 +156,12 @@ static class Pull
     public static PullState forever<A>(ref StackFrame frame) =>
         
         // Peek at the forever value 
-        global<A>(ref frame, out var value)
+        frame.vars.Pop<A>(out var value) &&
         
-            // Yield the value downstream
-            ? yield(ref frame, in value)
+        // Push the value
+        frame.vars.Push(in value)
+
+            ? @continue(ref frame)
             : empty(ref frame);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -230,13 +172,15 @@ static class Pull
         globalM<bool>(ref frame, out var cont) && cont.Value(ref frame) &&
 
         // Peek at the singleton value 
-        global<A>(ref frame, out var value) &&
+        frame.vars.Pop<A>(out var value) &&
 
         // Set the `continue` flag to `false` so we don't run again
-        cont.Update(ref frame, false)
+        cont.Update(ref frame, false) &&
 
-            // Yield the value downstream
-            ? yield(ref frame, in value)
+        // Push the value
+        frame.vars.Push(in value)
+
+            ? @continue(ref frame)
             : empty(ref frame);
 
     
@@ -246,15 +190,18 @@ static class Pull
         where IS : unmanaged =>
 
         // Peak-await the iterable instance
-        global<K<T, A>>(ref frame, out var ta) &&
+        frame.vars.Pop<K<T, A>>(out var ta) &&
 
         // Pop the iterable state
         globalM<IS>(ref frame, out var ts) &&
 
         // Step the iterable
-        T.Next(in ta, ref ts.Value(ref frame), out var x)
+        T.Next(in ta, ref ts.Value(ref frame), out var x) &&
+        
+        // Push the value
+        frame.vars.Push(in x)
 
-            ? yield(ref frame, in x)
+            ? @continue(ref frame)
             : empty(ref frame);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -267,9 +214,11 @@ static class Pull
         iter.Value(ref frame).TryGetValue(out var head, out var iter1) &&
 
         // Push the updated iterator
-        iter.Update(ref frame, in iter1)
+        iter.Update(ref frame, in iter1) &&
+        
+        // Push the value
+        frame.vars.Push(in head)
 
-            // Yield the value
-            ? yield(ref frame, in head)
+            ? @continue(ref frame)
             : empty(ref frame);
 }
