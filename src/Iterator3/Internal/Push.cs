@@ -124,10 +124,10 @@ static unsafe class Push
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged  =>
         
-        // Push the iterable state onto the constants-list
+        // Push the iterable state onto the globals-list
         global(ref frame, T.SetupImmutable(in ta)) &&
     
-        // Push the iterable instance onto the constants-list
+        // Push the iterable instance onto the globals-list
         global(ref frame, in ta) &&
         
         // Push the yield operation

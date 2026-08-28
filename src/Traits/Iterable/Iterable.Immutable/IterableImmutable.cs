@@ -16,6 +16,10 @@ public interface IterableImmutable<T, IS> : Iterable<T>
     static abstract bool StepImmutable<A>(in K<T, A> ta, in IS state, out A head, out IS tail);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static virtual bool Next<A>(in K<T, A> ta, ref IS state, out A head) =>
+        T.StepImmutable(in ta, in state, out head, out state);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static IEnumerable<A> Iterable<T>.AsEnumerable<A>(K<T, A> ta) =>
         new IterableImmutableEnumerable<T, IS, A>(ta);
 

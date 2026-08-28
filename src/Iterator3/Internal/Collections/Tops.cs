@@ -176,6 +176,12 @@ readonly struct Tops
         get => ref Unsafe.AddByteOffset(ref LastBytes, 2);
     }
 
+    public ref byte LastYield
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AddByteOffset(ref LastBytes, 3);
+    }
+
     public ref byte CurrentBytes
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -198,6 +204,12 @@ readonly struct Tops
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AddByteOffset(ref CurrentBytes, 2);
+    }
+
+    public ref byte CurrentYield
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AddByteOffset(ref CurrentBytes, 3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

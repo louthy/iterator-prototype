@@ -74,10 +74,10 @@ readonly ref struct StackFrame
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool StartYield<A>(in A value) =>
-
+        
         // Create a new scope
         Push() &&
-
+        
         // Yield
         yields.Push(in value);
 

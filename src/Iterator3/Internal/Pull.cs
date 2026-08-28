@@ -245,17 +245,14 @@ static class Pull
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged =>
 
-        // Pop the iterable state
-        globalM<IS>(ref frame, out var ts) &&
-
         // Peak-await the iterable instance
         global<K<T, A>>(ref frame, out var ta) &&
 
-        // Step the iterable
-        T.StepImmutable(in ta, in ts.Value(ref frame), out var x, out var ts1) &&
+        // Pop the iterable state
+        globalM<IS>(ref frame, out var ts) &&
 
-        // Push the iterable state
-        ts.Update(ref frame, in ts1)
+        // Step the iterable
+        T.Next(in ta, ref ts.Value(ref frame), out var x)
 
             ? yield(ref frame, in x)
             : empty(ref frame);
