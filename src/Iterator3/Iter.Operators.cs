@@ -8,6 +8,6 @@ public static class IterOperators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Iter<B> operator |(Iter<A> lhs, IterMap<A, B> rhs) =>
-            Iter.map(rhs.f, in lhs);
+            IterAction.map(rhs.f, in lhs);
     }
 }

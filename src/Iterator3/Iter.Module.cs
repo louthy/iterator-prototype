@@ -20,6 +20,12 @@ public static class Iter
     /// </summary>
     public static IterPure pure = default;
     
+    /// <summary>
+    /// Pure
+    /// </summary>
+    public static IterTake take(int amount) => 
+        new (amount);
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
@@ -54,53 +60,8 @@ public static class Iter
         singleton(in item1) | singleton(in item2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<B> bind<A, B>(in Iter<A> ta, in Func<A, Iter<B>> f)
-    {
-        var frame = ta.Next<A, B>(out var tb);
-        return Push.bind(ref frame, f)
-                   ? tb
-                   : default;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> ta)
-    {
-        var frame = ta.Next<A, B>(out var tb);
-        return Push.map(ref frame, f)
-                   ? tb
-                   : default;
-    }
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> awaiter<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.await<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
-            
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> purify<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.pure<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
-                
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> yielder<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.yield<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
                     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<A> product<A>(in Iter<A> tx, in Iter<A> ty)

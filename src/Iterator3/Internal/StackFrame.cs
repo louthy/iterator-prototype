@@ -6,19 +6,47 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    public readonly ref Tops tops;
-    public readonly ref Ops ops;
-    public readonly ref VStack vars;
-    public readonly ref VStack yields;
+    public readonly ref Fields fields;
+
+    public ref Tops tops 
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.tops);
+    } 
+    
+    public ref Ops ops  
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.ops);
+    } 
+    
+    public ref Globals globals 
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.globals);
+    } 
+    
+    public ref Args args 
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.args);
+    } 
+    
+    public ref Vars vars
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.vars);
+    } 
+
+    public ref Vars yields
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in fields.yields);
+    } 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public StackFrame(ref Tops tops, ref Ops ops, ref VStack vars, ref VStack yields)
-    {
-        this.tops = ref tops;
-        this.ops = ref ops;
-        this.vars = ref vars;
-        this.yields = ref yields;
-    }
+    public StackFrame(ref Fields fields) =>
+        this.fields = ref fields;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool StartCoRoutine<A>() =>
@@ -94,10 +122,6 @@ readonly ref struct StackFrame
             return false;
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool AddArg<A>(in A top) =>
-        vars.Prepend(in top);
 
     public bool IsVoid
     {

@@ -1,7 +1,10 @@
+#pragma warning disable CS8618 
+#pragma warning disable CS0169
+#pragma warning disable CS0649
+// ReSharper disable UnassignedReadonlyField
+
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-// ReSharper disable UnassignedReadonlyField
-#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
