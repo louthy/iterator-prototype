@@ -10,10 +10,11 @@ namespace IteratorPrototype.Iterator3;
 static class Pull
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState empty(ref StackFrame frame) =>
-        frame.VoidCoRoutine()
-            ? PullState.Void
-            : PullState.Continue;
+    public static PullState empty(ref StackFrame frame)
+    {
+        frame.VoidCoRoutine();
+        return PullState.Void;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState @continue(ref StackFrame frame) =>

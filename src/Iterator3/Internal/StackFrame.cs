@@ -119,6 +119,8 @@ readonly ref struct StackFrame
         }
         else
         {
+            vars.objs.PopToTop(0);
+            vars.values.PopToTop(0);
             return false;
         }
     }
