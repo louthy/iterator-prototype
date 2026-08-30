@@ -64,66 +64,34 @@ readonly ref struct StackFrame
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool StartScope()
-    {
+    public bool StartScope() =>
+        
         // Create a new scope
-        var success = Push();
-        
-        var self = this;
-        Log.coroutine("{", ref self);
-        Log.scope();
-        
-        return success;
-    }
-
+        Push();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool EndScope<A>(out A head)
-    {
-        // Get the return value
-        if (!vars.Pop(out head)) return false;
+    public bool EndScope<A>(out A head) =>
         
+        // Get the return value
+        vars.Pop(out head) &&
+
         // Pop the current scope
-        var success = Pop();
-                
-        var self = this;
-        Log.descope();
-        Log.coroutine("}", ref self);
-
-        return success;
-    }
+        Pop();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool ResetFrame<A>(out A result)
-    {
+    public bool ResetFrame<A>(out A result) =>
+        
         // Get the return value
-        vars.Pop(out result);
-
-        var self = this;
-        Log.coroutine("end-frame", ref self);
+        vars.Pop(out result) &&
 
         // Pop the current tops
-        var success = tops.ResetFrame();
-        
-        Log.coroutine("reset-frame", ref self);
-        return success;
-    }
+        tops.ResetFrame();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool VoidScope()
-    {
-        var self = this;
-        Log.descope();
-        Log.coroutine("}", ref self);
+    public bool VoidScope() =>
         
         // Pop the current scope
-        var success = Pop();
-
-        Log.coroutine("end", ref self);
-
-        return success;
-    }
-        
+        Pop();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Push() =>

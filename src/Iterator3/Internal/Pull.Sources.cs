@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
-using IteratorPrototype.Iterator3.Internal.Collections;
 using LanguageExt.Traits;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
@@ -26,9 +25,7 @@ static partial class Pull
         gts.Update(ref frame, in xs) &&
         
         // Return the value
-        @return(ref frame, in x) &&
-
-        Log.function($"push {x} : ... [iterable]", ref frame)
+        @return(ref frame, in x) 
 
             ? @continue(ref frame)
             : empty(ref frame);
@@ -38,21 +35,15 @@ static partial class Pull
 
         // Pop the iterator
         arg<Iter<A>>(ref frame, out var ta, out var g) &&
-
-        Log.err("begin: Iter.TryGetValue ", ref frame) &&
         
         // Read the next value
         ta.TryGetValue(out var x, out var xs) &&
-
-        Log.err("end: Iter.TryGetValue ", ref frame) &&
 
         // Push the updated iterator
         g.Update(ref frame, in xs) &&
 
         // Return the value
-        @return(ref frame, in x) &&
-
-        Log.function($"push {x} : ... [iterator]", ref frame)
+        @return(ref frame, in x) 
 
             ? @continue(ref frame)
             : empty(ref frame);

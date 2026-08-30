@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 public abstract class Bench<A>
     where A : Bench<A>, new()
 {
-    protected const int Count = 1_000_000;
+    protected const int Count = 4_000;
     protected abstract string Explain { get; }
     protected abstract void Main();
     protected abstract ConsoleColor Color { get; }

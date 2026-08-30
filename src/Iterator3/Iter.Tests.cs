@@ -8,7 +8,6 @@ public static class IterTests
 {
     public static void Tests()
     {
-        Log.disable();
 
         Basic0();
         Basic1();

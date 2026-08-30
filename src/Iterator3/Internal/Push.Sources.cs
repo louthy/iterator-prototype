@@ -60,8 +60,7 @@ static unsafe partial class Push
     public static bool iterator<A>(ref StackFrame frame, in Iter<A> ta) =>
         
         // Push the readonly iterator
-        //declare(ref frame, ta) &&
-        TEMPdeclare(ref frame, ta) &&
+        declare(ref frame, ta) &&
         
         // Start the co-routine
         coroutine(ref frame) &&
