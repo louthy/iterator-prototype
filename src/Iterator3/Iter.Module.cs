@@ -76,7 +76,6 @@ public static class Iter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<(A First, B Second)> product<A, B>(in Iter<A> ta, in Iter<B> tb)
     {
-        tb.SetIdent(666);        
         var frame = ta.Next<A, (A, B)>(out var ta1);
         return Push.iterator(ref frame, in tb) &&
                Push.apply<A, B>(ref frame)

@@ -7,13 +7,7 @@ namespace IteratorPrototype.Iterator3;
 [SkipLocalsInit]
 public readonly struct Iter<A>
 {
-    public readonly int IDENTIFIER; 
     readonly Fields fields;
-    
-    internal void SetIdent(int id)
-    {
-        Unsafe.AsRef(in IDENTIFIER) = id;
-    }
 
     ref Fields fieldsRef
     {
@@ -22,11 +16,8 @@ public readonly struct Iter<A>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iter(in Fields fields, int id)
-    {
-        this.IDENTIFIER = id;
+    internal Iter(in Fields fields) =>
         this.fields = fields;
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out A head, out Iter<A> tail)
@@ -35,9 +26,7 @@ public readonly struct Iter<A>
         tail = this;
         var frame = tail.Frame();
         frame.tops.Sync(in frame.vars.objs, in frame.vars.values); // TODO: I'd like this to not be needed
-        Log.warn("in", ref frame);
         var r = tail.fields.ops.Run(ref frame, out head);
-        Log.warn("out", ref frame);
         return r;
     }
 
@@ -110,5 +99,5 @@ public readonly struct Iter<A>
         next = Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));
 
     public override string ToString() =>
-        $"Iter<{Log.ty<A>()}> [IDENTIFIER={IDENTIFIER}] ";
+        $"Iter<{Log.ty<A>()}>";
 }

@@ -10,53 +10,27 @@ static unsafe class G
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static PullState reset<A>(ref StackFrame frame, in ushort ix)
     {
-        if (frame.globals.ResetAt<A>(ix, out var x))
-        {
-            Log.err($"RESET GLOBAL to {x} (ID:{ix})", ref frame);
-            
-            return Pull.@continue(ref frame);
-        }
-        else
-        {
-            return Pull.empty(ref frame);
-        }
+        return frame.globals.ResetAt<A>(ix, out _) 
+                   ? Pull.@continue(ref frame) 
+                   : Pull.empty(ref frame);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static PullState pullM<A>(ref StackFrame frame, in ushort ix)
     {
         var g = new Global<A>(in ix);
-        if (frame.vars.Push(in g))
-        {
-            if (typeof(A) == typeof(Iter<int>))
-            {
-                ref var variable = ref frame.globals.At<Iter<int>>(ix);
-                variable.SetIdent(999);
-            }
-            
-            Log.err($"YIELD {g.Value(ref frame)} (ID:{ix})", ref frame);
-            return Pull.@continue(ref frame);
-        }
-        else
-        {
-            return Pull.empty(ref frame);
-        }
+        return frame.vars.Push(in g) 
+                   ? Pull.@continue(ref frame) 
+                   : Pull.empty(ref frame);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static PullState pull<A>(ref StackFrame frame, in ushort ix)
     {
         ref var r = ref frame.globals.At<A>(ix);
-        if (frame.vars.Push(in r))
-        {
-            Log.err($"YIELD {r} (ID:{ix})", ref frame);
-            return Pull.@continue(ref frame);
-        }
-        else
-        {
-            return Pull.empty(ref frame);
-
-        }
+        return frame.vars.Push(in r) 
+                   ? Pull.@continue(ref frame) 
+                   : Pull.empty(ref frame);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,8 +42,6 @@ static unsafe class G
         // Pop the value from the stack
         if (frame.vars.Pop<A>(out var x))
         {
-            Log.err($"SET GLOBAL to {x} (ID:{ix})", ref frame);
-            
             // Set the global to be what was on the top of the stack
             r = x;
             return Pull.@continue(ref frame);

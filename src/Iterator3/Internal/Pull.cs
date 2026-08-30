@@ -162,9 +162,7 @@ static partial class Pull
         frame.vars.Peek<A>(out var a) && 
 
         // Push the tuple
-        @return(ref frame, (a, b)) &&
-
-        Log.function($"apply ({a}, {b})", ref frame)
+        @return(ref frame, (a, b)) 
 
             ? @continue(ref frame)
             : empty(ref frame);
