@@ -134,10 +134,6 @@ readonly ref struct StackFrame
         ops.Add(f);
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public unsafe bool Add(delegate*<ref StackFrame, PullState> f, delegate*<ref StackFrame, PullState> c) =>
-        ops.Add(f, c);
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>
         ops.Prepend(f);
 }

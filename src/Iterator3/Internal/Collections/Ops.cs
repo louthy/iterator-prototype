@@ -14,13 +14,11 @@ readonly unsafe struct Ops
     readonly struct Op
     {
         public readonly nint Fun;
-        public readonly nint Cont;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public Op(nint fun, nint cont)
+        public Op(nint fun)
         {
             Fun = fun;
-            Cont = cont;
         }
     }
     
@@ -65,18 +63,7 @@ readonly unsafe struct Ops
         if (Count + 1 > Capacity) return false;
         ref var count = ref Unsafe.AsRef(in Count);
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
-        entry = new Op((nint)f, 0);
-        count++;
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Add(in delegate*<ref StackFrame, PullState> f, in delegate*<ref StackFrame, PullState> c)
-    {
-        if (Count + 1 > Capacity) return false;
-        ref var count = ref Unsafe.AsRef(in Count);
-        ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
-        entry = new Op((nint)f, (nint)c);
+        entry = new Op((nint)f);
         count++;
         return true;
     }
@@ -95,26 +82,7 @@ readonly unsafe struct Ops
             ref Unsafe.As<Op, byte>(ref start), 
             (uint)(Unsafe.SizeOf<Op>() * count));
         
-        start = new Op((nint)f, 0);
-        count++;
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Prepend(in delegate*<ref StackFrame, PullState> f, in delegate*<ref StackFrame, PullState> c)
-    {
-        if (Count + 1 > Capacity) return false;
-        ref var count = ref Unsafe.AsRef(in Count);
-
-        ref var start = ref Unsafe.AsRef(in Fun00);
-        ref var next  = ref Unsafe.Add(ref start, 1);
-        
-        Unsafe.CopyBlock(
-            ref Unsafe.As<Op, byte>(ref next), 
-            ref Unsafe.As<Op, byte>(ref start), 
-            (uint)(Unsafe.SizeOf<Op>() * count));
-        
-        start = new Op((nint)f, (nint)c);
+        start = new Op((nint)f);
         count++;
         return true;
     }
