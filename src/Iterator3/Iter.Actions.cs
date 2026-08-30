@@ -2,9 +2,9 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Iterator3;
 
-public readonly struct IterYield;
 public readonly struct IterAwait;
 public readonly struct IterPure;
+public readonly struct IterScope;
 public readonly record struct IterTake(int amount);
 public readonly record struct IterMap<A, B>(Func<A, B> f);
 public readonly record struct IterBimap<A, B, C>(Func<A, B, C> f);
@@ -23,19 +23,19 @@ static class IterAction
     }
             
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<A> scope<A>(in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Push.scope(ref frame)
+                   ? ta1
+                   : default;
+    }
+            
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<A> pure<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
         return Push.pure<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
-                
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> yield<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.yield<A>(ref frame)
                    ? ta1
                    : default;
     }

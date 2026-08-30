@@ -1,66 +1,14 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
 using IteratorPrototype.Iterator3.Internal.Collections;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
-static unsafe class Push
+static unsafe partial class Push
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool coroutine(ref StackFrame frame) =>
-        
-        // Push the no-arg coroutine operation
-        frame.Add(&Pull.coroutine);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool coroutine<A>(ref StackFrame frame) =>
-        
-        // Push the single-arg coroutine operation
-        frame.Add(&Pull.coroutine<A>);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool yield<A>(ref StackFrame frame) =>
-        
-        // Push the yield operation
-        frame.Add(&Pull.yield<A>);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool await<A>(ref StackFrame frame) =>
-        
-        // Push the yield operation
-        frame.Add(&Pull.await<A>);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool @const<A>(ref StackFrame frame, in A value) =>
-
-        // Push the value to the globals-list
-        frame.globals.Add(in value, out var ix) &&
-
-        // The operation to load the global has the index built-in
-        frame.Add(G.pull<A>(in ix));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool var<A>(ref StackFrame frame, in A value) =>
-
-        // Push the value to the globals-list
-        frame.globals.Add(in value, out var ix) &&
-
-        // The operation to load the global has the index built-in
-        frame.Add(G.pullM<A>(in ix));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool yield<A>(ref StackFrame frame, in A value) =>
-        
-        // Add the constant value
-        @const(ref frame, in value) &&
-        
-        // Push the yield operation
-        frame.Add(&Pull.yield<A>);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool pure<A>(ref StackFrame frame) =>
-        
+
         // Push the yield operation
         frame.Add(&Pull.pure<A>);
     
@@ -72,6 +20,66 @@ static unsafe class Push
         
         // Push the yield operation
         frame.Add(&Pull.pure<A>);
+    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool yield<A>(ref StackFrame frame) =>
+
+        // Create a global variable, this will be the storage for our yield value
+        frame.globals.Add(default(A), out var yieldIx) &&
+        
+        // Fill the yield variable with the output of whatever ran before us
+        frame.Add(G.push<A>(in yieldIx)) &&
+
+        // Flag that this co-routine has yielded something
+        frame.Add(&Pull.yield) &&
+        
+        // Start a new co-routine for the value
+        frame.Add(&Pull.coroutine) &&
+    
+        // Pull the value from the global and push it onto the 'vars' stack
+        frame.Add(G.pull<A>(in yieldIx));
+    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool yield<A>(ref StackFrame frame, in A value) =>
+
+        // Create a global variable, this will be the storage for our yield value
+        frame.globals.Add(value, out var yieldIx) &&
+
+        // Flag that this co-routine has yielded something
+        frame.Add(&Pull.yield) &&
+        
+        // Start a new co-routine for the value
+        frame.Add(&Pull.coroutine) &&
+        
+        // Pull the value from the global and push it onto the 'vars' stack
+        frame.Add(G.pull<A>(in yieldIx));
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool dup<A>(ref StackFrame frame) =>
+        
+        // Push the yield operation
+        frame.Add(&Pull.dup<A>);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool coroutine(ref StackFrame frame) =>
+        
+        // Push the no-arg coroutine operation
+        frame.Add(&Pull.coroutine);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool scope(ref StackFrame frame) =>
+        
+        // Push the no-arg coroutine operation
+        frame.Prepend(&Pull.coroutine);
+
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool await<A>(ref StackFrame frame) =>
+        
+        // Push the yield operation
+        frame.Add(&Pull.await<A>);
  
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool map<A, B>(ref StackFrame frame, in Func<A, B> f) =>
@@ -128,53 +136,6 @@ static unsafe class Push
         frame.Add(&Pull.bind<A, B>);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool forever<A>(ref StackFrame frame, in A value) =>
-
-        // Mark the start of this co-routine
-        coroutine(ref frame) &&
-
-        // Push the forever value
-        @const(ref frame, in value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool singleton<A>(ref StackFrame frame, in A value) =>
-
-        // Push the singleton value
-        @const(ref frame, in value) &&
-        
-        // Repeat only once
-        take(ref frame, 1);
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool iterable<T, IS, A>(ref StackFrame frame, in K<T, A> ta)
-        where T : Tr.IterableImmutable<T, IS>
-        where IS : unmanaged  =>
-        
-        // Mark the start of this co-routine
-        coroutine(ref frame) &&
-        
-        // Push the iterable state onto the globals-list
-        var(ref frame, T.SetupImmutable(in ta)) &&
-    
-        // Push the iterable instance onto the globals-list
-        @const(ref frame, in ta) &&
-        
-        // Push the yield operation
-        frame.Add(&Pull.iterable<T, IS, A>);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool iterator<A>(ref StackFrame frame, in Iter<A> ta) =>
-
-        // Mark the start of this co-routine
-        coroutine(ref frame) &&
-        
-        // Push the iterator to the stack (TODO: this will box the Iter structure!)
-        var(ref frame, in ta) &&
-
-        // Push coroutine program-counter
-        frame.Add(&Pull.iterator<A>);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool take(ref StackFrame frame, in int amount) =>
 
         // Push the amount
@@ -182,6 +143,13 @@ static unsafe class Push
         
         // Push take operation
         frame.Add(&Pull.take);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal static PullState apply<A, B>(ref StackFrame frame) =>
+        
+        // Push apply operation
+        frame.Add(&Pull.apply<A, B>);
+
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool tuple<A, B>(ref StackFrame frame) => 
@@ -194,10 +162,16 @@ static unsafe class Push
         
         // Push tuple operation
         frame.Add(&Pull.tuple<A, B, C>);    
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool tuple1<A, B, C>(ref StackFrame frame) => 
+    internal static bool elements<A, B>(ref StackFrame frame) => 
         
-        // Push tuple operation
-        frame.Add(&Pull.tuple1<A, B, C>);    
+        // Push elements operation
+        frame.Add(&Pull.elements<A, B>);
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool elements<A, B, C>(ref StackFrame frame) => 
+        
+        // Push elements operation
+        frame.Add(&Pull.elements<A, B, C>);    
 }

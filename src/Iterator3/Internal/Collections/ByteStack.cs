@@ -39,7 +39,7 @@ public readonly struct ByteStack
     public bool PopToTop(int top)
     {
         ref var t = ref Unsafe.AsRef(in Top);
-        t = top;
+        t = Math.Min(t, top);
         return true;
     }
         

@@ -51,7 +51,7 @@ public readonly struct ObjStack
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool PopToTop(int top)
     {
-        Debug.Assert(top <= Top);
+        if(top > Top) return false;
         if(top == Top) return true;
         
         ref var tref  = ref Unsafe.AsRef(in Top);

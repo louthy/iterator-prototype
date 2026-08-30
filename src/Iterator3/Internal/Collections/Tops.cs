@@ -11,7 +11,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 [SkipLocalsInit]
 readonly struct Tops
 {
-    const int Capacity = 15;
+    const int Capacity = 16;
     
     readonly uint item0;
     readonly uint item1;
@@ -28,42 +28,23 @@ readonly struct Tops
     readonly uint itemC;
     readonly uint itemD;
     readonly uint itemE;
+    readonly uint itemF;
     readonly uint current;
-    readonly int top;
+    readonly uint begin;
+    readonly int count;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Tops() =>
-        top = 1;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public Tops(params ReadOnlySpan<uint> items)
+    public Tops()
     {
-        if (items.Length == 0)
-        {
-            top = 1;
-            return;
-        }
-        if (items.Length > Capacity)
-        {
-            throw new ArgumentException("Stack overflow");
-        }
-        var span = MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in item0), Capacity);
-        items.CopyTo(span);
-        top = items.Length;
-        current = items[^1];
+        count = 1;
+        begin = 0;
+        current = 0;
     }
 
-    public void Init()
+    public int Count
     {
-        // We have one entry to start with!
-        ref var t = ref Unsafe.AsRef(in top);
-        t = 1;
-
-        // Zero the current cache
-        Current = 0;
-
-        // Zero the top entry
-        Top = Current;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => count;
     }
 
     public bool Sync(in ObjStack objs, in ByteStack values)
@@ -105,45 +86,39 @@ readonly struct Tops
     public bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => top == 0;
+        get => count == 0;
     }
-  
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void PopPC()
+ 
+
+    /// <summary>
+    /// This is the state when this frame started
+    /// </summary>
+    ref uint Begin
     {
-        CurrentPC = HasLast ? LastPC : (byte)0;
-        Top = Current;
-    }
-  
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Pop()
-    {
-        ref var t = ref Unsafe.AsRef(in top);
-        t--;
-        Current = Top;
-        return t > 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        get => ref Unsafe.AsRef(in begin);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Peek(out uint value)
-    {
-        value = current;
-        return true;
-    }
-
-    public ref uint Current
+    /// <summary>
+    /// This is the current state of the frame
+    /// </summary>
+    ref uint Current
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AsRef(in current);
     }
 
+    /*
     public bool HasLast
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => top is not (0 or 1);
     }
 
-    public ref uint Last
+    /// <summary>
+    /// This is the state of the last frame
+    /// </summary>
+    ref uint Last
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get 
@@ -188,6 +163,7 @@ readonly struct Tops
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AddByteOffset(ref LastBytes, 3);
     }
+    */
 
     public ref byte CurrentBytes
     {
@@ -218,85 +194,84 @@ readonly struct Tops
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AddByteOffset(ref CurrentBytes, 3);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Push()
-    {
-        
-        // We only check out of bounds on growth
-        if (top >= Capacity) return false;
-
-        // Reference to the top index
-        ref var t = ref Unsafe.AsRef(in top);
  
-        // Get the current state and make sure the Entry is synced before we change the top.
-        if (t > 0)
-        {
-            // We want to go back to the start of the co-routine when this current
-            // frame is popped.  So, get the last program-counter
-            var lastPC = HasLast ? LastPC : (byte)0;
-            
-            // Cache the latest state
-            var now = current;
-            
-            // Synchronise the current entry to have the latest state and the previous
-            // program-counter
-            CurrentPC = lastPC;
-            Top = current;
-            
-            // Make top 1 louder
-            t++;
-
-            Top = now;
-            Current = now;
-        }
-        else
-        {
-            // Make top 1 louder
-            t++;
-            Top = 0;
-            Current = 0;
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool ResetFrame()
+    {
+        Current = Begin;
+        Top = Begin;
         return true;
     }
-
+  
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool Push(uint value)
+    public bool PopFrame()
     {
-        // We only check out of bounds on growth
-        if (top >= Capacity) return false;
+        if (count <= 0) return false;
+        
+        // Clear the top entry
+        Top = 0;
+        
+        // Make the stack 1 quieter
+        ref var c = ref Unsafe.AsRef(in count);
+        c--;
 
-        // Reference to the top index
-        ref var t = ref Unsafe.AsRef(in top);
- 
-        // Get the current state and make sure the Entry is synced before we change the top.
-        if (t > 0)
+        // Reload the current state cache
+        Current = Top;
+        
+        /*
+        // Make sure the yield counter decreases if we're leaving the frame.
+        if (CurrentYield > 0)
         {
-            // Cache the latest state
-            var now = current;
-            
-            // Synchronise the current entry to have the latest state
-            Top = now;
-            
-            // Make top 1 louder
-            t++;
+            CurrentYield--;
+            Top = Current;
+        }
+        */
+        
+        // Make sure we remember the start of this frame
+        Begin = Current;
+        
+        return true;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool PushFrame()
+    {
+        if (count >= Capacity) return false;
 
-            Top = value;
-            Current = value;
-        }
-        else
-        {
-            // Make top 1 louder
-            t++;
-            Top = value;
-            Current = value;
-        }
+        // Save the current program-counter and then reset the cached version to have the one from the
+        // start of the current frame.  That means popping the entry takes us back to the start of the
+        // current frame, allowing us to loop through all elements of the iteration.
+        var beginPC = Begin & 0xFF;
+        var nowPC = Current & 0xFF;
+        CurrentPC = (byte)beginPC;
+        
+        // This takes the cached current state (with the program-counter reset back to the start of this frame) and
+        // copies it to the current entry at the top of the stack.
+        Top = Current;
+        
+        // Make the top of the stack 1 louder
+        ref var c = ref Unsafe.AsRef(in count);
+        c++;
+
+        // The current yield should be reset to zero because no yields have happened yet.
+        // This is a `ref` to the cached current state. 
+        CurrentYield = 0;
+
+        // Reset thew current PC to the saved value
+        CurrentPC = (byte)nowPC;
+        
+        // Now write the current state to the new entry at the top of the stack
+        Top = Current;
+        
+        // Remember where this frame starts
+        Begin = Current;
+        
         return true;
     }
 
     ref uint Top
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), top - 1);
+        get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
     }    
 }

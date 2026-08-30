@@ -34,6 +34,12 @@ abstract class GlobalsGen<A>
 
     public abstract bool At(ref Globals list, in ushort ix, out A value);
     public abstract ref A At(ref Globals list, ushort ix);
+
+    public abstract bool DeclaredAt(ref Globals list, in ushort ix, out A value);
+    public abstract ref A DeclaredAt(ref Globals list, ushort ix);
+
+    public abstract bool ResetAt(ref Globals list, in ushort ix, out A value);
+    public abstract bool ResetAt(ref Globals list, in ushort ix);
     
     public abstract bool Add(ref Globals list, in A value);
     public abstract bool Add(ref Globals list, in A value, out ushort index);
@@ -50,7 +56,19 @@ class ManagedGlobals<A> : GlobalsGen<A>
     
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtManaged<A>(ix);
+
+    public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
+        list.DeclaredAtManaged(ix, out value);
     
+    public override ref A DeclaredAt(ref Globals list, ushort ix) =>
+        ref list.DeclaredAtManaged<A>(ix);
+
+    public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
+        list.ResetAtManaged(ix, out value);
+
+    public override bool ResetAt(ref Globals list, in ushort ix) =>
+        list.ResetAtManaged<A>(ix);
+
     public override bool Add(ref Globals list, in A value) =>
         list.AddManaged(in value);
     
@@ -70,6 +88,18 @@ class StructGlobals<A> : GlobalsGen<A>
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtStruct<A>(ix);
     
+    public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
+        list.DeclaredAtStruct(ix, out value);
+    
+    public override ref A DeclaredAt(ref Globals list, ushort ix) =>
+        ref list.DeclaredAtStruct<A>(ix);
+
+    public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
+        list.ResetAtStruct(ix, out value);
+
+    public override bool ResetAt(ref Globals list, in ushort ix) =>
+        list.ResetAtStruct<A>(ix);
+
     public override bool Add(ref Globals list, in A value) =>
         list.AddStruct(in value);
     
@@ -88,6 +118,18 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
     
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtUnmanaged<A>(ix);
+
+    public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
+        list.DeclaredAtUnmanaged(ix, out value);
+    
+    public override ref A DeclaredAt(ref Globals list, ushort ix) =>
+        ref list.DeclaredAtUnmanaged<A>(ix);
+
+    public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
+        list.ResetAtUnmanaged(ix, out value);
+
+    public override bool ResetAt(ref Globals list, in ushort ix) =>
+        list.ResetAtUnmanaged<A>(ix);
 
     public override bool Add(ref Globals list, in A value) =>
         list.AddUnmanaged(in value);

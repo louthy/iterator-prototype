@@ -30,74 +30,100 @@ readonly ref struct StackFrame
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AsRef(in fields.vars);
-    } 
+    }
 
-    public ref Vars yields
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void Unwind()
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AsRef(in fields.yields);
-    } 
-    
+        // TODO: Some more efficient way to unwind the stack.
+
+        while (Pop())
+        {
+            // unwind 
+        }
+    }
+        
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public StackFrame(ref Fields fields) =>
         this.fields = ref fields;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool StartCoRoutine<A>() =>
-        
-        // Get the result type off the stack
-        vars.Pop<A>(out var x) &&
-
-        // Create a new scope
-        Push() &&
-
-        // Push the input type into the new co-routine scope
-        vars.Push(in x);
+    bool SetArg<A>(ushort argIndex, A value)
+    {
+        ref var g = ref globals.At<A>(argIndex);
+        g = value;
+        return true;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool StartNoArgCoRoutine() =>
-        
-        // Create a new scope
-        Push();
+    bool ClearArg<A>(ushort argIndex)
+    {
+        ref var g = ref globals.At<A>(argIndex);
+        g = default!;
+        return true;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool StartYield<A>() =>
-
-        // Get the result type off the stack
-        vars.Pop<A>(out var x) &&
-
+    public bool StartScope()
+    {
         // Create a new scope
-        Push() &&
+        var success = Push();
+        
+        var self = this;
+        Log.coroutine("{", ref self);
+        Log.scope();
+        
+        return success;
+    }
 
-        // Yield
-        yields.Push(in x);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool StartYield<A>(in A value) =>
-        
-        // Create a new scope
-        Push() &&
-        
-        // Yield
-        yields.Push(in value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool EndCoRoutine<A>() =>
-        
+    public bool EndScope<A>(out A head)
+    {
         // Get the return value
-        vars.Pop(out A result) &&
+        if (!vars.Pop(out head)) return false;
         
         // Pop the current scope
-        Pop() &&
-        
-        // Push the result
-        vars.Push(in result);
+        var success = Pop();
+                
+        var self = this;
+        Log.descope();
+        Log.coroutine("}", ref self);
+
+        return success;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public bool VoidCoRoutine() =>
+    public bool ResetFrame<A>(out A result)
+    {
+        // Get the return value
+        vars.Pop(out result);
+
+        var self = this;
+        Log.coroutine("end-frame", ref self);
+
+        // Pop the current tops
+        var success = tops.ResetFrame();
+        
+        Log.coroutine("reset-frame", ref self);
+        return success;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool VoidScope()
+    {
+        var self = this;
+        Log.descope();
+        Log.coroutine("}", ref self);
         
         // Pop the current scope
-        Pop();
+        var success = Pop();
+
+        Log.coroutine("end", ref self);
+
+        return success;
+    }
+        
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Push() =>
@@ -106,12 +132,12 @@ readonly ref struct StackFrame
         tops.Sync(in vars.objs, in vars.values) &&
         
         // Push the current tops onto the stack
-        tops.Push();
+        tops.PushFrame();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Pop()
     {
-        if (tops.Pop())
+        if (tops.PopFrame())
         {
             vars.objs.PopToTop(tops.CurrentObj);
             vars.values.PopToTop(tops.CurrentValue);
@@ -140,6 +166,10 @@ readonly ref struct StackFrame
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public unsafe bool Add(delegate*<ref StackFrame, PullState> f) =>
         ops.Add(f);
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public unsafe bool Add(delegate*<ref StackFrame, PullState> f, delegate*<ref StackFrame, PullState> c) =>
+        ops.Add(f, c);
         
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>

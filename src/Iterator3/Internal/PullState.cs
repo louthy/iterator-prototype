@@ -14,7 +14,18 @@ public readonly struct PullState : IEquatable<PullState>, IEquatable<int>
     public static readonly PullState Void = new (0);
     public static readonly PullState Continue = new (1);
     public static readonly PullState Pure = new(2);
-    
+    public static readonly PullState End = new (3);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static implicit operator PullState(bool flag) =>
+        flag
+            ? Continue
+            : Void;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static implicit operator bool(PullState s) =>
+        s.Value == 1;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static bool operator false(PullState s) =>
         s.Value == 0;

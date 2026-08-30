@@ -8,5 +8,4 @@ readonly struct Fields
     public readonly Ops ops;
     public readonly Globals globals;
     public readonly Vars vars;
-    public readonly Vars yields;
 }

@@ -1,22 +1,32 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3;
 
 [SkipLocalsInit]
 public readonly struct Iter<A>
 {
+    public readonly int IDENTIFIER; 
     readonly Fields fields;
+    
+    internal void SetIdent(int id)
+    {
+        Unsafe.AsRef(in IDENTIFIER) = id;
+    }
 
     ref Fields fieldsRef
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AsRef(in fields);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal Iter(in Fields fields) =>
+    internal Iter(in Fields fields, int id)
+    {
+        this.IDENTIFIER = id;
         this.fields = fields;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool TryGetValue(out A head, out Iter<A> tail)
@@ -24,8 +34,11 @@ public readonly struct Iter<A>
         head = default!;
         tail = this;
         var frame = tail.Frame();
-        frame.tops.Sync(in frame.vars.objs, in frame.vars.values);  // TODO: I'd like this to not be needed
-        return tail.fields.ops.Run(ref frame, out head);
+        frame.tops.Sync(in frame.vars.objs, in frame.vars.values); // TODO: I'd like this to not be needed
+        Log.warn("in", ref frame);
+        var r = tail.fields.ops.Run(ref frame, out head);
+        Log.warn("out", ref frame);
+        return r;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -39,16 +52,16 @@ public readonly struct Iter<A>
         */
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iter<A> operator |(Iter<A> lhs, IterAwait rhs) =>
+    public static Iter<A> operator |(IterScope _, Iter<A> rhs) =>
+        IterAction.scope(in rhs);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static Iter<A> operator |(Iter<A> lhs, IterAwait _) =>
         IterAction.await(in lhs);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iter<A> operator |(Iter<A> lhs, IterPure rhs) =>
+    public static Iter<A> operator |(Iter<A> lhs, IterPure _) =>
         IterAction.pure(in lhs);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Iter<A> operator |(Iter<A> lhs, IterYield rhs) =>
-        IterAction.yield(in lhs);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Iter<A> operator |(Iter<A> lhs, IterTake rhs) =>
@@ -62,6 +75,10 @@ public readonly struct Iter<A>
         
         // We need an initial scope
         f.Push();
+        
+        // We waste a bit of space for the first global, so that 0 is a valid index
+        // for the input.  But awaiting it should be considered an error.
+        f.globals.Add(0xDEADBEEF);
         
         return f;
     }
@@ -90,5 +107,8 @@ public readonly struct Iter<A>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     internal void CopyCast<B>(out Iter<B> next) =>
-        next = Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));        
+        next = Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));
+
+    public override string ToString() =>
+        $"Iter<{Log.ty<A>()}> [IDENTIFIER={IDENTIFIER}] ";
 }

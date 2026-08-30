@@ -1193,6 +1193,25 @@ public sealed class Arr<A> :
         CalculateHashCode();
 
     [Pure]
+    public override string ToString()
+    {
+        if(Count == 0) return "[]";
+        Span<char> str = stackalloc char[1024];
+        var        m   = new StringMaker(str);
+        var        sa  = IterableMutable.setup<Arr, ArrState, ArrStateRef, A>(this);
+        m.Append('[');
+        while (IterableMutable.step<Arr, ArrState, ArrStateRef, A>(this, ref sa, out var x))
+        {
+            m.Append(x);
+            m.Append(',');
+            m.Append(' ');
+        }
+        m.Undo(2);
+        m.Append(']');
+        return m.ToString();
+    }
+
+    [Pure]
     public static bool operator ==(Arr<A>? lhs, Arr<A>? rhs) =>
         lhs?.Equals(rhs) ?? rhs is null;
 

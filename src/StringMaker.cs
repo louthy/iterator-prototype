@@ -23,9 +23,10 @@ public ref struct StringMaker(Span<char> buffer)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(string str)
     {
+        if(str.Length + pos > buffer.Length) MoveToHeap();
         foreach (var c in str)
         {
-            Append(c);
+            buffer[pos++] = c;
         }
     }
 
@@ -46,5 +47,5 @@ public ref struct StringMaker(Span<char> buffer)
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() =>
-        new (buffer);
+        new (buffer[..pos]);
 }

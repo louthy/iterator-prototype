@@ -7,6 +7,11 @@ public readonly struct ArrState(in int index, in int count)
 {
     public readonly int Index = index;
     public readonly int Count = count;
+    
+    public override string ToString() =>
+        Index < Count
+            ? $"ArrState({Index + 1} of {Count})"
+            : "ArrState(complete)";
 }
 
 [SkipLocalsInit]

@@ -1,3 +1,5 @@
+using IteratorPrototype.Iterator3.Internal;
+
 namespace IteratorPrototype.Iterator3;
 
 using static IteratorPrototype.Iterator3.Iter;
@@ -6,9 +8,14 @@ public static class IterTests
 {
     public static void Tests()
     {
+        Log.disable();
+
         Basic0();
         Basic1();
+        Basic2_0();
+        Basic2_1();
         Basic2();
+
         /*
         Test0();
         Test3();
@@ -25,7 +32,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.Write($"{head} ");
+            Console.WriteLine($"{head} ");
         }
         
         Console.WriteLine();
@@ -44,6 +51,44 @@ public static class IterTests
         Console.WriteLine();
     }
 
+    public static void Basic2_0()
+    {
+        var iter = from(10, 20, 30, 40, 50);
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.WriteLine($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic2_0_0()
+    {
+        var iter = lift(from(1));
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.WriteLine($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic2_1()
+    {
+        var iter = from(10, 20)
+                 | from(100, 200)
+                 | bimap((int x, int y) => x * y);
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.WriteLine($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
     public static void Basic2()
     {
         var iter = from(1, 2, 3)
@@ -52,7 +97,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.Write($"{head} ");
+            Console.WriteLine($"{head} ");
         }
         
         Console.WriteLine();
@@ -115,7 +160,7 @@ public static class IterTests
     public static void Test3()
     {
         var arr  = Arr.create(1..6);
-        var iter = Iter.from<Arr, ArrState, int>(arr).Map(x => $"Item {x}");
+        var iter = from<Arr, ArrState, int>(arr).Map(x => $"Item {x}");
         
         while(iter.TryGetValue(out var head, out iter))
         {
