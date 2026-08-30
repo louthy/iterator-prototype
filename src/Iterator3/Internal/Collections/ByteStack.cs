@@ -12,33 +12,35 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 [StructLayout(LayoutKind.Explicit, Size = Capacity)]
 public readonly struct ByteStack
 {
-    const int Capacity = 128 - sizeof(int);
+    public const int Capacity = 128 - sizeof(int);
     
     [FieldOffset(0)]
-    public readonly int Top;
+    public readonly int Count;
     
     [FieldOffset(4)]
     public readonly byte Stack;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public bool Add(in ByteStack rhs)
+    {
+        if(rhs.Count + Count > Capacity)
+        {
+            return false;
+        }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void CopyTo(ref ByteStack dest)
-    {
-        Unsafe.CopyBlock(ref Unsafe.AsRef(in dest.Stack), in Stack, (uint)Top);
-        ref var dtop = ref Unsafe.AsRef(in dest.Top);
-        dtop = Top;
-    }
+        var     sizeOfPtr = Unsafe.SizeOf<nint>();
+        var     srcSize   = (uint)(rhs.Count * sizeOfPtr);
+        ref var dest      = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), rhs.Count * sizeOfPtr);
+        ref var src       = ref Unsafe.AsRef(in rhs.Stack);
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Clear()
-    {
-        ref var self = ref Unsafe.AsRef(in this);
-        Unsafe.InitBlock(ref Unsafe.As<ByteStack, byte>(ref self), 0, Capacity);
+        Unsafe.CopyBlock(ref dest, ref src, srcSize);
+        return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool PopToTop(int top)
     {
-        ref var t = ref Unsafe.AsRef(in Top);
+        ref var t = ref Unsafe.AsRef(in Count);
         t = Math.Min(t, top);
         return true;
     }
@@ -47,7 +49,7 @@ public readonly struct ByteStack
     public bool Pop<A>()
     {
         var     sizeOf = Unsafe.SizeOf<A>();
-        ref var top    = ref Unsafe.AsRef(in Top);
+        ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
         return true;
     }
@@ -56,7 +58,7 @@ public readonly struct ByteStack
     public bool Pop<A>(out A value)
     {
         var     sizeOf = Unsafe.SizeOf<A>();
-        ref var top    = ref Unsafe.AsRef(in Top);
+        ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
         return true;
@@ -68,23 +70,23 @@ public readonly struct ByteStack
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
         var     sizeOf = Unsafe.SizeOf<A>();
-        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Top - sizeOf));
+        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Count - sizeOf));
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public ref A PeekAt<A>()
         where A : unmanaged =>
-        ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Top - Unsafe.SizeOf<A>()));
+        ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count - Unsafe.SizeOf<A>()));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Push<A>(in A value)
         where A : unmanaged
     {
         var sizeOf = Unsafe.SizeOf<A>();
-        if (Top + sizeOf > Capacity) return false;
-        ref var top   = ref Unsafe.AsRef(in Top);
-        ref var stack = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Top);
+        if (Count + sizeOf > Capacity) return false;
+        ref var top   = ref Unsafe.AsRef(in Count);
+        ref var stack = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count);
         ref var entry = ref Unsafe.As<byte, A>(ref stack);
         entry = value;
         top += sizeOf;
@@ -96,8 +98,8 @@ public readonly struct ByteStack
         where A : unmanaged
     {
         var sizeOf = Unsafe.SizeOf<A>();
-        if (Top + sizeOf > Capacity) return false;
-        ref var top  = ref Unsafe.AsRef(in Top);
+        if (Count + sizeOf > Capacity) return false;
+        ref var top  = ref Unsafe.AsRef(in Count);
         ref var src  = ref Unsafe.AsRef(in Stack);
         ref var dest = ref Unsafe.AddByteOffset(ref src, sizeOf);
 

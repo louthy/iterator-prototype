@@ -4,7 +4,6 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -47,35 +46,13 @@ readonly struct Tops
         get => count;
     }
 
-    public bool Sync(in ObjStack objs, in ByteStack values)
+    public bool Sync(in Vars.State snapshot)
     {
         // Update the objects-stack top cache 
-        CurrentObj = (byte)objs.Top;
+        CurrentObj = snapshot.ObjectsTop;
         
         // Update the values-stack top cache 
-        CurrentValue = (byte)values.Top;
-        
-        // Sync the top entry to the current cache
-        Top = Current;
-        
-        return true;
-    }
-
-    public bool Sync(in ByteStack values)
-    {
-        // Update the values-stack top cache 
-        CurrentValue = (byte)values.Top;
-        
-        // Sync the top entry to the current cache
-        Top = Current;
-        
-        return true;
-    }
-
-    public bool Sync(in ObjStack objs)
-    {
-        // Update the objects-stack top cache 
-        CurrentObj = (byte)objs.Top;
+        CurrentValue = snapshot.ValuesTop;
         
         // Sync the top entry to the current cache
         Top = Current;
@@ -107,63 +84,6 @@ readonly struct Tops
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AsRef(in current);
     }
-
-    /*
-    public bool HasLast
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => top is not (0 or 1);
-    }
-
-    /// <summary>
-    /// This is the state of the last frame
-    /// </summary>
-    ref uint Last
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get 
-        {
-            if (HasLast)
-            {
-                return ref Unsafe.Add(ref Unsafe.AsRef(in item0), top - 2);
-            }
-            else
-            {
-                throw new StackUnderflowException();
-            }
-        }
-    }
-
-    public ref byte LastBytes
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.As<uint, byte>(ref Last);
-    }
-
-    public ref byte LastPC
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AddByteOffset(ref LastBytes, 0);
-    }
-
-    public ref byte LastObj
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AddByteOffset(ref LastBytes, 1);
-    }
-
-    public ref byte LastValue
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AddByteOffset(ref LastBytes, 2);
-    }
-
-    public ref byte LastYield
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        get => ref Unsafe.AddByteOffset(ref LastBytes, 3);
-    }
-    */
 
     public ref byte CurrentBytes
     {
@@ -217,15 +137,6 @@ readonly struct Tops
 
         // Reload the current state cache
         Current = Top;
-        
-        /*
-        // Make sure the yield counter decreases if we're leaving the frame.
-        if (CurrentYield > 0)
-        {
-            CurrentYield--;
-            Top = Current;
-        }
-        */
         
         // Make sure we remember the start of this frame
         Begin = Current;

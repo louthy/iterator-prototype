@@ -97,7 +97,7 @@ readonly ref struct StackFrame
     public bool Push() =>
         
         // Make sure the tops are in-sync with live object and value stacks; so that we can safely pop later.
-        tops.Sync(in vars.objs, in vars.values) &&
+        tops.Sync(vars.Snapshot) &&
         
         // Push the current tops onto the stack
         tops.PushFrame();
@@ -107,14 +107,12 @@ readonly ref struct StackFrame
     {
         if (tops.PopFrame())
         {
-            vars.objs.PopToTop(tops.CurrentObj);
-            vars.values.PopToTop(tops.CurrentValue);
+            vars.Reset(new Vars.State(tops.CurrentObj, tops.CurrentValue));
             return true;
         }
         else
         {
-            vars.objs.PopToTop(0);
-            vars.values.PopToTop(0);
+            vars.Reset(new Vars.State(0, 0));
             return false;
         }
     }

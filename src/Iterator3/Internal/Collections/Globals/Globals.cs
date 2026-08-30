@@ -336,7 +336,7 @@ readonly struct Globals
             return false;
         }
         
-        var top = objs.Top;
+        var top = objs.Count;
         
         // NOTE: The two box allocations are required because the declared value
         //       is used to reset the original value.  We pass references back, so 
@@ -373,7 +373,7 @@ readonly struct Globals
             return false;
         }
 
-        var top = objs.Top;
+        var top = objs.Count;
         if (objs.Push(in value) && declaredObjs.Push(in value))
         {
             ref var ix = ref IxUntyped(c);
@@ -405,7 +405,7 @@ readonly struct Globals
             return false;
         }
 
-        var top = values.Top;
+        var top = values.Count;
         if (values.Push(in value) && declaredValues.Push(in value))
         {
             ref var ix = ref IxUntyped(c);

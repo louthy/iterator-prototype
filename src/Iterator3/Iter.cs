@@ -25,7 +25,7 @@ public readonly struct Iter<A>
         head = default!;
         tail = this;
         var frame = tail.Frame();
-        frame.tops.Sync(in frame.vars.objs, in frame.vars.values); // TODO: I'd like this to not be needed
+        frame.tops.Sync(frame.vars.Snapshot); // TODO: I'd like this to not be needed
         var r = tail.fields.ops.Run(ref frame, out head);
         return r;
     }

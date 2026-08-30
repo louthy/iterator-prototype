@@ -1,3 +1,4 @@
+using IteratorPrototype.Iterator3.Internal;
 using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
@@ -11,7 +12,7 @@ public static class Iterator
         var cont = Cont.iterable<T, IS, A>(ta);
         return new Iterator<IS, A>(cont, T.SetupImmutable(ta));
     }
-    
+
     public static void Tests()
     {
         Test1();
@@ -19,7 +20,7 @@ public static class Iterator
         Test3();
         Test4();
     }
-    
+
     public static void Test1()
     {
         var arr   = Arr.create(1..6);

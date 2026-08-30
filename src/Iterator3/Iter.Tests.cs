@@ -31,7 +31,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.WriteLine($"{head} ");
+            Console.Write($"{head} ");
         }
         
         Console.WriteLine();
@@ -56,7 +56,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.WriteLine($"{head} ");
+            Console.Write($"{head} ");
         }
         
         Console.WriteLine();
@@ -68,7 +68,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.WriteLine($"{head} ");
+            Console.Write($"{head} ");
         }
         
         Console.WriteLine();
@@ -82,7 +82,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.WriteLine($"{head} ");
+            Console.Write($"{head} ");
         }
         
         Console.WriteLine();
@@ -96,7 +96,7 @@ public static class IterTests
         
         while(iter.TryGetValue(out var head, out iter))
         {
-            Console.WriteLine($"{head} ");
+            Console.Write($"{head} ");
         }
         
         Console.WriteLine();

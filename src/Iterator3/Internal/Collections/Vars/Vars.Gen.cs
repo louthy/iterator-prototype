@@ -33,11 +33,11 @@ abstract class VarsGen<A>
         }
     }
 
-    public abstract bool PopImpl(ref Vars frame, out A top);
-    public abstract bool PopImpl(ref Vars frame);
-    public abstract bool PrependImpl(ref Vars frame, in A top);
-    public abstract bool PushImpl(ref Vars frame, in A top);
-    public abstract bool PeekImpl(ref Vars frame, out A top);    
+    public abstract bool PopImpl(ref Vars vars, out A value);
+    public abstract bool PopImpl(ref Vars vars);
+    public abstract bool PushImpl(ref Vars vars, in A value);
+    public abstract bool PeekImpl(ref Vars vars, out A value);    
+    public abstract ref A PeekAtImpl(ref Vars vars);    
 }
 
 class ManagedVars<A> : VarsGen<A>
@@ -47,79 +47,51 @@ class ManagedVars<A> : VarsGen<A>
         Instance = new ManagedVars<A>();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack, out A top) =>
-        stack.objs.Pop(out top);
+    public override bool PopImpl(ref Vars vars, out A value) =>
+        vars.PopManaged(out value);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack) =>
-        stack.objs.Pop();
+    public override bool PopImpl(ref Vars vars) =>
+        vars.PopManaged();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PushImpl(ref Vars stack, in A top) =>
-        stack.objs.Push(top);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PrependImpl(ref Vars stack, in A top) =>
-        stack.objs.Prepend(top);
+    public override bool PushImpl(ref Vars vars, in A value) =>
+        vars.PushManaged(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PeekImpl(ref Vars stack, out A top) =>
-        stack.objs.Peek(out top);
+    public override bool PeekImpl(ref Vars vars, out A value) =>
+        vars.PeekManaged(out value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override ref A PeekAtImpl(ref Vars vars) =>
+        ref vars.PeekAtManaged<A>();
 }
 
 class StructVars<A> : VarsGen<A>
     where A : struct
 {
-    // TODO: Consider if we can do something cunning to allocate and free the Box type
-    //       Probably from an object-pool, but also see there's a way of freeing the objects
-    //       on Pop operations.
-    //
-    // TODO: The major issue would be somebody doing default(ObjStack) to wipe the objects.
-    
     static StructVars() =>
         Instance = new StructVars<A>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack, out A top)
-    {
-        if (stack.objs.Pop<Box<A>>(out var box))
-        {
-            top = box.Value;
-            return true;
-        }
-        else
-        {
-            top = default!;
-            return false;
-        }
-    }
+    public override bool PopImpl(ref Vars vars, out A value) =>
+        vars.PopStruct(out value);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack) =>
-        stack.objs.Pop();
+    public override bool PopImpl(ref Vars vars) =>
+        vars.PopStruct();
     
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PushImpl(ref Vars stack, in A top) =>
-        stack.objs.Push(new Box<A>(top));
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PrependImpl(ref Vars stack, in A top) =>
-        stack.objs.Prepend(new Box<A>(top));
+    public override bool PushImpl(ref Vars vars, in A value) =>
+        vars.PushStruct(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PeekImpl(ref Vars stack, out A top)
-    {
-        if (stack.objs.Peek<Box<A>>(out var box))
-        {
-            top = box.Value;
-            return true;
-        }
-        else
-        {
-            top = default!;
-            return false;
-        }
-    }
+    public override bool PeekImpl(ref Vars vars, out A value) =>
+        vars.PeekStruct(out value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override ref A PeekAtImpl(ref Vars vars) =>
+        ref vars.PeekAtStruct<A>();
 }
 
 class UnmanagedVars<A> : VarsGen<A>
@@ -127,24 +99,24 @@ class UnmanagedVars<A> : VarsGen<A>
 {
     static UnmanagedVars() =>
         Instance = new UnmanagedVars<A>();
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override bool PopImpl(ref Vars vars, out A value) =>
+        vars.PopUnmanaged(out value);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override bool PopImpl(ref Vars vars) =>
+        vars.PopUnmanaged<A>();
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public override bool PushImpl(ref Vars vars, in A value) =>
+        vars.PushUnmanaged(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack, out A top) =>
-        stack.values.Pop(out top);
-    
+    public override bool PeekImpl(ref Vars vars, out A value) =>
+        vars.PeekUnmanaged(out value);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PopImpl(ref Vars stack) =>
-        stack.values.Pop<A>();
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PushImpl(ref Vars stack, in A top) =>
-        stack.values.Push(top);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PrependImpl(ref Vars stack, in A top) =>
-        stack.values.Prepend(top);
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public override bool PeekImpl(ref Vars stack, out A top) =>
-        stack.values.Peek(out top);
+    public override ref A PeekAtImpl(ref Vars vars) =>
+        ref vars.PeekAtUnmanaged<A>();
 }
