@@ -8,19 +8,33 @@ public static class IterTests
 {
     public static void Tests()
     {
-
-        Basic0();
-        Basic1();
-        Basic2_0();
+        Log.enable();
+        
+        //Basic00();
+        //Basic0();
+        //Basic1();
+        //Basic2_0();
         Basic2_1();
         Basic2();
-
+        
         /*
         Test0();
         Test3();
         Test1();
         Test2();
         Test4();*/
+    }
+
+    public static void Basic00()
+    {
+        var iter = forever(1) | take(0);
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.WriteLine($"{head} ");
+        }
+        
+        Console.WriteLine();
     }
 
     public static void Basic0()
@@ -40,7 +54,7 @@ public static class IterTests
     public static void Basic1()
     {
         var iter = singleton(1) 
-                     | map<int, string>(x => $"'{x}'");
+                      | map<int, string>(x => $"'{x}'");
         
         while(iter.TryGetValue(out var head, out iter))
         {

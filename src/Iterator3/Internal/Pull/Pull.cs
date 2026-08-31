@@ -40,27 +40,6 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState await<A>(ref StackFrame frame) =>
-
-        // Get the awaited value from the globals-list
-        frame.globals.At<A>(frame.tops.CurrentYield, out var value) &&
-
-        // Push the awaited value onto the 'variables' stack 
-        frame.vars.Push(in value)
-
-            ? @continue(ref frame)
-            : empty(ref frame);
-
-    [MethodImpl(Optimisations.Default)]
-    public static PullState await<A>(ref StackFrame frame, out A value) =>
-
-        // Get the awaited value from the globals-list
-        frame.globals.At(frame.tops.CurrentYield, out value) 
-        
-            ? @continue(ref frame)
-            : empty(ref frame);
-
-    [MethodImpl(Optimisations.Default)]
     public static PullState map<A, B>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -220,16 +199,20 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState take(ref StackFrame frame) =>
+    public static PullState take<A>(ref StackFrame frame) =>
 
         // Pop the amount 
-        arg<int>(ref frame, out var amount, out var g) && amount > 0 &&
+        arg<int>(ref frame, out var amount, out var g) && amount > 0
 
-        // Push the updated amount
-        g.Update(ref frame, amount - 1)
+            // Push the updated amount
+            ? g.Update(ref frame, amount - 1) 
+                  ? @continue(ref frame)
+                  : empty(ref frame)
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            // We're voiding this, so we need to pop the top entry
+            // so that we don't leave a stray value on the stack.
+            : constarg<A>(ref frame, out _) && false;
+
 
     [MethodImpl(Optimisations.Default)]
     public static PullState bind<A, B>(ref StackFrame frame) =>

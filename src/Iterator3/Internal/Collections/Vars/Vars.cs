@@ -106,15 +106,35 @@ readonly partial struct Vars
         where A : unmanaged =>
         values.Peek(out value);
 
-    public State Snapshot
+    [MethodImpl(Optimisations.Default)]
+    public bool SyncTo(ref Tops tops)
     {
-        [MethodImpl(Optimisations.Default)]
-        get => new((byte)objs.Count, (byte)values.Count);
+        var os      = (uint)(objs.Count   & 0xFF) << 16;
+        var vs      = (uint)(values.Count & 0xFF) << 8;
+        var current = tops.Current & 0xFF0000FF;
+        tops.CurrentRef = current | os | vs;
+        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Reset(State snapshot) =>
+    public bool SyncFrom(in Tops tops)
+    {
+        var snapshot = tops.Current & 0x00FFFF00;
+        var os       = (int)((snapshot & 0x00FF0000) >> 16);
+        var vs       = (int)((snapshot & 0x0000FF00) >> 8);
+        
         // TODO: This feels a bit shonky. Arguably the stacks should be torn down without the need for this.
-        objs.PopToTop(snapshot.ObjectsTop) &&
-        values.PopToTop(snapshot.ValuesTop);
+        return objs.PopToTop(os) && 
+               values.PopToTop(vs);
+    }
+
+    [MethodImpl(Optimisations.Default)]
+    public bool Zero() =>
+        objs.PopToTop(0) && values.PopToTop(0);
+    
+    public int ObjsCount => 
+        objs.Count;
+    
+    public int ValuesCount => 
+        values.Count;
 }

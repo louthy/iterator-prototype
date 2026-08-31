@@ -12,6 +12,11 @@ readonly struct Tops
 {
     const int Capacity = 16;
     
+    // 0x000000FF = PC 
+    // 0x0000FF00 = Values top 
+    // 0x00FF0000 = Objs top 
+    // 0xFF000000 = Yield 
+    
     readonly uint item0;
     readonly uint item1;
     readonly uint item2;
@@ -49,14 +54,14 @@ readonly struct Tops
     [MethodImpl(Optimisations.Default)]
     public bool Sync(in Vars.State snapshot)
     {
-        // Update the objects-stack top cache 
-        CurrentObj = snapshot.ObjectsTop;
+        // Update the current cache
+        var c = (current & 0xFF0000FF) | (snapshot.Bits & 0x00FFFF00);
         
-        // Update the values-stack top cache 
-        CurrentValue = snapshot.ValuesTop;
+        // Update the top cache 
+        CurrentRef = c;
         
         // Sync the top entry to the current cache
-        Top = Current;
+        TopRef = c;
         
         return true;
     }
@@ -66,12 +71,11 @@ readonly struct Tops
         [MethodImpl(Optimisations.Default)]
         get => count == 0;
     }
- 
 
     /// <summary>
     /// This is the state when this frame started
     /// </summary>
-    ref uint Begin
+    ref uint BeginRef
     {
         [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in begin);
@@ -80,47 +84,82 @@ readonly struct Tops
     /// <summary>
     /// This is the current state of the frame
     /// </summary>
-    ref uint Current
+    public ref uint CurrentRef
     {
         [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in current);
     }
 
-    public ref byte CurrentBytes
+    /// <summary>
+    /// This is the current state of the frame
+    /// </summary>
+    public uint Current
     {
         [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.As<uint, byte>(ref Current);
+        get => current;
     }
 
-    public ref byte CurrentPC
+    public int PC
     {
-        [MethodImpl(Optimisations.Default)]
-        get => ref CurrentBytes;
+        [MethodImpl(Optimisations.Default)] 
+        get => (int)(current & 0x000000ff);
     }
 
-    public ref byte CurrentObj
+    public bool IsSingleton
     {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AddByteOffset(ref CurrentBytes, 1);
+        [MethodImpl(Optimisations.Default)] 
+        get => (current & 0xff000000) == 0;
     }
 
-    public ref byte CurrentValue
+    public bool HasYielded
     {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AddByteOffset(ref CurrentBytes, 2);
+        [MethodImpl(Optimisations.Default)] 
+        get => (current & 0xff000000) != 0;
+    } 
+
+    [MethodImpl(Optimisations.Default)]
+    public int IncrementPC()
+    {
+        unchecked
+        {
+            var c = current + 1;
+            CurrentRef = c;
+            return (int)(c & 0x000000ff);
+        }
     }
 
-    public ref byte CurrentYield
+    [MethodImpl(Optimisations.Default)]
+    public void IncrementYields()
     {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AddByteOffset(ref CurrentBytes, 3);
+        unchecked
+        {
+            var     c = current + 0x01000000;
+            CurrentRef = c;
+        }
+    }
+
+    [MethodImpl(Optimisations.Default)]
+    public void DecrementYields()
+    {
+        unchecked
+        {
+            var     c = current - 0x01000000;
+            CurrentRef = c;
+        }
+    }
+
+    [MethodImpl(Optimisations.Default)]
+    public void ClearYields()
+    {
+        var     c = current & 0x00FFFFFF;
+        CurrentRef = c;
     }
  
     [MethodImpl(Optimisations.Default)]
     public bool ResetFrame()
     {
-        Current = Begin;
-        Top = Begin;
+        CurrentRef = begin;
+        TopRef = begin;
         return true;
     }
   
@@ -130,17 +169,20 @@ readonly struct Tops
         if (count <= 0) return false;
         
         // Clear the top entry
-        Top = 0;
+        TopRef = 0;
         
         // Make the stack 1 quieter
         ref var c = ref Unsafe.AsRef(in count);
         c--;
 
+        // Load the previous frame's state
+        var top = Top;
+        
         // Reload the current state cache
-        Current = Top;
+        CurrentRef = top;
         
         // Make sure we remember the start of this frame
-        Begin = Current;
+        BeginRef = top;
         
         return true;
     }
@@ -150,38 +192,40 @@ readonly struct Tops
     {
         if (count >= Capacity) return false;
 
-        // Save the current program-counter and then reset the cached version to have the one from the
-        // start of the current frame.  That means popping the entry takes us back to the start of the
-        // current frame, allowing us to loop through all elements of the iteration.
-        var beginPC = Begin & 0xFF;
-        var nowPC = Current & 0xFF;
-        CurrentPC = (byte)beginPC;
+        // The new top state will be the current state with the yields reset
+        var newState = current & 0x00FFFFFF;
         
-        // This takes the cached current state (with the program-counter reset back to the start of this frame) and
-        // copies it to the current entry at the top of the stack.
-        Top = Current;
+        // The state we're about to save (before pushing a new one) will have its program-counter reset back to the
+        // start of this frame, so when it's popped, we'll be back at the start (loops).
+        var newCurrent = (current & 0xFFFFFF00) | (begin & 0x000000FF);
+        
+        // This takes the current state (with the program-counter reset back to the start of this frame) and
+        // copies it to the current top entry at the top of the stack (before we push).
+        TopRef = newCurrent;
         
         // Make the top of the stack 1 louder
         ref var c = ref Unsafe.AsRef(in count);
         c++;
-
-        // The current yield should be reset to zero because no yields have happened yet.
-        // This is a `ref` to the cached current state. 
-        CurrentYield = 0;
-
-        // Reset thew current PC to the saved value
-        CurrentPC = (byte)nowPC;
+        
+        // Set the new state
+        CurrentRef = newState;
         
         // Now write the current state to the new entry at the top of the stack
-        Top = Current;
+        TopRef = newState;
         
         // Remember where this frame starts
-        Begin = Current;
+        BeginRef = newState;
         
         return true;
     }
 
-    ref uint Top
+    uint Top
+    {
+        [MethodImpl(Optimisations.Default)]
+        get => Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
+    }    
+
+    ref uint TopRef
     {
         [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);

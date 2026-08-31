@@ -35,10 +35,14 @@ abstract class GlobalsGen<A>
     public static unsafe delegate*<ref StackFrame, PullState> yield(in ushort index) => 
         Instance.Yield(in index);
 
+    public static unsafe delegate*<ref StackFrame, PullState> yieldConst(in ushort index) => 
+        Instance.YieldConst(in index);
+
     public static unsafe delegate*<ref StackFrame, PullState> pull(in ushort index) => 
         Instance.Pull(in index);
 
     public abstract unsafe delegate*<ref StackFrame, PullState> Yield(in ushort index);
+    public abstract unsafe delegate*<ref StackFrame, PullState> YieldConst(in ushort index);
     public abstract unsafe delegate*<ref StackFrame, PullState> Pull(in ushort index);
  
     public abstract bool At(ref Globals list, in ushort ix, out A value);
@@ -62,6 +66,9 @@ class ManagedGlobals<A> : GlobalsGen<A>
 
     public override unsafe delegate*<ref StackFrame, PullState> Yield(in ushort index) =>
         GManaged<A>.yield(in index);
+
+    public override unsafe delegate*<ref StackFrame, PullState> YieldConst(in ushort index) =>
+        GManaged<A>.yieldConst(in index);
 
     public override unsafe delegate*<ref StackFrame, PullState> Pull(in ushort index) =>
         GManaged<A>.pull(in index);
@@ -100,6 +107,9 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
     public override unsafe delegate*<ref StackFrame, PullState> Yield(in ushort index) =>
         GUnmanaged<A>.yield(in index);
 
+    public override unsafe delegate*<ref StackFrame, PullState> YieldConst(in ushort index) =>
+        GUnmanaged<A>.yieldConst(in index);
+
     public override unsafe delegate*<ref StackFrame, PullState> Pull(in ushort index) =>
         GUnmanaged<A>.pull(in index);
 
@@ -136,6 +146,9 @@ class StructGlobals<A> : GlobalsGen<A>
 
     public override unsafe delegate*<ref StackFrame, PullState> Yield(in ushort index) =>
         GStruct<A>.yield(in index);
+
+    public override unsafe delegate*<ref StackFrame, PullState> YieldConst(in ushort index) =>
+        GStruct<A>.yieldConst(in index);
 
     public override unsafe delegate*<ref StackFrame, PullState> Pull(in ushort index) =>
         GStruct<A>.pull(in index);

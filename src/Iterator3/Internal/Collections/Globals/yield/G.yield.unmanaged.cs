@@ -17,7 +17,7 @@ static unsafe partial class GUnmanaged<A>
             r = value;
 
             // Flag that this co-routine has yielded something
-            frame.tops.CurrentYield++;
+            frame.tops.IncrementYields();
 
             // Start a new co-routine for the value
             frame.StartScope();

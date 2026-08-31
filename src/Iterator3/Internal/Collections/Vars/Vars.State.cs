@@ -10,14 +10,10 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 readonly partial struct Vars
 {
-    [StructLayout(LayoutKind.Explicit, Size = sizeof(byte) * 2)]
-    [method: MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly struct State(in byte objectsTop, in byte valuesTop)
+    [SkipLocalsInit]
+    [method: MethodImpl(Optimisations.Default)]
+    public readonly struct State(in uint bits)
     {
-        [FieldOffset(0)]
-        public readonly byte ObjectsTop = objectsTop;
-        
-        [FieldOffset(1)]
-        public readonly byte ValuesTop = valuesTop;
+        public readonly uint Bits = bits;
     }
 }

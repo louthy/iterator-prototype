@@ -17,7 +17,7 @@ static partial class Pull
         frame.vars.PopManaged<K<T, A>>(out var ta);
         frame.vars.PopUnmanaged<Global<IS>>(out var gts);
         ref var ts = ref frame.globals.AtUnmanaged<IS>(gts.Index);
-        if(!T.Next(in ta, ref ts, out var x)) return empty(ref frame);
+        if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushUnmanaged(in x);
         return PullState.Continue;
     }
@@ -31,7 +31,7 @@ static partial class Pull
         frame.vars.PopManaged<K<T, A>>(out var ta);
         frame.vars.PopUnmanaged<Global<IS>>(out var gts);
         ref var ts = ref frame.globals.AtUnmanaged<IS>(gts.Index);
-        if(!T.Next(in ta, ref ts, out var x)) return empty(ref frame);
+        if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushManaged(in x);
         return PullState.Continue;
     }
@@ -45,7 +45,7 @@ static partial class Pull
         frame.vars.PopManaged<K<T, A>>(out var ta);
         frame.vars.PopUnmanaged<Global<IS>>(out var gts);
         ref var ts = ref frame.globals.AtUnmanaged<IS>(gts.Index);
-        if(!T.Next(in ta, ref ts, out var x)) return empty(ref frame);
+        if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushStruct(in x);
         return PullState.Continue;
     }

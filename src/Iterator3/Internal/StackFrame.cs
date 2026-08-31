@@ -69,8 +69,9 @@ readonly ref struct StackFrame
     [MethodImpl(Optimisations.Default)]
     public bool Push() =>
         
-        // Make sure the tops are in-sync with live object and value stacks; so that we can safely pop later.
-        tops.Sync(vars.Snapshot) &&
+        // Make sure the tops are in-sync with live object
+        // and value stacks; so that we can safely pop later.
+        vars.SyncTo(ref tops) &&
         
         // Push the current tops onto the stack
         tops.PushFrame();
@@ -80,12 +81,12 @@ readonly ref struct StackFrame
     {
         if (tops.PopFrame())
         {
-            vars.Reset(new Vars.State(tops.CurrentObj, tops.CurrentValue));
+            vars.SyncFrom(in tops);
             return true;
         }
         else
         {
-            vars.Reset(new Vars.State(0, 0));
+            vars.Zero();
             return false;
         }
     }
@@ -99,7 +100,7 @@ readonly ref struct StackFrame
     public bool IsReturn
     {
         [MethodImpl(Optimisations.Default)]
-        get => tops.CurrentPC == ops.Count;
+        get => tops.PC == ops.Count;
     }
         
     [MethodImpl(Optimisations.Default)]
@@ -109,4 +110,13 @@ readonly ref struct StackFrame
     [MethodImpl(Optimisations.Default)]
     public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>
         ops.Prepend(f);
+
+    public override string ToString()
+    {
+        var pc      = tops.Current & 0xff;
+        var objs    = vars.ObjsCount;
+        var vals    = vars.ValuesCount;
+        var yielded = tops.HasYielded.ToString().ToLower();
+        return $"[pc:{pc}, objs:{objs}, vals:{vals}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
+    }
 }

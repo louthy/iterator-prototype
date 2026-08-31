@@ -28,7 +28,7 @@ static unsafe partial class Push
         // Create a global variable, this will be the storage for our yield value
         frame.globals.Add(default(A), out var yieldIx) &&
         
-        // Fill the yield variable with the output of whatever ran before us
+        // Yield what's stored in the global variable
         fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
     
 
@@ -38,8 +38,8 @@ static unsafe partial class Push
         // Create a global variable, this will be the storage for our yield value
         frame.globals.Add(value, out var yieldIx) &&
         
-        // Fill the yield variable with the output of whatever ran before us
-        fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
+        // Yield what's stored in the global variable
+        fun(ref frame, GlobalsGen<A>.yieldConst(in yieldIx));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool dup<A>(ref StackFrame frame) =>
@@ -62,13 +62,6 @@ static unsafe partial class Push
         
         // Push the no-arg coroutine operation
         frame.Prepend(&Pull.coroutine);
-
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool await<A>(ref StackFrame frame) =>
-        
-        // Push the yield operation
-        fun(ref frame, &Pull.await<A>);
  
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool map<A, B>(ref StackFrame frame, in Func<A, B> f) =>
@@ -125,13 +118,13 @@ static unsafe partial class Push
         fun(ref frame, &Pull.bind<A, B>);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool take(ref StackFrame frame, in int amount) =>
+    public static bool take<A>(ref StackFrame frame, in int amount) =>
 
         // Push the amount
         var(ref frame, amount) &&
         
         // Push take operation
-        fun(ref frame, &Pull.take);
+        fun(ref frame, &Pull.take<A>);
     
     [MethodImpl(Optimisations.Default)]
     internal static PullState apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>

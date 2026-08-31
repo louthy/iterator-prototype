@@ -16,7 +16,7 @@ static class IterAction
     public static Iter<A> take<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Push.take(ref frame, amount)
+        return Push.take<A>(ref frame, amount)
                    ? ta1
                    : default;
     }
@@ -54,15 +54,6 @@ static class IterAction
         var frame = ta.Next<A, B>(out var tb);
         return Push.bind(ref frame, f)
                    ? tb
-                   : default;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Iter<A> await<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.await<A>(ref frame)
-                   ? ta1
                    : default;
     }
             

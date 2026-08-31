@@ -25,7 +25,7 @@ public readonly struct Iter<A>
         head = default!;
         tail = this;
         var frame = tail.Frame();
-        frame.tops.Sync(frame.vars.Snapshot); // TODO: I'd like this to not be needed
+        frame.vars.SyncTo(ref frame.tops); // TODO: I'd like this to not be needed
         var r = tail.fields.ops.Run(ref frame, out head);
         return r;
     }
@@ -43,10 +43,6 @@ public readonly struct Iter<A>
     [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(IterScope _, Iter<A> rhs) =>
         IterAction.scope(in rhs);
-
-    [MethodImpl(Optimisations.Default)]
-    public static Iter<A> operator |(Iter<A> lhs, IterAwait _) =>
-        IterAction.await(in lhs);
 
     [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(Iter<A> lhs, IterPure _) =>

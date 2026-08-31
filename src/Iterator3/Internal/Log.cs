@@ -36,9 +36,12 @@ static class Log
         enabled = false;
         return PullState.Continue;
     }
-    
-    public static string stackInfo(ref StackFrame frame) =>
-        $"[pc:{frame.tops.CurrentPC}, objs:{frame.vars.objs.Top}, vals:{frame.vars.values.Top}, tops:{frame.tops.Count}, y:{frame.tops.CurrentYield}, len: {frame.tops.Count}]";
+
+    public static void stackInfo(ref StackFrame frame) =>
+        Console.Write(frame.ToString());
+
+    public static void stackLine(ref StackFrame frame) =>
+        Console.WriteLine(frame.ToString());
 
     static PullState write(string msg, ConsoleColor colour, ref StackFrame frame)
     {
@@ -49,7 +52,7 @@ static class Log
         Console.Write(msg);
         Console.Write(' ');
         Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write(stackInfo(ref frame));
+        stackInfo(ref frame);
         Console.ForegroundColor = c;
         Console.WriteLine();
         return PullState.Continue;
