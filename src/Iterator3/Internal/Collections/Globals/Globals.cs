@@ -171,13 +171,8 @@ readonly struct Globals
 
     [MethodImpl(Optimisations.Default)]
     public ref A DeclaredAtStruct<A>(ushort ix)
-        where A : struct
-    {
-        ref var index = ref Ix(in ix);
-        ref var ot    = ref Unsafe.AsRef(in declaredObjs.Object00);
-        ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
-        return ref box.Ref;
-    }
+        where A : struct =>
+        ref DeclaredAtManaged<Box<A>>(ix).Ref;
 
     [MethodImpl(Optimisations.Default)]
     public bool DeclaredAtUnmanaged<A>(ushort ix, out A value)
@@ -219,11 +214,8 @@ readonly struct Globals
     public bool DeclaredAtStruct<A>(ushort ix, out A value)
         where A : struct
     {
-        if (ix < Count)
+        if (DeclaredAtManaged<Box<A>>(ix, out var box))
         {
-            ref var index = ref Ix(in ix);
-            ref var ot    = ref Unsafe.AsRef(in declaredObjs.Object00);
-            ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
             value = box.Value;
             return true;
         }
@@ -254,13 +246,8 @@ readonly struct Globals
 
     [MethodImpl(Optimisations.Default)]
     public ref A AtStruct<A>(ushort ix)
-        where A : struct
-    {
-        ref var index = ref Ix(in ix);
-        ref var ot    = ref Unsafe.AsRef(in objs.Object00);
-        ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
-        return ref box.Ref;
-    }
+        where A : struct =>
+        ref AtManaged<Box<A>>(ix).Ref;
     
     [MethodImpl(Optimisations.Default)]
     public bool AtUnmanaged<A>(in ushort ix, out A value)
@@ -304,11 +291,8 @@ readonly struct Globals
     public bool AtStruct<A>(in ushort ix, out A value)
         where A : struct
     {
-        if (ix < Count)
+        if (AtManaged<Box<A>>(in ix, out var box))
         {
-            ref var index = ref Ix(in ix);
-            ref var ot    = ref Unsafe.AsRef(in objs.Object00);
-            ref var box   = ref Unsafe.As<object, Box<A>>(ref Unsafe.Add(ref ot, index.Offset));
             value = box.Ref;
             return true;
         }
