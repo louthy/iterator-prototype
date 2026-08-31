@@ -55,6 +55,16 @@ readonly ref struct StackFrame
         Push();
 
     [MethodImpl(Optimisations.Default)]
+    public bool StartYieldScope() =>
+        
+        // Make sure the tops are in-sync with live object
+        // and value stacks; so that we can safely pop later.
+        vars.SyncTo(ref tops) &&
+        
+        // Push the current tops onto the stack
+        tops.PushFrame(1);
+
+    [MethodImpl(Optimisations.Default)]
     public bool EndScope<A>(out A head) =>
         
         // Get the return value
@@ -86,7 +96,7 @@ readonly ref struct StackFrame
         vars.SyncTo(ref tops) &&
         
         // Push the current tops onto the stack
-        tops.PushFrame();
+        tops.PushFrame(0);
 
     [MethodImpl(Optimisations.Default)]
     public bool Pop()
@@ -116,11 +126,11 @@ readonly ref struct StackFrame
     }
         
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Add(delegate*<ref StackFrame, PullState> f) =>
+    public unsafe bool Add(delegate*<ref StackFrame, int> f) =>
         ops.Add(f);
         
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>
+    public unsafe bool Prepend(delegate*<ref StackFrame, int> f) =>
         ops.Prepend(f);
 
     public override string ToString()

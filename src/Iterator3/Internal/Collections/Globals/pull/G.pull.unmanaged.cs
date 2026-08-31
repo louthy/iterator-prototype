@@ -8,7 +8,7 @@ static unsafe partial class GUnmanaged<A>
     where A : unmanaged
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull(ref StackFrame frame, in ushort ix)
+    static int pull(ref StackFrame frame, in ushort ix)
     {
         ref var r = ref frame.globals.AtUnmanaged<A>(ix);
         return frame.vars.PushUnmanaged(in r)
@@ -16,7 +16,7 @@ static unsafe partial class GUnmanaged<A>
                    : PullState.Void;
     }
     
-    public static delegate*<ref StackFrame, PullState> pull(in ushort index) =>
+    public static delegate*<ref StackFrame, int> pull(in ushort index) =>
         index switch
         {
             0  => &pull0,
@@ -55,134 +55,134 @@ static unsafe partial class GUnmanaged<A>
         };
        
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull0(ref StackFrame frame) => 
+    static int pull0(ref StackFrame frame) => 
         pull(ref frame, 0);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-    static PullState pull1(ref StackFrame frame) => 
+    static int pull1(ref StackFrame frame) => 
         pull(ref frame, 1);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-    static PullState pull2(ref StackFrame frame) => 
+    static int pull2(ref StackFrame frame) => 
         pull(ref frame, 2);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull3(ref StackFrame frame) => 
+    static int pull3(ref StackFrame frame) => 
         pull(ref frame, 3);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull4(ref StackFrame frame) => 
+    static int pull4(ref StackFrame frame) => 
         pull(ref frame, 4);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-    static PullState pull5(ref StackFrame frame) => 
+    static int pull5(ref StackFrame frame) => 
         pull(ref frame, 5);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-    static PullState pull6(ref StackFrame frame) => 
+    static int pull6(ref StackFrame frame) => 
         pull(ref frame, 6);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull7(ref StackFrame frame) => 
+    static int pull7(ref StackFrame frame) => 
         pull(ref frame, 7);
     
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull8(ref StackFrame frame) => 
+    static int pull8(ref StackFrame frame) => 
         pull(ref frame, 8);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull9(ref StackFrame frame) => 
+    static int pull9(ref StackFrame frame) => 
         pull(ref frame, 9);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull10(ref StackFrame frame) => 
+    static int pull10(ref StackFrame frame) => 
         pull(ref frame, 10);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull11(ref StackFrame frame) => 
+    static int pull11(ref StackFrame frame) => 
         pull(ref frame, 11);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull12(ref StackFrame frame) => 
+    static int pull12(ref StackFrame frame) => 
         pull(ref frame, 12);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull13(ref StackFrame frame) => 
+    static int pull13(ref StackFrame frame) => 
         pull(ref frame, 13);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull14(ref StackFrame frame) => 
+    static int pull14(ref StackFrame frame) => 
         pull(ref frame, 14);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull15(ref StackFrame frame) => 
+    static int pull15(ref StackFrame frame) => 
         pull(ref frame, 15);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull16(ref StackFrame frame) => 
+    static int pull16(ref StackFrame frame) => 
         pull(ref frame, 16);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull17(ref StackFrame frame) => 
+    static int pull17(ref StackFrame frame) => 
         pull(ref frame, 17);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull18(ref StackFrame frame) => 
+    static int pull18(ref StackFrame frame) => 
         pull(ref frame, 18);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull19(ref StackFrame frame) => 
+    static int pull19(ref StackFrame frame) => 
         pull(ref frame, 19);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull20(ref StackFrame frame) => 
+    static int pull20(ref StackFrame frame) => 
         pull(ref frame, 20);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull21(ref StackFrame frame) => 
+    static int pull21(ref StackFrame frame) => 
         pull(ref frame, 21);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull22(ref StackFrame frame) => 
+    static int pull22(ref StackFrame frame) => 
         pull(ref frame, 22);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull23(ref StackFrame frame) => 
+    static int pull23(ref StackFrame frame) => 
         pull(ref frame, 23);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull24(ref StackFrame frame) => 
+    static int pull24(ref StackFrame frame) => 
         pull(ref frame, 24);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull25(ref StackFrame frame) => 
+    static int pull25(ref StackFrame frame) => 
         pull(ref frame, 25);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull26(ref StackFrame frame) => 
+    static int pull26(ref StackFrame frame) => 
         pull(ref frame, 26);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull27(ref StackFrame frame) => 
+    static int pull27(ref StackFrame frame) => 
         pull(ref frame, 27);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull28(ref StackFrame frame) => 
+    static int pull28(ref StackFrame frame) => 
         pull(ref frame, 28);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull29(ref StackFrame frame) => 
+    static int pull29(ref StackFrame frame) => 
         pull(ref frame, 29);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull30(ref StackFrame frame) => 
+    static int pull30(ref StackFrame frame) => 
         pull(ref frame, 30);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static PullState pull31(ref StackFrame frame) => 
+    static int pull31(ref StackFrame frame) => 
         pull(ref frame, 31);
 }

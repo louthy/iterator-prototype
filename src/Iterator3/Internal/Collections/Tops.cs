@@ -188,7 +188,7 @@ readonly struct Tops
     }
     
     [MethodImpl(Optimisations.Default)]
-    public bool PushFrame()
+    public bool PushFrame(uint yieldAdd)
     {
         if (count >= Capacity) return false;
 
@@ -197,7 +197,7 @@ readonly struct Tops
         
         // The state we're about to save (before pushing a new one) will have its program-counter reset back to the
         // start of this frame, so when it's popped, we'll be back at the start (loops).
-        var newCurrent = (current & 0xFFFFFF00) | (begin & 0x000000FF);
+        var newCurrent = ((current & 0xFFFFFF00) | (begin & 0x000000FF)) + (yieldAdd << 24);
         
         // This takes the current state (with the program-counter reset back to the start of this frame) and
         // copies it to the current top entry at the top of the stack (before we push).

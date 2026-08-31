@@ -13,7 +13,7 @@ static unsafe partial class Push
         frame.globals.Add(in value, out var ix) &&
 
         // Each time this runs, we reset the global to its declared value
-        fun(ref frame, G.reset<A>(in ix));
+        fun(ref frame, GlobalsGen<A>.reset(in ix));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool @const<A>(ref StackFrame frame, in A value) =>
@@ -57,5 +57,5 @@ static unsafe partial class Push
         frame.globals.AtEnd<A>(1, out var g) &&
         
         // The operation to load the global has the index built-in
-        fun(ref frame, G.push<A>(in g.Index));
+        fun(ref frame, GlobalsGen<A>.push(in g.Index));
 }

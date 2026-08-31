@@ -8,15 +8,15 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.Default)]
-    public static PullState empty(ref StackFrame frame) =>
+    public static int empty(ref StackFrame frame) =>
         PullState.Void;
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState pure(ref StackFrame frame) =>
+    public static int pure(ref StackFrame frame) =>
         PullState.Pure;
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState @continue(ref StackFrame frame) =>
+    public static int @continue(ref StackFrame frame) =>
         PullState.Continue;
 
     [MethodImpl(Optimisations.Default)]
@@ -25,7 +25,7 @@ static partial class Pull
         frame.StartScope();
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState coroutine(ref StackFrame frame) =>
+    public static int coroutine(ref StackFrame frame) =>
 
         coroutine1(ref frame)
 
@@ -33,14 +33,14 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState dup<A>(ref StackFrame frame) =>
+    public static int dup<A>(ref StackFrame frame) =>
         frame.vars.Peek<A>(out var x) &&
         frame.vars.Push(in x)         
             ? @continue(ref frame)
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState map<A, B>(ref StackFrame frame) =>
+    public static int map<A, B>(ref StackFrame frame) =>
 
         // Peek at the map function
         constarg<Func<A, B>>(ref frame, out var f) &&
@@ -55,7 +55,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState bimap<A, B, C>(ref StackFrame frame) =>
+    public static int bimap<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
         constarg<Func<A, B, C>>(ref frame, out var f) &&
@@ -73,7 +73,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState bimap1<A, B, C>(ref StackFrame frame) =>
+    public static int bimap1<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
         constarg<Func<A, B, C>>(ref frame, out var f) &&
@@ -88,7 +88,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState trimap<A, B, C, D>(ref StackFrame frame) =>
+    public static int trimap<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
         constarg<Func<A, B, C, D>>(ref frame, out var f) &&
@@ -109,7 +109,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState trimap1<A, B, C, D>(ref StackFrame frame) =>
+    public static int trimap1<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
         constarg<Func<A, B, C, D>>(ref frame, out var f) &&
@@ -124,7 +124,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState apply<A, B, C>(ref StackFrame frame) =>
+    public static int apply<A, B, C>(ref StackFrame frame) =>
 
         // Pop at the apply function
         constarg<Func<A, B, C>>(ref frame,out var f) && 
@@ -142,7 +142,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState apply<A, B, C, D>(ref StackFrame frame) =>
+    public static int apply<A, B, C, D>(ref StackFrame frame) =>
 
         // Pop at the apply function
         constarg<Func<A, B, C, D>>(ref frame,out var f) && 
@@ -166,7 +166,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState tuple<A, B>(ref StackFrame frame) =>
+    public static int tuple<A, B>(ref StackFrame frame) =>
 
         // Pop the second element
         constarg<B>(ref frame, out var b) &&
@@ -181,7 +181,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState tuple<A, B, C>(ref StackFrame frame) =>
+    public static int tuple<A, B, C>(ref StackFrame frame) =>
 
         // Pop the second element
         constarg<C>(ref frame, out var c) &&
@@ -199,7 +199,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState take<A>(ref StackFrame frame) =>
+    public static int take<A>(ref StackFrame frame) =>
 
         // Pop the amount 
         arg<int>(ref frame, out var amount, out var g) && amount > 0
@@ -211,11 +211,12 @@ static partial class Pull
 
             // We're voiding this, so we need to pop the top entry
             // so that we don't leave a stray value on the stack.
-            : constarg<A>(ref frame, out _) && false;
+            : constarg<A>(ref frame, out _)
+                | PullState.Void;
 
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState bind<A, B>(ref StackFrame frame) =>
+    public static int bind<A, B>(ref StackFrame frame) =>
 
         // Pop the bind function
         constarg<Func<A, Iter<B>>>(ref frame, out var f) &&
@@ -233,7 +234,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState elements<A, B>(ref StackFrame frame) =>
+    public static int elements<A, B>(ref StackFrame frame) =>
 
         frame.vars.Pop<(A, B)>(out var tuple) &&
         frame.vars.Push(in tuple.Item2)       &&
@@ -243,7 +244,7 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState elements<A, B, C>(ref StackFrame frame) =>
+    public static int elements<A, B, C>(ref StackFrame frame) =>
 
         frame.vars.Pop<(A, B, C)>(out var tuple) &&
         frame.vars.Push(in tuple.Item3)          &&

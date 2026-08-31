@@ -48,7 +48,7 @@ static unsafe partial class Push
         fun(ref frame, &Pull.dup<A>);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, PullState> f) =>
+    public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, int> f) =>
         frame.Add(f);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -127,7 +127,7 @@ static unsafe partial class Push
         fun(ref frame, &Pull.take<A>);
     
     [MethodImpl(Optimisations.Default)]
-    internal static PullState apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
+    internal static bool apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
         
         @const(ref frame, f) &&
         
@@ -136,7 +136,7 @@ static unsafe partial class Push
 
     
     [MethodImpl(Optimisations.Default)]
-    internal static PullState apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
+    internal static bool apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
         
         @const(ref frame, f) &&
         

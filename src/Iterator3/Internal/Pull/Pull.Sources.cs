@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.Default)]
-    public static PullState iterator<A>(ref StackFrame frame) =>
+    public static int iterator<A>(ref StackFrame frame) =>
 
         // Pop the iterator
         arg<Iter<A>>(ref frame, out var ta, out var g) &&

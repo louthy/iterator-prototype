@@ -9,7 +9,7 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.Default)]
-    public static PullState iterableUnmanaged<T, IS, A>(ref StackFrame frame)
+    public static int iterableUnmanaged<T, IS, A>(ref StackFrame frame)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
         where A : unmanaged
@@ -23,7 +23,7 @@ static partial class Pull
     }
     
     [MethodImpl(Optimisations.Default)]
-    public static PullState iterableManaged<T, IS, A>(ref StackFrame frame)
+    public static int iterableManaged<T, IS, A>(ref StackFrame frame)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
         where A : class
@@ -37,7 +37,7 @@ static partial class Pull
     }
         
     [MethodImpl(Optimisations.Default)]
-    public static PullState iterableStruct<T, IS, A>(ref StackFrame frame)
+    public static int iterableStruct<T, IS, A>(ref StackFrame frame)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
         where A : struct

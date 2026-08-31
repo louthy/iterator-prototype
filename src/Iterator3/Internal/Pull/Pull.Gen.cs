@@ -34,12 +34,12 @@ abstract class PullGen<A>
         }
     }
 
-    public static unsafe delegate*<ref StackFrame, PullState> iterable<T, IS>() 
+    public static unsafe delegate*<ref StackFrame, int> iterable<T, IS>() 
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged =>
         Instance.IterableImpl<T, IS>();
  
-    public abstract unsafe delegate*<ref StackFrame, PullState> IterableImpl<T, IS>()
+    public abstract unsafe delegate*<ref StackFrame, int> IterableImpl<T, IS>()
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged;
 }
@@ -50,7 +50,7 @@ class ManagedPull<A> : PullGen<A>
     static ManagedPull() =>
         Instance = new ManagedPull<A>();
 
-    public override unsafe delegate*<ref StackFrame, PullState> IterableImpl<T, IS>() =>
+    public override unsafe delegate*<ref StackFrame, int> IterableImpl<T, IS>() =>
         &Pull.iterableManaged<T, IS, A>;
 }
 
@@ -60,7 +60,7 @@ class UnmanagedPull<A> : PullGen<A>
     static UnmanagedPull() =>
         Instance = new UnmanagedPull<A>();
     
-    public override unsafe delegate*<ref StackFrame, PullState> IterableImpl<T, IS>() =>
+    public override unsafe delegate*<ref StackFrame, int> IterableImpl<T, IS>() =>
         &Pull.iterableUnmanaged<T, IS, A>;
 }
 
@@ -70,6 +70,6 @@ class StructPull<A> : PullGen<A>
     static StructPull() =>
         Instance = new StructPull<A>();
 
-    public override unsafe delegate*<ref StackFrame, PullState> IterableImpl<T, IS>() =>
+    public override unsafe delegate*<ref StackFrame, int> IterableImpl<T, IS>() =>
         &Pull.iterableStruct<T, IS, A>;
 }

@@ -4,6 +4,13 @@ namespace IteratorPrototype.Iterator3;
 
 public static class IterOperators
 {
+    extension<A>(bool)
+    {
+        [MethodImpl(Optimisations.Default)]
+        public static A operator | (bool _, A rhs) =>
+            rhs;
+    }
+    
     extension<A, B>(Iter<A>)
     {
         [MethodImpl(Optimisations.Default)]
