@@ -39,11 +39,7 @@ public readonly struct ObjStack
     [MethodImpl(Optimisations.Default)]
     public bool Add(in ObjStack rhs)
     {
-        if(rhs.Count + Count > Capacity)
-        {
-            return false;
-        }
-
+        if(rhs.Count + Count > Capacity) return false;
         var     sizeOfPtr = Unsafe.SizeOf<nint>();
         var     srcSize   = (uint)(rhs.Count * sizeOfPtr);
         ref var dobj      = ref Unsafe.AsRef(in Object00);
@@ -115,8 +111,8 @@ public readonly struct ObjStack
     public bool Push<A>(in A value)
         where A : class 
     {
+        if(Count == Capacity) return false;
         ref var top = ref Unsafe.AsRef(in Count);
-        if(top == Capacity) return false;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         entry = value;
         top++;
@@ -127,7 +123,7 @@ public readonly struct ObjStack
     public bool Prepend<A>(in A value)
         where A : class
     {
-        if (Count + 1 > Capacity) return false;
+        if(Count == Capacity) return false;
         ref var top  = ref Unsafe.AsRef(in Count);
         ref var src  = ref Unsafe.AsRef(in Object00);
         ref var dest = ref Unsafe.Add(ref src, 1);

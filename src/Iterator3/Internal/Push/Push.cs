@@ -7,10 +7,10 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Push
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool pure<A>(ref StackFrame frame) =>
+    public static bool pure(ref StackFrame frame) =>
 
         // Push the yield operation
-        fun(ref frame, &Pull.pure<A>);
+        fun(ref frame, &Pull.pure);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool pure<A>(ref StackFrame frame, in A value) =>
@@ -19,7 +19,7 @@ static unsafe partial class Push
         @const(ref frame, in value) &&
         
         // Push the yield operation
-        fun(ref frame, &Pull.pure<A>);
+        fun(ref frame, &Pull.pure);
     
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

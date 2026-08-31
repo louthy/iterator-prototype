@@ -70,7 +70,7 @@ static class IterAction
     internal static Iter<A> pure<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Push.pure<A>(ref frame)
+        return Push.pure(ref frame)
                    ? ta1
                    : default;
     }

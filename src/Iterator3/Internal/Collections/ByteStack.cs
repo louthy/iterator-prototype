@@ -23,11 +23,7 @@ public readonly struct ByteStack
     [MethodImpl(Optimisations.Default)]
     public bool Add(in ByteStack rhs)
     {
-        if(rhs.Count + Count > Capacity)
-        {
-            return false;
-        }
-
+        if (rhs.Count + Count > Capacity) return false;
         var     sizeOfPtr = Unsafe.SizeOf<nint>();
         var     srcSize   = (uint)(rhs.Count * sizeOfPtr);
         ref var dest      = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), rhs.Count * sizeOfPtr);

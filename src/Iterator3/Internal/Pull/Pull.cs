@@ -12,7 +12,7 @@ static partial class Pull
         PullState.Void;
 
     [MethodImpl(Optimisations.Default)]
-    public static PullState pure<A>(ref StackFrame frame) =>
+    public static PullState pure(ref StackFrame frame) =>
         PullState.Pure;
 
     [MethodImpl(Optimisations.Default)]
