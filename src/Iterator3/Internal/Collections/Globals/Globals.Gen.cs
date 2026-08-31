@@ -8,7 +8,7 @@ abstract class GlobalsGen<A>
 {
     public static GlobalsGen<A> Instance;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static GlobalsGen()
     {
         if (Ty<A>.IsUnmanaged)

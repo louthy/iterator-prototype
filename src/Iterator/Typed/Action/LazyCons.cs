@@ -9,7 +9,7 @@ public record LazyConsIteratorAction<T, IS, A>(A x, LazyIteratorAction<T, IS, A>
     where T : IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         head = x;
@@ -17,7 +17,7 @@ public record LazyConsIteratorAction<T, IS, A>(A x, LazyIteratorAction<T, IS, A>
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields<T, IS, A>> stack, out A head)
     {
         head = x;

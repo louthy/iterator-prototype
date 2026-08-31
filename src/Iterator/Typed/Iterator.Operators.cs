@@ -8,7 +8,7 @@ public static partial class IteratorOperators
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public Iterator<T, IS, A> Cons(Func<Iterator<T, IS, A>> xs) =>
             new (null!, new LazyConsIteratorAction<T, IS, A>(x, new LazyIteratorAction<T, IS, A>(xs)), default);
     }
@@ -17,11 +17,11 @@ public static partial class IteratorOperators
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public static Iterator<T, IS, A> operator +(in A x, in Iterator<T, IS, A> xs) =>
             xs.Cons(in x);
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public static Iterator<T, IS, A> operator +(in Iterator<T, IS, A> xs, in Iterator<T, IS, A> ys) =>
             xs.Concat(ys);
     }
@@ -30,7 +30,7 @@ public static partial class IteratorOperators
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public static Iterator<T, IS, A> operator +(A x, Func<Iterator<T, IS, A>> xs) =>
             new (null!, new LazyConsIteratorAction<T, IS, A>(x, new LazyIteratorAction<T, IS, A>(xs)), default);
         

@@ -7,7 +7,7 @@ namespace IteratorPrototype.Internal.Sources;
 [SkipLocalsInit]
 sealed record ConsSource<A>(A Head, IteratorSource? Next) : IteratorSource<A>(Next)
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool Run(ref StackFrame stack)
     {
         ValueStack<A>.Push(ref stack, Head);
@@ -15,7 +15,7 @@ sealed record ConsSource<A>(A Head, IteratorSource? Next) : IteratorSource<A>(Ne
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override IteratorSource<A> Prepend(A value) =>
         new ConsSource<A>(value, this);
 }

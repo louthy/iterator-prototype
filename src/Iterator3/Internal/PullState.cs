@@ -7,7 +7,7 @@ public readonly struct PullState : IEquatable<PullState>, IEquatable<int>
 {
     public readonly int Value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     PullState(int value) =>
         Value = value;
     
@@ -16,37 +16,37 @@ public readonly struct PullState : IEquatable<PullState>, IEquatable<int>
     public static readonly PullState Pure = new(2);
     public static readonly PullState End = new (3);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static implicit operator PullState(bool flag) =>
         flag
             ? Continue
             : Void;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static implicit operator bool(PullState s) =>
         s.Value == 1;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool operator false(PullState s) =>
         s.Value == 0;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool operator true(PullState s) =>
         s.Value > 0;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Equals(PullState other) =>
         Value == other.Value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Equals(int other) =>
         Value == other;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool Equals(object? obj) =>
         obj is PullState other && Equals(other);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override int GetHashCode() =>
         Value;
 }

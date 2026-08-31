@@ -11,15 +11,15 @@ public readonly struct Iter<A>
 
     ref Fields fieldsRef
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in fields);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal Iter(in Fields fields) =>
         this.fields = fields;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(out A head, out Iter<A> tail)
     {
         head = default!;
@@ -30,33 +30,33 @@ public readonly struct Iter<A>
         return r;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public Iter<B> Map<B>(Func<A, B> f) =>
         IterAction.map(f, in this);
 
     /*
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public Iter<A> Prepend(A value) =>
         Iter.prepend(value, in this);
         */
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(IterScope _, Iter<A> rhs) =>
         IterAction.scope(in rhs);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(Iter<A> lhs, IterAwait _) =>
         IterAction.await(in lhs);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(Iter<A> lhs, IterPure _) =>
         IterAction.pure(in lhs);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(Iter<A> lhs, IterTake rhs) =>
         IterAction.take(rhs.amount, in lhs);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal static StackFrame Default(out Iter<A> self)
     {
         self = default;
@@ -72,29 +72,29 @@ public readonly struct Iter<A>
         return f;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal static StackFrame Next(in Iter<A> current, out Iter<A> next)
     {
         next = current; // Copy
         return new StackFrame(ref next.fieldsRef);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal static StackFrame Next<B>(in Iter<A> current, out Iter<B> next)
     {
         current.CopyCast(out next); // Copy
         return new StackFrame(ref next.fieldsRef);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal StackFrame Frame() =>
         new(ref fieldsRef);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal ref Iter<B> Cast<B>() =>
         ref Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));        
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal void CopyCast<B>(out Iter<B> next) =>
         next = Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));
 

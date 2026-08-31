@@ -7,7 +7,7 @@ public static partial class IteratorExtensions2
 {
     extension<A>(Iterator2<A> ta)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public Iterator2<A> Prepend(A head)
         {
             var iter = ta;
@@ -16,7 +16,7 @@ public static partial class IteratorExtensions2
             return iter;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public Iterator2<B> Map<B>(Func<A, B> f)
         {
             ref var tb   = ref Unsafe.As<Iterator2<A>, Iterator2<B>>(ref ta);

@@ -15,26 +15,26 @@ readonly struct OpFrame
     public readonly ObjStack objs;
     public readonly ByteStack values;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run(ref StackFrame stack) =>
         source!.Run(ref stack) && ops.Run(ref stack);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void SetSource(in IteratorSource? src)
     { 
         ref var src1 = ref Unsafe.AsRef(in source);
         src1 = src;
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref IteratorSource<A>? GetSource<A>() =>
         ref Unsafe.As<IteratorSource?, IteratorSource<A>?>(ref Unsafe.AsRef(in source));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Add(in Op op) =>
         ops.Add(in op);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Clear()
     {
         // Clear GC references
@@ -44,7 +44,7 @@ readonly struct OpFrame
         src = null;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void CopyTo(ref OpFrame dest)
     {
         // TODO: Decide if a manual copy is faster than a struct assignment.

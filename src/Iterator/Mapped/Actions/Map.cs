@@ -7,7 +7,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public sealed class MapAction<A, B>(IteratorAction<A> action, Func<A, B> f) : IteratorAction<A, B>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
         if (action.TryGetValue(ref stack, out var h))
@@ -22,7 +22,7 @@ public sealed class MapAction<A, B>(IteratorAction<A> action, Func<A, B> f) : It
         }        
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     IteratorAction<C> IteratorAction<B>.Map<C>(Func<B, C> g) =>
         new MapAction<A, C>(action, x => g(f(x)));
 }
@@ -32,7 +32,7 @@ public sealed class MapAction<T, IS, A, B>(IteratorAction<A> action, Func<A, B> 
     where T : IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<B>.TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
         if (action.TryGetValue(ref stack, out var h))
@@ -47,7 +47,7 @@ public sealed class MapAction<T, IS, A, B>(IteratorAction<A> action, Func<A, B> 
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<T, IS, A, B>.TryGetValue(ref MiniStack<IteratorFields<T, IS, A, B>> stack, out B head)
     {
         ref var s = ref Unsafe.As<MiniStack<IteratorFields<T, IS, A, B>>, MiniStack<IteratorFields>>(ref stack);
@@ -63,7 +63,7 @@ public sealed class MapAction<T, IS, A, B>(IteratorAction<A> action, Func<A, B> 
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     IteratorAction<C> IteratorAction<B>.Map<C>(Func<B, C> g) =>
         new MapAction<T, IS, A, C>(action, x => g(f(x)));
 }

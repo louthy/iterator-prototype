@@ -20,7 +20,7 @@ public readonly struct ByteStack
     [FieldOffset(4)]
     public readonly byte Stack;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Add(in ByteStack rhs)
     {
         if(rhs.Count + Count > Capacity)
@@ -37,7 +37,7 @@ public readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool PopToTop(int top)
     {
         ref var t = ref Unsafe.AsRef(in Count);
@@ -45,7 +45,7 @@ public readonly struct ByteStack
         return true;
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>()
     {
         var     sizeOf = Unsafe.SizeOf<A>();
@@ -54,7 +54,7 @@ public readonly struct ByteStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>(out A value)
     {
         var     sizeOf = Unsafe.SizeOf<A>();
@@ -64,7 +64,7 @@ public readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Peek<A>(out A value)
         where A : unmanaged
     {
@@ -74,12 +74,12 @@ public readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A PeekAt<A>()
         where A : unmanaged =>
         ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count - Unsafe.SizeOf<A>()));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Push<A>(in A value)
         where A : unmanaged
     {
@@ -93,7 +93,7 @@ public readonly struct ByteStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Prepend<A>(in A value)
         where A : unmanaged
     {

@@ -15,7 +15,7 @@ readonly unsafe struct Ops
     {
         public readonly nint Fun;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public Op(nint fun)
         {
             Fun = fun;
@@ -57,7 +57,7 @@ readonly unsafe struct Ops
     readonly Op Fun1E;
     readonly Op Fun1F;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Add(in delegate*<ref StackFrame, PullState> f)
     {
         if (Count + 1 > Capacity) return false;
@@ -68,7 +68,7 @@ readonly unsafe struct Ops
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Prepend(in delegate*<ref StackFrame, PullState> f)
     {
         if (Count + 1 > Capacity) return false;
@@ -87,7 +87,7 @@ readonly unsafe struct Ops
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run<A>(ref StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator
@@ -150,7 +150,7 @@ readonly unsafe struct Ops
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         static bool VoidResetToContinuationPoint(ref StackFrame frame)
         {
             ref var hasYielded = ref frame.tops.CurrentYield;
@@ -173,7 +173,7 @@ readonly unsafe struct Ops
             return frame.tops.Count > 0;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         static bool PureResetToContinuationPoint(ref StackFrame frame, out A head)
         {
             ref var hasYielded = ref frame.tops.CurrentYield;

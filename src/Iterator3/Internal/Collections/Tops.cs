@@ -32,7 +32,7 @@ readonly struct Tops
     readonly uint begin;
     readonly int count;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public Tops()
     {
         count = 1;
@@ -42,11 +42,11 @@ readonly struct Tops
 
     public int Count
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => count;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Sync(in Vars.State snapshot)
     {
         // Update the objects-stack top cache 
@@ -63,7 +63,7 @@ readonly struct Tops
 
     public bool IsEmpty
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => count == 0;
     }
  
@@ -73,7 +73,7 @@ readonly struct Tops
     /// </summary>
     ref uint Begin
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in begin);
     }
 
@@ -82,41 +82,41 @@ readonly struct Tops
     /// </summary>
     ref uint Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in current);
     }
 
     public ref byte CurrentBytes
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.As<uint, byte>(ref Current);
     }
 
     public ref byte CurrentPC
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref CurrentBytes;
     }
 
     public ref byte CurrentObj
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AddByteOffset(ref CurrentBytes, 1);
     }
 
     public ref byte CurrentValue
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AddByteOffset(ref CurrentBytes, 2);
     }
 
     public ref byte CurrentYield
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AddByteOffset(ref CurrentBytes, 3);
     }
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetFrame()
     {
         Current = Begin;
@@ -124,7 +124,7 @@ readonly struct Tops
         return true;
     }
   
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool PopFrame()
     {
         if (count <= 0) return false;
@@ -145,7 +145,7 @@ readonly struct Tops
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool PushFrame()
     {
         if (count >= Capacity) return false;
@@ -183,7 +183,7 @@ readonly struct Tops
 
     ref uint Top
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
     }    
 }

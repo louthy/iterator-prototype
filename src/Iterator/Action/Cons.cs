@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public sealed class ConsAction<A>(A x, Iterator<A> xs) : IteratorAction<A>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         head = x;

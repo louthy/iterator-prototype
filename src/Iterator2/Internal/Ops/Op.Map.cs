@@ -5,7 +5,7 @@ namespace IteratorPrototype.Internal;
 
 class MapOp<A, B>(Func<A, B> f) : Op<A, B>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool Run(ref StackFrame stack)
     {
         ValueStack<A>.Pop(ref stack, out var x);

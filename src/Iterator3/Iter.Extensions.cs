@@ -7,11 +7,11 @@ public static class IterExtensions
 {
     extension<A>(in Iter<A> self)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         internal StackFrame Next(out Iter<A> next) =>
             Iter<A>.Next(in self, out next);
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         internal StackFrame Next<B>(out Iter<B> next) =>
             Iter<A>.Next(in self, out next);        
     }

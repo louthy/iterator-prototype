@@ -6,7 +6,7 @@ namespace IteratorPrototype;
 
 public static class Iterator2
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static Iterator2<A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged

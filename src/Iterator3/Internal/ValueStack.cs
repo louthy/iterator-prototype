@@ -7,27 +7,27 @@ abstract class ValueStack<A>
 {
     protected static ValueStack<A> Instance;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool Pop(ref StackFrame stack, out A top) =>
         Instance.PopImpl(ref stack, out top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool Pop(ref StackFrame stack) =>
         Instance.PopImpl(ref stack);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool Prepend(ref StackFrame stack, in A top) =>
         Instance.PrependImpl(ref stack, in top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool Push(ref StackFrame stack, in A top) =>
         Instance.PushImpl(ref stack, in top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool Peek(ref StackFrame stack, out A top) =>
         Instance.PeekImpl(ref stack, out top);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static ValueStack()
     {
         if (Ty<A>.IsUnmanaged)
@@ -55,23 +55,23 @@ class ManagedValueStack<A> : ValueStack<A>
     static ManagedValueStack() =>
         Instance = new ManagedValueStack<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PopImpl(ref StackFrame frame, out A top) =>
         frame.objs.Pop(out top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PopImpl(ref StackFrame frame) =>
         frame.objs.Pop();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PushImpl(ref StackFrame frame, in A top) =>
         frame.objs.Push(top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PrependImpl(ref StackFrame frame, in A top) =>
         frame.objs.Prepend(top);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PeekImpl(ref StackFrame frame, out A top) =>
         frame.objs.Peek(out top);
 }
@@ -82,23 +82,23 @@ class UnmanagedValueStack<A> : ValueStack<A>
     static UnmanagedValueStack() =>
         Instance = new UnmanagedValueStack<A>();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PopImpl(ref StackFrame frame, out A top) =>
         frame.values.Pop(out top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PopImpl(ref StackFrame frame) =>
         frame.values.Pop<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PushImpl(ref StackFrame frame, in A top) =>
         frame.values.Push(top);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PrependImpl(ref StackFrame frame, in A top) =>
         frame.values.Prepend(top);
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     protected override bool PeekImpl(ref StackFrame frame, out A top) =>
         frame.values.Peek(out top);
 }*/

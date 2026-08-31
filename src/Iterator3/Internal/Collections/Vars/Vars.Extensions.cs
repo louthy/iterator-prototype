@@ -6,23 +6,23 @@ static class VarsExtensions
 {
     extension(ref Vars vars)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public bool Pop<A>(out A value) =>
             VarsGen<A>.Instance.PopImpl(ref vars, out value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public bool Pop<A>() =>
             VarsGen<A>.Instance.PopImpl(ref vars);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public bool Push<A>(in A value) =>
             VarsGen<A>.Instance.PushImpl(ref vars, in value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public bool Peek<A>(out A value) =>
             VarsGen<A>.Instance.PeekImpl(ref vars, out value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public ref A PeekAt<A>() =>
             ref VarsGen<A>.Instance.PeekAtImpl(ref vars);
     }

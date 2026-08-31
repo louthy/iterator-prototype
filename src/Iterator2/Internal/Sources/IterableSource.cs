@@ -12,7 +12,7 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
     public static readonly IteratorSource<A> Instance = 
         new IterableSource<T, IS, A>(new EmptyIteratorSource<A>(null!));
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool Run(ref StackFrame stack)
     {
         ref var frame = ref stack.frame;
@@ -31,7 +31,7 @@ record IterableSource<T, IS, A>(IteratorSource? Next) : IteratorSource<A>(Next)
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override IteratorSource<A> Prepend(A value) =>
         new ConsSource<A>(value, this);
 }

@@ -6,7 +6,7 @@ namespace IteratorPrototype.Iterator3;
 
 static partial class Pull
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState iterator<A>(ref StackFrame frame) =>
 
         // Pop the iterator

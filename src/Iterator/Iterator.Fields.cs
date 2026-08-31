@@ -9,7 +9,7 @@ public readonly struct IteratorFields
     public readonly IteratorAction action;
     public readonly Space128 space;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal IteratorFields(object ta, IteratorAction action, in Space128 space)
     {
         this.ta = ta;
@@ -25,7 +25,7 @@ public readonly struct IteratorFields<A>
     public readonly IteratorAction<A> action;
     public readonly Space128 space;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal IteratorFields(object ta, IteratorAction<A> action, in Space128 space)
     {
         this.ta = ta;

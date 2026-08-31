@@ -6,7 +6,7 @@ public static partial class MiniStack
 {
     extension<A>(ref MiniStack<A> stack)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public void Push(in A value)
         {
             ref var top   = ref stack.Top;
@@ -17,7 +17,7 @@ public static partial class MiniStack
             top++;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public void PushMany(in MiniStack<A> values)
         {
             ref var          top    = ref stack.Top;
@@ -38,7 +38,7 @@ public static partial class MiniStack
             top++;
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public ref A Pop()
         {
             ref var top   = ref stack.Top;
@@ -51,7 +51,7 @@ public static partial class MiniStack
     
     extension<A>(in MiniStack<A> stack)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public ref A Peek()
         {
             ref var s     = ref Unsafe.AsRef(in stack);
@@ -61,11 +61,11 @@ public static partial class MiniStack
             return ref Unsafe.Add(ref Unsafe.AsRef(in items), top - 1);
         }        
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public ref MiniStack<B> Cast<B>() =>
             ref Unsafe.As<MiniStack<A>, MiniStack<B>>(ref Unsafe.AsRef(in stack));
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         public void CloneAllButTop(out MiniStack<A> ns)
         {
             ns = stack;

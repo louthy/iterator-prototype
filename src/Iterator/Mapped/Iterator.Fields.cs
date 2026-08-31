@@ -12,7 +12,7 @@ public readonly struct IteratorFields<T, IS, A, B>
     public readonly IteratorAction<B> action;
     public readonly IS space;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal IteratorFields(K<T, A> ta, IteratorAction<B> action, in IS space)
     {
         this.ta = ta;

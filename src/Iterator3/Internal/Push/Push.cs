@@ -133,7 +133,7 @@ static unsafe partial class Push
         // Push take operation
         fun(ref frame, &Pull.take);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal static PullState apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
         
         @const(ref frame, f) &&
@@ -142,7 +142,7 @@ static unsafe partial class Push
         fun(ref frame, &Pull.apply<A, B, C>);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal static PullState apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
         
         @const(ref frame, f) &&

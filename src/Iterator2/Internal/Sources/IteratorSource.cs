@@ -6,10 +6,10 @@ namespace IteratorPrototype.Internal.Sources;
 [SkipLocalsInit]
 abstract record IteratorSource(IteratorSource? Next, LE.Unit Dummy)
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public abstract bool Run(ref StackFrame stack);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public IteratorSource SetParent(IteratorSource parent) =>
         this with { Next = parent };
 }
@@ -17,6 +17,6 @@ abstract record IteratorSource(IteratorSource? Next, LE.Unit Dummy)
 [SkipLocalsInit]
 abstract record IteratorSource<A>(IteratorSource? Next) : IteratorSource(Next, default)
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public abstract IteratorSource<A> Prepend(A value);
 }

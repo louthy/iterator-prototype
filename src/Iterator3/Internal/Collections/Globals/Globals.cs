@@ -53,15 +53,15 @@ readonly struct Globals
     readonly ObjStack declaredObjs;
     readonly ByteStack declaredValues;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     ref Index Ix(in ushort ix) =>
         ref Unsafe.As<ushort, Index>(ref IxUntyped(in ix));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     ref ushort IxUntyped(in ushort ix) =>
         ref Unsafe.Add(ref Unsafe.AsRef(in data00), ix);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtUnmanaged<A>(ushort ix, out A value)
         where A : unmanaged
     {
@@ -80,7 +80,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtManaged<A>(ushort ix, out A value)
         where A : class
     {
@@ -99,7 +99,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtStruct<A>(ushort ix, out A value)
         where A : struct
     {
@@ -118,7 +118,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtUnmanaged<A>(ushort ix)
         where A : unmanaged
     {
@@ -129,7 +129,7 @@ readonly struct Globals
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtManaged<A>(ushort ix)
         where A : class
     {
@@ -140,7 +140,7 @@ readonly struct Globals
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetAtStruct<A>(ushort ix)
         where A : struct
     {
@@ -151,7 +151,7 @@ readonly struct Globals
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A DeclaredAtUnmanaged<A>(ushort ix)
         where A : unmanaged
     {
@@ -160,7 +160,7 @@ readonly struct Globals
         return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref vt, index.Offset));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A DeclaredAtManaged<A>(ushort ix)
         where A : class
     {
@@ -169,7 +169,7 @@ readonly struct Globals
         return ref Unsafe.As<object, A>(ref Unsafe.Add(ref ot, index.Offset));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A DeclaredAtStruct<A>(ushort ix)
         where A : struct
     {
@@ -179,7 +179,7 @@ readonly struct Globals
         return ref box.Ref;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool DeclaredAtUnmanaged<A>(ushort ix, out A value)
         where A : unmanaged
     {
@@ -197,7 +197,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool DeclaredAtManaged<A>(ushort ix, out A value)
         where A : class
     {
@@ -215,7 +215,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool DeclaredAtStruct<A>(ushort ix, out A value)
         where A : struct
     {
@@ -234,7 +234,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A AtUnmanaged<A>(ushort ix)
         where A : unmanaged
     {
@@ -243,7 +243,7 @@ readonly struct Globals
         return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref vt, index.Offset));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A AtManaged<A>(ushort ix)
         where A : class
     {
@@ -252,7 +252,7 @@ readonly struct Globals
         return ref Unsafe.As<object, A>(ref Unsafe.Add(ref ot, index.Offset));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A AtStruct<A>(ushort ix)
         where A : struct
     {
@@ -262,7 +262,7 @@ readonly struct Globals
         return ref box.Ref;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AtUnmanaged<A>(in ushort ix, out A value)
         where A : unmanaged
     {
@@ -281,7 +281,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AtManaged<A>(in ushort ix, out A value)
         where A : class
     {
@@ -300,7 +300,7 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AtStruct<A>(in ushort ix, out A value)
         where A : struct
     {
@@ -320,12 +320,12 @@ readonly struct Globals
     }
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddStruct<A>(in A value)
         where A : struct =>
         AddStruct(in value, out _);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddStruct<A>(in A value, out ushort index)
         where A : struct
     {
@@ -357,12 +357,12 @@ readonly struct Globals
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddManaged<A>(in A value)
         where A : class =>
         AddManaged(in value, out _);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddManaged<A>(in A value, out ushort index)
         where A : class
     {
@@ -389,12 +389,12 @@ readonly struct Globals
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddUnmanaged<A>(in A value)
         where A : unmanaged =>
         AddUnmanaged(in value, out _);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool AddUnmanaged<A>(in A value, out ushort index)
         where A : unmanaged
     {

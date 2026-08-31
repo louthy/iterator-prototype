@@ -9,7 +9,7 @@ public sealed class ConsAction<T, IS, A, B>(B Head, IteratorAction<T, IS, A, B> 
     where T : IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
         head = Head;
@@ -17,7 +17,7 @@ public sealed class ConsAction<T, IS, A, B>(B Head, IteratorAction<T, IS, A, B> 
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields<T, IS, A, B>> stack, out B head)
     {
         head = Head;

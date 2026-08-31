@@ -8,7 +8,7 @@ public struct IteratorEnumerator<A>
     Iterator<A> iter;
     A current;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public IteratorEnumerator(in Iterator<A> iter)
     {
         this.reset = iter;
@@ -16,13 +16,13 @@ public struct IteratorEnumerator<A>
         this.current = default!;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool MoveNext() =>
         iter.TryGetValue(out current, out iter);
 
     public A Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => current;
     }
 

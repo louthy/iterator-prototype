@@ -10,7 +10,7 @@ abstract class PullGen<A>
 {
     public static PullGen<A> Instance;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullGen()
     {
         if (Ty<A>.IsUnmanaged)

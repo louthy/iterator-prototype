@@ -8,41 +8,41 @@ readonly ref struct StackFrame
 {
     public readonly ref Fields fields;
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public StackFrame(ref Fields fields) =>
         this.fields = ref fields;
 
     public ref Tops tops 
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in fields.tops);
     } 
     
     public ref Ops ops  
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in fields.ops);
     } 
     
     public ref Globals globals 
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in fields.globals);
     } 
     
     public ref Vars vars
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AsRef(in fields.vars);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool StartScope() =>
         
         // Create a new scope
         Push();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool EndScope<A>(out A head) =>
         
         // Get the return value
@@ -51,7 +51,7 @@ readonly ref struct StackFrame
         // Pop the current scope
         Pop();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool ResetFrame<A>(out A result) =>
         
         // Get the return value
@@ -60,13 +60,13 @@ readonly ref struct StackFrame
         // Pop the current tops
         tops.ResetFrame();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool VoidScope() =>
         
         // Pop the current scope
         Pop();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Push() =>
         
         // Make sure the tops are in-sync with live object and value stacks; so that we can safely pop later.
@@ -75,7 +75,7 @@ readonly ref struct StackFrame
         // Push the current tops onto the stack
         tops.PushFrame();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop()
     {
         if (tops.PopFrame())
@@ -92,21 +92,21 @@ readonly ref struct StackFrame
 
     public bool IsVoid
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => tops.IsEmpty;
     }
 
     public bool IsReturn
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => tops.CurrentPC == ops.Count;
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public unsafe bool Add(delegate*<ref StackFrame, PullState> f) =>
         ops.Add(f);
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public unsafe bool Prepend(delegate*<ref StackFrame, PullState> f) =>
         ops.Prepend(f);
 }

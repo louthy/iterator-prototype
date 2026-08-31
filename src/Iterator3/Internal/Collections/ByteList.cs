@@ -31,7 +31,7 @@ public readonly struct ByteList
     [FieldOffset(IndexCapacity + DataCapacity + sizeof(ushort))]
     public readonly ushort Count;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     ref byte Offset(int i)
     {
         if (i < IndexCapacity)
@@ -44,7 +44,7 @@ public readonly struct ByteList
         }
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool At<A>(int ix, out A value)
         where A : unmanaged
     {
@@ -54,7 +54,7 @@ public readonly struct ByteList
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Add<A>(in A value)
         where A : unmanaged
     {

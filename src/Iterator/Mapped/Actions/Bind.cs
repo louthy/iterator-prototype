@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 sealed class BindAction<A, B>(IteratorAction<A> action, Func<A, Iterator<B>> f) : IteratorAction<A, B>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out B head)
     {
         ref var flags = ref stack.Flags;

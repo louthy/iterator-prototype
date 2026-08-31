@@ -10,7 +10,7 @@ public ref struct IteratorStack
     public ref IteratorAction action;
     public ref Space128 space;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public IteratorStack(ref object ta, ref IteratorAction action, ref Space128 space)
     {
         this.ta = ref ta;
@@ -18,13 +18,13 @@ public ref struct IteratorStack
         this.space = ref space;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static ref IteratorStack From<T, IS, A>(ref IteratorStack<T, IS, A> stack) 
         where T : IterableImmutable<T, IS>
         where IS : unmanaged =>
         ref Unsafe.As<IteratorStack<T, IS, A>, IteratorStack>(ref stack);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static ref IteratorStack From<T, IS, A, B>(ref IteratorStack<T, IS, A, B> stack) 
         where T : IterableImmutable<T, IS>
         where IS : unmanaged =>

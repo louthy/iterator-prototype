@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class GManaged<A>
     where A : class
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield(ref StackFrame frame, in ushort ix)
     {
         if (frame.vars.PopManaged<A>(out var value))
@@ -71,135 +71,135 @@ static unsafe partial class GManaged<A>
             _  => throw new ArgumentOutOfRangeException(nameof(index))
         };       
        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield0(ref StackFrame frame) => 
         yield(ref frame, 0);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] 
+    [MethodImpl(Optimisations.Default)] 
     static PullState yield1(ref StackFrame frame) => 
         yield(ref frame, 1);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] 
+    [MethodImpl(Optimisations.Default)] 
     static PullState yield2(ref StackFrame frame) => 
         yield(ref frame, 2);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield3(ref StackFrame frame) => 
         yield(ref frame, 3);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield4(ref StackFrame frame) => 
         yield(ref frame, 4);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] 
+    [MethodImpl(Optimisations.Default)] 
     static PullState yield5(ref StackFrame frame) => 
         yield(ref frame, 5);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] 
+    [MethodImpl(Optimisations.Default)] 
     static PullState yield6(ref StackFrame frame) => 
         yield(ref frame, 6);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield7(ref StackFrame frame) => 
         yield(ref frame, 7);
     
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield8(ref StackFrame frame) => 
         yield(ref frame, 8);
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield9(ref StackFrame frame) => 
         yield(ref frame, 9);
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield10(ref StackFrame frame) => 
         yield(ref frame, 10);
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield11(ref StackFrame frame) => 
         yield(ref frame, 11);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield12(ref StackFrame frame) => 
         yield(ref frame, 12);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield13(ref StackFrame frame) => 
         yield(ref frame, 13);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield14(ref StackFrame frame) => 
         yield(ref frame, 14);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield15(ref StackFrame frame) => 
         yield(ref frame, 15);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield16(ref StackFrame frame) => 
         yield(ref frame, 16);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield17(ref StackFrame frame) => 
         yield(ref frame, 17);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield18(ref StackFrame frame) => 
         yield(ref frame, 18);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield19(ref StackFrame frame) => 
         yield(ref frame, 19);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield20(ref StackFrame frame) => 
         yield(ref frame, 20);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield21(ref StackFrame frame) => 
         yield(ref frame, 21);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield22(ref StackFrame frame) => 
         yield(ref frame, 22);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield23(ref StackFrame frame) => 
         yield(ref frame, 23);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield24(ref StackFrame frame) => 
         yield(ref frame, 24);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield25(ref StackFrame frame) => 
         yield(ref frame, 25);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield26(ref StackFrame frame) => 
         yield(ref frame, 26);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield27(ref StackFrame frame) => 
         yield(ref frame, 27);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield28(ref StackFrame frame) => 
         yield(ref frame, 28);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield29(ref StackFrame frame) => 
         yield(ref frame, 29);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield30(ref StackFrame frame) => 
         yield(ref frame, 30);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static PullState yield31(ref StackFrame frame) => 
         yield(ref frame, 31);
 }

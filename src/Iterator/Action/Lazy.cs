@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public record LazyIteratorAction<A>(Func<Iterator<A>> xs) : IteratorAction<A>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         // Get the head A value that was stashed where the iterable reference normally goes

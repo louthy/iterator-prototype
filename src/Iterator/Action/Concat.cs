@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 [SkipLocalsInit]
 public sealed class ConcatAction<A>(IteratorAction<A> first, Iterator<A> next) : IteratorAction<A>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         if (first.TryGetValue(ref stack, out head))

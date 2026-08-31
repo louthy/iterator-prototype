@@ -29,11 +29,11 @@ readonly struct ObjStack
 
     public ref object this[int index]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Object00), index);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void CopyTo(ref ObjStack dest)
     {
         Unsafe.CopyBlock(ref Unsafe.As<object, byte>(ref Unsafe.AsRef(in dest.Object00)), 
@@ -44,14 +44,14 @@ readonly struct ObjStack
         dtop = Top;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Clear()
     {
         ref var self = ref Unsafe.AsRef(in this);
         Unsafe.InitBlock(ref Unsafe.As<ObjStack, byte>(ref self), 0, (uint)Unsafe.SizeOf<ObjStack>());
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop()
     {
         ref var top = ref Unsafe.AsRef(in Top);
@@ -61,7 +61,7 @@ readonly struct ObjStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>(out A value)
     {
         ref var top = ref Unsafe.AsRef(in Top);
@@ -72,12 +72,12 @@ readonly struct ObjStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A Peek<A>()
         where A : class =>
         ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), Top - 1));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Push<A>(in A value)
         where A : class 
     {

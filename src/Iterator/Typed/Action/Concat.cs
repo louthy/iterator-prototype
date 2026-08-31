@@ -9,7 +9,7 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
     where T : IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<A>.TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         if (first.TryGetValue(ref stack, out head))
@@ -33,7 +33,7 @@ public sealed class ConcatAction<T, IS, A>(IteratorAction<T, IS, A> first, Itera
         }
     }    
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(ref MiniStack<IteratorFields<T, IS, A>> stack, out A head)
     {
         if (first.TryGetValue(ref stack, out head))

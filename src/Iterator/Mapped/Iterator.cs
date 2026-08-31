@@ -11,22 +11,22 @@ public readonly struct Iterator<T, IS, A, B>
     readonly MiniStack<IteratorFields<T, IS, A, B>> fields;
 
     /*
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal Iterator(K<T, A> ta, IteratorAction<B> action, in IS space) =>
         fields = new IteratorFields<T, IS, A, B>(ta, action, in space);
         */
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal Iterator(in IteratorFields<T, IS, A, B> entry) =>
         fields = MiniStack.singleton(in entry);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal Iterator(in MiniStack<IteratorFields<T, IS, A, B>> fields) =>
         this.fields = fields;
 
     public Iterator<B> Lower
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get
         {
             ref var fs = ref fields.Cast<IteratorFields<T, IS, A, B>, IteratorFields<B>>();
@@ -34,7 +34,7 @@ public readonly struct Iterator<T, IS, A, B>
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(out B head, out Iterator<T, IS, A, B> tail)
     {
         tail = this; // Copy

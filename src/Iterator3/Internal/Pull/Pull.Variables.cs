@@ -10,14 +10,14 @@ static partial class Pull
     /// <summary>
     /// Pushes the return value to the stack
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool @return<A>(ref StackFrame frame, in A value) =>
         frame.vars.Push(value);
     
     /// <summary>
     /// Pops the global variable from the stack and pushes its value onto the stack.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool arg<A>(ref StackFrame frame) =>
         frame.vars.Pop<Global<A>>(out var global) &&
         frame.vars.Push(global.Value(ref frame));
@@ -26,7 +26,7 @@ static partial class Pull
     /// Pops the global variable and yields its value and a Global structure that can be used to update it via
     /// the `out` parameters.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool arg<A>(ref StackFrame frame, out A value, out Global<A> arg)
     {
         if (frame.vars.Pop(out arg))
@@ -46,7 +46,7 @@ static partial class Pull
     /// Pops the global variable and yields its Global structure that can be used to update it via
     /// the `out` parameter.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool arg<A>(ref StackFrame frame, out Global<A> arg)
     {
         if (frame.vars.Pop(out arg))
@@ -63,7 +63,7 @@ static partial class Pull
     /// <summary>
     /// Pops the constant global variable and yields value via the `out` parameter.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool constarg<A>(ref StackFrame frame, out A arg)
     {
         if (frame.vars.Pop(out arg))

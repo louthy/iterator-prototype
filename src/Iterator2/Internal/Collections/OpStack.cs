@@ -17,19 +17,19 @@ readonly struct OpStack
 
     public ref OpFrame this[int index]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), index);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void SetSource(in IteratorSource? src) =>
         AtTop.SetSource(in src);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref IteratorSource<A>? GetSource<A>() =>
         ref AtTop.GetSource<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void CopyTo(ref OpStack dest)
     {
         ref var df0 = ref Unsafe.AsRef(in dest.Frame0);
@@ -70,7 +70,7 @@ readonly struct OpStack
         dtop = Top;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Pop()
     {
         ref var top = ref Unsafe.AsRef(in Top);
@@ -83,11 +83,11 @@ readonly struct OpStack
 
     public ref OpFrame AtTop
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), Top - 1);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run()
     {
         if (Top == 0) return false;
@@ -111,14 +111,14 @@ readonly struct OpStack
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Add(Op op)
     {
         if (Top == 0) throw new StackUnderflowException();
         AtTop.Add(op);   
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref OpFrame Push()
     {
         ref var top = ref Unsafe.AsRef(in Top);
@@ -127,7 +127,7 @@ readonly struct OpStack
         return ref Unsafe.Add(ref Unsafe.AsRef(in Frame0), top - 1);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Push(in OpFrame frame)
     {
         ref var top   = ref Unsafe.AsRef(in Top);

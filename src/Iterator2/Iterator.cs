@@ -22,18 +22,18 @@ public readonly struct Iterator2<A>
 {
     internal readonly OpStack stack;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool TryGetValue(out A head, out Iterator2<A> tail)
     {
         tail = this;                        // Copy
         return tail.MoveNext(out head);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public IteratorEnumerator2<A> GetEnumerator() =>
         new (in this);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal bool MoveNext(out A head)
     {
         ref var stack1 = ref Unsafe.AsRef(in stack);
@@ -51,11 +51,11 @@ public readonly struct Iterator2<A>
 
     internal ref IteratorSource<A>? Source
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref stack.GetSource<A>();
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     internal void Add(Op<A> op) =>
         stack.Add(op);
 }

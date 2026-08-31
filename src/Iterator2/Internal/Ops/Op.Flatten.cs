@@ -7,7 +7,7 @@ class FlattenOp<A> : Op<A>
 {
     public static readonly Op<A> Instance = new FlattenOp<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool Run(ref StackFrame stack)
     {
         throw new NotImplementedException();

@@ -51,7 +51,7 @@ readonly struct Ops
     [FieldOffset(HeaderSize + PointerSize * 15)]
     public readonly Op OpF;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public Ops(params ReadOnlySpan<Op> ops)
     {
         var     size = PointerSize * ops.Length;
@@ -61,7 +61,7 @@ readonly struct Ops
         Count = (short)ops.Length;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run(ref StackFrame stack)
     {
         switch (Count)
@@ -103,7 +103,7 @@ readonly struct Ops
         */
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static bool RunOp(ref StackFrame stack, ref Op op)
     {
         var cont = op.Run(ref stack);
@@ -111,18 +111,18 @@ readonly struct Ops
         return cont;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run0(ref StackFrame stack) =>
         true;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run1(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
         return RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run2(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -130,7 +130,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run3(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -139,7 +139,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run4(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -149,7 +149,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run5(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -160,7 +160,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run6(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -172,7 +172,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run7(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -185,7 +185,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run8(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -199,7 +199,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Run9(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -214,7 +214,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunA(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -230,7 +230,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunB(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -247,7 +247,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunC(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -265,7 +265,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunD(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -284,7 +284,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunE(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -304,7 +304,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool RunF(ref StackFrame stack)
     {
         ref var pc = ref Unsafe.AsRef(in Op0);
@@ -325,7 +325,7 @@ readonly struct Ops
                RunOp(ref stack, ref pc);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Add(in Op op)
     {
         ref var count = ref Unsafe.AsRef(in Count);
@@ -335,7 +335,7 @@ readonly struct Ops
         count++;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Clear()
     {
         var size = (uint)(Count * PointerSize + HeaderSize);
@@ -344,11 +344,11 @@ readonly struct Ops
 
     public ref Op this[int index]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Op0), PointerSize * index);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void CopyTo(ref Ops dest)
     {
         var blockSize = PointerSize * Count + HeaderSize;

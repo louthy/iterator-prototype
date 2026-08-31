@@ -7,24 +7,24 @@ namespace IteratorPrototype.Iterator3;
 
 static partial class Pull
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState empty(ref StackFrame frame) =>
         PullState.Void;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState pure<A>(ref StackFrame frame) =>
         PullState.Pure;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState @continue(ref StackFrame frame) =>
         PullState.Continue;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static bool coroutine1(ref StackFrame frame) =>
 
         frame.StartScope();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState coroutine(ref StackFrame frame) =>
 
         coroutine1(ref frame)
@@ -32,14 +32,14 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState dup<A>(ref StackFrame frame) =>
         frame.vars.Peek<A>(out var x) &&
         frame.vars.Push(in x)         
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState await<A>(ref StackFrame frame) =>
 
         // Get the awaited value from the globals-list
@@ -51,7 +51,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState await<A>(ref StackFrame frame, out A value) =>
 
         // Get the awaited value from the globals-list
@@ -60,7 +60,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState map<A, B>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -75,7 +75,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState bimap<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -93,7 +93,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState bimap1<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -108,7 +108,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState trimap<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -129,7 +129,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState trimap1<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
@@ -144,7 +144,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState apply<A, B, C>(ref StackFrame frame) =>
 
         // Pop at the apply function
@@ -162,7 +162,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState apply<A, B, C, D>(ref StackFrame frame) =>
 
         // Pop at the apply function
@@ -186,7 +186,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState tuple<A, B>(ref StackFrame frame) =>
 
         // Pop the second element
@@ -201,7 +201,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState tuple<A, B, C>(ref StackFrame frame) =>
 
         // Pop the second element
@@ -219,7 +219,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState take(ref StackFrame frame) =>
 
         // Pop the amount 
@@ -231,7 +231,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState bind<A, B>(ref StackFrame frame) =>
 
         // Pop the bind function
@@ -249,7 +249,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState elements<A, B>(ref StackFrame frame) =>
 
         frame.vars.Pop<(A, B)>(out var tuple) &&
@@ -259,7 +259,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static PullState elements<A, B, C>(ref StackFrame frame) =>
 
         frame.vars.Pop<(A, B, C)>(out var tuple) &&

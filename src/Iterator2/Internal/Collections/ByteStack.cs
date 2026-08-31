@@ -15,7 +15,7 @@ readonly struct ByteStack
     [FieldOffset(4)]
     public readonly byte Stack;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void CopyTo(ref ByteStack dest)
     {
         Unsafe.CopyBlock(ref Unsafe.AsRef(in dest.Stack), in Stack, (uint)Top);
@@ -23,14 +23,14 @@ readonly struct ByteStack
         dtop = Top;
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public void Clear()
     {
         ref var self = ref Unsafe.AsRef(in this);
         Unsafe.InitBlock(ref Unsafe.As<ByteStack, byte>(ref self), 0, Capacity);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>()
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
@@ -41,7 +41,7 @@ readonly struct ByteStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>(out A value)
     {
         ref var stack  = ref Unsafe.AsRef(in Stack);
@@ -59,7 +59,7 @@ readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A Peek<A>()
         where A : unmanaged
     {
@@ -68,7 +68,7 @@ readonly struct ByteStack
         return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, Top - sizeOf));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Push<A>(in A value)
         where A : unmanaged
     {

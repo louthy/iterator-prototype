@@ -32,11 +32,11 @@ public readonly struct ObjStack
     
     public ref object this[int index]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Object00), index);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Add(in ObjStack rhs)
     {
         if(rhs.Count + Count > Capacity)
@@ -55,7 +55,7 @@ public readonly struct ObjStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool PopToTop(int top)
     {
         if(top > Count) return false;
@@ -73,7 +73,7 @@ public readonly struct ObjStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop()
     {
         ref var top = ref Unsafe.AsRef(in Count);
@@ -83,7 +83,7 @@ public readonly struct ObjStack
         return true;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Pop<A>(out A value)
     {
         ref var top = ref Unsafe.AsRef(in Count);
@@ -94,7 +94,7 @@ public readonly struct ObjStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Peek<A>(out A value)
         where A : class
     {
@@ -103,7 +103,7 @@ public readonly struct ObjStack
         return true;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public ref A PeekAt<A>()
         where A : class
     {
@@ -111,7 +111,7 @@ public readonly struct ObjStack
         return ref Unsafe.As<object, A>(ref entry);
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Push<A>(in A value)
         where A : class 
     {
@@ -123,7 +123,7 @@ public readonly struct ObjStack
         return true;
     }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool Prepend<A>(in A value)
         where A : class
     {

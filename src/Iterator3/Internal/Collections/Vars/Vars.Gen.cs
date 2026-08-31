@@ -8,7 +8,7 @@ abstract class VarsGen<A>
 {
     public static VarsGen<A> Instance;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     static VarsGen()
     {
         if (Ty<A>.IsUnmanaged)
@@ -46,23 +46,23 @@ class ManagedVars<A> : VarsGen<A>
     static ManagedVars() =>
         Instance = new ManagedVars<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
         vars.PopManaged(out value);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars) =>
         vars.PopManaged();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PushImpl(ref Vars vars, in A value) =>
         vars.PushManaged(value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PeekImpl(ref Vars vars, out A value) =>
         vars.PeekManaged(out value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtManaged<A>();
 }
@@ -73,23 +73,23 @@ class StructVars<A> : VarsGen<A>
     static StructVars() =>
         Instance = new StructVars<A>();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
         vars.PopStruct(out value);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars) =>
         vars.PopStruct();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PushImpl(ref Vars vars, in A value) =>
         vars.PushStruct(value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PeekImpl(ref Vars vars, out A value) =>
         vars.PeekStruct(out value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtStruct<A>();
 }
@@ -100,23 +100,23 @@ class UnmanagedVars<A> : VarsGen<A>
     static UnmanagedVars() =>
         Instance = new UnmanagedVars<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
         vars.PopUnmanaged(out value);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars) =>
         vars.PopUnmanaged<A>();
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PushImpl(ref Vars vars, in A value) =>
         vars.PushUnmanaged(value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override bool PeekImpl(ref Vars vars, out A value) =>
         vars.PeekUnmanaged(out value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtUnmanaged<A>();
 }

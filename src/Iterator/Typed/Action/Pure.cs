@@ -10,7 +10,7 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
 {
     public static readonly IteratorAction<T, IS, A> Default = new PureAction<T, IS, A>();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<A>.TryGetValue(ref MiniStack<IteratorFields> stack, out A head)
     {
         ref var top   = ref stack.Cast<IteratorFields, IteratorFields<T, IS, A>>().Peek();
@@ -18,7 +18,7 @@ public sealed class PureAction<T, IS, A> : IteratorAction<T, IS, A>
         return T.StepImmutable(in top.ta, in space, out head, out space);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     bool IteratorAction<T, IS, A>.TryGetValue(ref MiniStack<IteratorFields<T, IS, A>> stack, out A head)
     {
         ref var top   = ref stack.Peek();

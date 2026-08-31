@@ -8,7 +8,7 @@ namespace IteratorPrototype;
 
 public static partial class MiniStack
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public static MiniStack<A> singleton<A>(in A item) => 
         new() { item0 = item, Top = 1 };
 }

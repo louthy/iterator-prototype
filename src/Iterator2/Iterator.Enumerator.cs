@@ -8,7 +8,7 @@ public struct IteratorEnumerator2<A>
     Iterator2<A> iter;
     A current;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public IteratorEnumerator2(in Iterator2<A> iter)
     {
         this.iter = iter;
@@ -16,13 +16,13 @@ public struct IteratorEnumerator2<A>
         current = default!;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public bool MoveNext() =>
         iter.MoveNext(out current);
 
     public A Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(Optimisations.Default)]
         get => current;
     }
 

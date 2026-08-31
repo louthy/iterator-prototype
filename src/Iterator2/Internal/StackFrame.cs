@@ -9,7 +9,7 @@ readonly ref struct StackFrame
     public readonly ref OpStack stack;
     public readonly ref OpFrame frame;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(Optimisations.Default)]
     public StackFrame(ref OpStack stack, ref OpFrame frame)
     {
         this.stack = ref stack;
