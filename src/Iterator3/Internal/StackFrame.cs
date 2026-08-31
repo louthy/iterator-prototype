@@ -7,6 +7,10 @@ namespace IteratorPrototype.Iterator3.Internal;
 readonly ref struct StackFrame
 {
     public readonly ref Fields fields;
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public StackFrame(ref Fields fields) =>
+        this.fields = ref fields;
 
     public ref Tops tops 
     {
@@ -30,37 +34,6 @@ readonly ref struct StackFrame
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get => ref Unsafe.AsRef(in fields.vars);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Unwind()
-    {
-        // TODO: Some more efficient way to unwind the stack.
-
-        while (Pop())
-        {
-            // unwind 
-        }
-    }
-        
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public StackFrame(ref Fields fields) =>
-        this.fields = ref fields;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool SetArg<A>(ushort argIndex, A value)
-    {
-        ref var g = ref globals.At<A>(argIndex);
-        g = value;
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    bool ClearArg<A>(ushort argIndex)
-    {
-        ref var g = ref globals.At<A>(argIndex);
-        g = default!;
-        return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
