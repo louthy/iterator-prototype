@@ -145,16 +145,43 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState apply<A, B>(ref StackFrame frame) =>
+    public static PullState apply<A, B, C>(ref StackFrame frame) =>
 
+        // Pop at the apply function
+        constarg<Func<A, B, C>>(ref frame,out var f) && 
+        
         // Pop the second element
         constarg<B>(ref frame, out var b) &&
 
-        // Pop the first element
+        // Peek the first element
         frame.vars.Peek<A>(out var a) && 
 
         // Push the tuple
-        @return(ref frame, (a, b)) 
+        @return(ref frame, f(a, b)) 
+
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static PullState apply<A, B, C, D>(ref StackFrame frame) =>
+
+        // Pop at the apply function
+        constarg<Func<A, B, C, D>>(ref frame,out var f) && 
+
+        // Pop the third element
+        constarg<C>(ref frame, out var c) &&
+
+        // Pop the second element
+        constarg<B>(ref frame, out var b) && 
+
+        // Peek the first element
+        frame.vars.Peek<A>(out var a) && 
+
+        // Re-push the second element
+        frame.vars.Push(in b) && 
+
+        // Push the tuple
+        @return(ref frame, f(a, b, c)) 
 
             ? @continue(ref frame)
             : empty(ref frame);

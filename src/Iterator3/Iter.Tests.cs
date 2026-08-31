@@ -77,7 +77,7 @@ public static class IterTests
     public static void Basic2_1()
     {
         var iter = from(10, 20)
-                 | from(100, 200)
+                 * from(100, 200)
                  | bimap((int x, int y) => x * y);
         
         while(iter.TryGetValue(out var head, out iter))
@@ -91,8 +91,8 @@ public static class IterTests
     public static void Basic2()
     {
         var iter = from(1, 2, 3)
-                 | from(1, 2, 3)
-                 | bimap((int x, int y) => x * y);
+                 * from("One", "Two", "Three")
+                 | bimap((int x, string y) => $"{x}. {y}");
         
         while(iter.TryGetValue(out var head, out iter))
         {

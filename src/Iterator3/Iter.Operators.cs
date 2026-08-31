@@ -7,7 +7,7 @@ public static class IterOperators
     extension<A, B>(Iter<A>)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Iter<(A First, B Second)> operator |(Iter<A> lhs, Iter<B> rhs) =>
+        public static Iter<(A First, B Second)> operator *(Iter<A> lhs, Iter<B> rhs) =>
             Iter.product(in lhs, in rhs);
     
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -19,14 +19,7 @@ public static class IterOperators
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Iter<(A First, B Second, C Third)> operator |(Iter<(A, B)> lhs, Iter<C> rhs) =>
-            Iter.product(in lhs, in rhs);
-    }
-    
-    extension<A, B>(Iter<B>)
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Iter<(A First, B Second)> operator |(Iter<B> lhs, IterPair<A, B> rhs) =>
-            IterAction.pair<A, B>(in lhs);
+            throw new NotImplementedException();
     }
     
     extension<A, B, C>(Iter<(A, B)>)
@@ -34,5 +27,12 @@ public static class IterOperators
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Iter<C> operator |(Iter<(A, B)> lhs, IterBimap<A, B, C> rhs) =>
             IterAction.bimap(rhs.f, in lhs);
+    }
+        
+    extension<A, B, C, D>(Iter<(A, B, C)>)
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static Iter<D> operator |(Iter<(A, B, C)> lhs, IterTrimap<A, B, C, D> rhs) =>
+            IterAction.trimap(rhs.f, in lhs);
     }
 }

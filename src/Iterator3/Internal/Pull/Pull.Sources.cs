@@ -15,11 +15,11 @@ static partial class Pull
     {
         // Optimised
         
-        frame.vars.Pop<K<T, A>>(out var ta);
-        frame.vars.Pop<Global<IS>>(out var gts);
-        ref var ts = ref frame.globals.At<IS>(gts.Index);
+        frame.vars.PopManaged<K<T, A>>(out var ta);
+        frame.vars.PopUnmanaged<Global<IS>>(out var gts);
+        ref var ts = ref frame.globals.AtUnmanaged<IS>(gts.Index);
         if(!T.Next(in ta, ref ts, out var x)) return empty(ref frame);
-        frame.vars.Push(x);
+        frame.vars.Push(in x);
         return @continue(ref frame);
 
         // Unoptimised

@@ -74,22 +74,17 @@ public static class Iter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<B> apply<A, B>(in Iter<Func<A, B>> tf, in Iter<A> ta)
+    {
+        throw new NotImplementedException();
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<(A First, B Second)> product<A, B>(in Iter<A> ta, in Iter<B> tb)
     {
         var frame = ta.Next<A, (A, B)>(out var ta1);
         return Push.iterator(ref frame, in tb) &&
-               Push.apply<A, B>(ref frame)
-                   ? ta1
-                   : default;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<(A, B)> tab, in Iter<C> tc)
-    {
-        var frame = tab.Next<(A, B), (A, B, C)>(out var ta1);
-        return Push.iterator(ref frame, in tab) &&
-               Push.iterator(ref frame, in tc)  &&
-               Push.bimap<(A, B), C, (A, B, C)>(ref frame, (ab, c) => (ab.Item1, ab.Item2, c))
+               Push.apply<A, B, (A, B)>(ref frame, static (x, y) => (x, y))
                    ? ta1
                    : default;
     }
@@ -101,25 +96,10 @@ public static class Iter
         return Push.iterator(ref frame, in ta) &&
                Push.iterator(ref frame, in tb) &&
                Push.iterator(ref frame, in tc) &&
-               Push.tuple<A, B, C>(ref frame)
+               Push.apply<A, B, C, (A, B, C)>(ref frame, static (x, y, z) => (x, y, z))
                    ? ta1
                    : default;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second, C Third, D Fourth)> product<A, B, C, D>(in Iter<(A, B, C)> tabc, in Iter<D> td)
-    {
-        var frame = tabc.Next<(A, B, C), (A, B, C, D)>(out var ta1);
-        return Push.iterator(ref frame, in tabc) &&
-               Push.iterator(ref frame, in td)   &&
-               Push.bimap<(A, B, C), D, (A, B, C, D)>(ref frame, (abc, d) => (abc.Item1, abc.Item2, abc.Item3, d))
-                   ? ta1
-                   : default;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IterPair<A, B> pair<A, B>() =>
-        default;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IterBimap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>

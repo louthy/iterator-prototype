@@ -8,53 +8,16 @@ public readonly struct IterScope;
 public readonly record struct IterTake(int amount);
 public readonly record struct IterMap<A, B>(Func<A, B> f);
 public readonly record struct IterBimap<A, B, C>(Func<A, B, C> f);
-public readonly record struct IterPair<A, B>;
-public readonly record struct IterPairConst<A, B>(A first, B second);
+public readonly record struct IterTrimap<A, B, C, D>(Func<A, B, C, D> f);
 
 static class IterAction
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> await<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.await<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
-            
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> scope<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.scope(ref frame)
-                   ? ta1
-                   : default;
-    }
-            
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<A> pure<A>(in Iter<A> ta)
-    {
-        var frame = ta.Next(out var ta1);
-        return Push.pure<A>(ref frame)
-                   ? ta1
-                   : default;
-    }
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<A> take<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
         return Push.take(ref frame, amount)
                    ? ta1
-                   : default;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second)> pair<A, B>(in Iter<B> tb)
-    {
-        var frame = tb.Next<B, (A, B)>(out var tab);
-        return Push.tuple<A, B>(ref frame)
-                   ? tab
                    : default;
     }
     
@@ -93,4 +56,32 @@ static class IterAction
                    ? tb
                    : default;
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Iter<A> await<A>(in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Push.await<A>(ref frame)
+                   ? ta1
+                   : default;
+    }
+            
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Iter<A> scope<A>(in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Push.scope(ref frame)
+                   ? ta1
+                   : default;
+    }
+            
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Iter<A> pure<A>(in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Push.pure<A>(ref frame)
+                   ? ta1
+                   : default;
+    }
+
 }
