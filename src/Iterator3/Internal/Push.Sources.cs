@@ -19,7 +19,7 @@ static unsafe partial class Push
         frame.globals.Add(value, out var ix) &&
 
         // Pull the value from the global and push it onto the 'vars' stack
-        frame.Add(G.pull<A>(in ix));
+        fun(ref frame, G.pull<A>(in ix));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool iterableSetup<T, IS, A>(ref StackFrame frame, in K<T, A> ta) 
@@ -50,7 +50,7 @@ static unsafe partial class Push
         constarg<K<T, A>>(ref frame, 2) &&
         
         // Push iterable operation
-        frame.Add(&Pull.iterable<T, IS, A>) &&
+        fun(ref frame, &Pull.iterable<T, IS, A>) &&
         
         // Fill the yield variable with the output of the iterable
         yield<A>(ref frame);
@@ -69,9 +69,8 @@ static unsafe partial class Push
         arg<Iter<A>>(ref frame, 1) &&
 
         // Push iterator operation
-        frame.Add(&Pull.iterator<A>) &&
+        fun(ref frame, &Pull.iterator<A>) &&
         
         // Fill the yield variable with the output of the iterator
         yield<A>(ref frame);
-    
 }

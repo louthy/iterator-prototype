@@ -40,14 +40,6 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static PullState yield(ref StackFrame frame)
-    {
-        // Log
-        frame.tops.CurrentYield++;
-        return @continue(ref frame);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static PullState await<A>(ref StackFrame frame) =>
 
         // Get the awaited value from the globals-list
