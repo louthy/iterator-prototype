@@ -91,20 +91,18 @@ public partial class Arr :
 
     public static bool Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
     {
-        ref var          index = ref Unsafe.AsRef(in ts.Index);
-        ref readonly var count = ref ts.Count;
-
-        if (index >= count)
+        ref var index = ref Unsafe.AsRef(in ts.Index);
+        if (index < ts.Count)
+        {
+            head = ((Arr<A>)ta).Values[index];
+            index++;
+            return true;    
+        }
+        else
         {
             head = default!;
             return false;
         }
-
-        ref var arr = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
-        head = arr.Values[index];
-        index++;
-
-        return true;    
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
