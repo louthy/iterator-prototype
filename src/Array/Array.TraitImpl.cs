@@ -31,6 +31,24 @@ public partial class Array : Tr.IterableMutable<Array,ArrayState, ArrayStateRef>
         return true;    
     }
 
+    public static bool Next<A>(in K<Array, A> ta, ref ArrayState ts, out A head)
+    {
+        ref var          index = ref Unsafe.AsRef(in ts.Index);
+        ref readonly var count = ref ts.Count;
+
+        if (index >= count)
+        {
+            head = default!;
+            return false;
+        }
+
+        ref var arr = ref Unsafe.As<K<Array, A>, Array<A>>(ref Unsafe.AsRef(in ta));
+        head = arr.Items[index];
+        index++;
+
+        return true;    
+    }
+
     static ArrayStateRef Tr.IterableMutable<Array, ArrayState, ArrayStateRef>.SetupMutable<A>(K<Array, A> ta)
     {
         var     array    = ((Array<A>)ta).Items;

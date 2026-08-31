@@ -89,6 +89,24 @@ public partial class Arr :
         return true;    
     }
 
+    public static bool Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
+    {
+        ref var          index = ref Unsafe.AsRef(in ts.Index);
+        ref readonly var count = ref ts.Count;
+
+        if (index >= count)
+        {
+            head = default!;
+            return false;
+        }
+
+        ref var arr = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
+        head = arr.Values[index];
+        index++;
+
+        return true;    
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
     static ArrStateRef Tr.IterableMutable<Arr, ArrState, ArrStateRef>.SetupMutable<A>(K<Arr, A> ta)
     {

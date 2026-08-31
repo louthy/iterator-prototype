@@ -46,6 +46,7 @@ readonly struct Tops
         get => count;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public bool Sync(in Vars.State snapshot)
     {
         // Update the objects-stack top cache 
