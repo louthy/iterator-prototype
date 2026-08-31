@@ -29,7 +29,7 @@ static unsafe partial class Push
         frame.globals.Add(default(A), out var yieldIx) &&
         
         // Fill the yield variable with the output of whatever ran before us
-        fun(ref frame, G.yield<A>(in yieldIx));
+        fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
     
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,7 +39,7 @@ static unsafe partial class Push
         frame.globals.Add(value, out var yieldIx) &&
         
         // Fill the yield variable with the output of whatever ran before us
-        fun(ref frame, G.yield<A>(in yieldIx));
+        fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool dup<A>(ref StackFrame frame) =>

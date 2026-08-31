@@ -11,9 +11,9 @@ static unsafe partial class G
     static PullState pullM<A>(ref StackFrame frame, in ushort ix)
     {
         var g = new Global<A>(in ix);
-        return frame.vars.Push(in g) 
-                   ? Pull.@continue(ref frame) 
-                   : Pull.empty(ref frame);
+        return frame.vars.PushUnmanaged(in g) 
+                   ? PullState.Continue 
+                   : PullState.Void;
     }
         
     public static delegate*<ref StackFrame, PullState> pullM<A>(in ushort index) =>
