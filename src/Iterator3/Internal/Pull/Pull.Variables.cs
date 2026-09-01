@@ -23,10 +23,10 @@ static partial class Pull
         frame.vars.Pop<A>();
     
     [MethodImpl(Optimisations.Default)]
-    
     public static bool peek<A>(ref StackFrame frame, out A value) =>
         frame.vars.Peek(out value);
     
+    [MethodImpl(Optimisations.Default)]
     public static bool push<A>(ref StackFrame frame, in A value) =>
         frame.vars.Push(in value);
 

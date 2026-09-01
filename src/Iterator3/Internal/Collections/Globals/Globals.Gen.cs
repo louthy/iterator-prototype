@@ -55,15 +55,14 @@ abstract class GlobalsGen<A>
 
     public abstract bool At(ref Globals list, in ushort ix, out A value);
     public abstract ref A At(ref Globals list, ushort ix);
-
     public abstract bool DeclaredAt(ref Globals list, in ushort ix, out A value);
     public abstract ref A DeclaredAt(ref Globals list, ushort ix);
-
     public abstract bool ResetAt(ref Globals list, in ushort ix, out A value);
     public abstract bool ResetAt(ref Globals list, in ushort ix);
-    
     public abstract bool Add(ref Globals list, in A value);
     public abstract bool Add(ref Globals list, in A value, out ushort index);
+    public abstract bool AtEnd(ref Globals list, in ushort ix, out Global<A> global);
+
 }
 
 class ManagedGlobals<A> : GlobalsGen<A>
@@ -110,6 +109,9 @@ class ManagedGlobals<A> : GlobalsGen<A>
     
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddManaged(in value, out index);
+    
+    public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
+        list.AtEndManaged(ix, out global);
 }
 
 class UnmanagedGlobals<A> : GlobalsGen<A>
@@ -156,6 +158,9 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
 
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddUnmanaged(in value, out index);
+    
+    public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
+        list.AtEndUnmanaged(ix, out global);
 }
 
 class StructGlobals<A> : GlobalsGen<A>
@@ -202,4 +207,7 @@ class StructGlobals<A> : GlobalsGen<A>
     
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddStruct(in value, out index);
+    
+    public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
+        list.AtEndStruct(ix, out global);
 }

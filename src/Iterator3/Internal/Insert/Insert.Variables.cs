@@ -38,7 +38,7 @@ static unsafe partial class Insert
         frame.globals.Add(in value, out var ix) &&
 
         // Each time this runs we acquire the constant value from the globals-list
-        fun(ref frame, G1<A>.arg(in ix));    
+        fun(ref frame, G1<A>.arg(in ix));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool arg2<A>(ref StackFrame frame, in A value) =>

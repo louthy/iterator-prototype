@@ -32,20 +32,11 @@ public readonly struct ByteList
     public readonly ushort Count;
 
     [MethodImpl(Optimisations.Default)]
-    ref byte Offset(int i)
-    {
-        if (i < IndexCapacity)
-        {
-            return ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), i * IndexItemSize);
-        }
-        else
-        {
-            throw new IndexOutOfRangeException();
-        }
-    }
+    ref byte Offset(in ushort i) =>
+        ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), i * IndexItemSize);
     
     [MethodImpl(Optimisations.Default)]
-    public bool At<A>(int ix, out A value)
+    public bool At<A>(in ushort ix, out A value)
         where A : unmanaged
     {
         ref var offset = ref Offset(ix);
@@ -53,16 +44,38 @@ public readonly struct ByteList
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, offset));
         return true;
     }
+    
+    [MethodImpl(Optimisations.Default)]
+    public ref A At<A>(in ushort ix)
+        where A : unmanaged
+    {
+        ref var offset = ref Offset(ix);
+        ref var stack  = ref Unsafe.AsRef(in data);
+        return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, offset));
+    }
 
     [MethodImpl(Optimisations.Default)]
     public bool Add<A>(in A value)
+        where A : unmanaged =>
+        Add(value, out _);
+
+    [MethodImpl(Optimisations.Default)]
+    public bool Add<A>(in A value, out ushort ix)
         where A : unmanaged
     {
         var sizeOf = (ushort)Unsafe.SizeOf<A>();
-        if (Count >= IndexCapacity || top + sizeOf > DataCapacity) return false;
+        if (Count >= IndexCapacity || top + sizeOf > DataCapacity)
+        {
+            ix = ushort.MinValue;
+            return false;
+        }
+
+        ix = Count;
+        ref var c = ref Unsafe.AsRef(in Count);
+        c++;
         
         ref var d = ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in data), top));
-        ref var i = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), Count);
+        ref var i = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), ix);
         ref var t = ref Unsafe.AsRef(in top);
         
         i = (byte)top;

@@ -7,29 +7,72 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Push
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool declare<A>(ref StackFrame frame, in A value) =>
-        
+    public static bool declare1<A>(ref StackFrame frame, in A value)
+    {
         // Push the value to the globals-list
-        frame.globals.Add(in value, out var ix) &&
+        if(!frame.globals.Add(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        fun(ref frame, GlobalsGen<A>.reset(in ix));
+        return fun(ref frame, GlobalsGen<A>.reset(in ix));
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool declare2<A>(ref StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.Add(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(ref frame, GlobalsGen<A>.reset(in ix));
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool declare3<A>(ref StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.Add(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(ref frame, GlobalsGen<A>.reset(in ix));
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool declare4<A>(ref StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.Add(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(ref frame, GlobalsGen<A>.reset(in ix));
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool arg<A>(ref StackFrame frame, in ushort fromEnd) =>
+    public static bool ref1<A>(ref StackFrame frame) =>
         
-        // Load recent global by providing an index from the end of the globals-list
-        frame.globals.AtEnd<A>(in fromEnd, out var g) &&
+        // Each time this runs we acquire the constant value from the globals-list
+        fun(ref frame, G1<A>.arg(in frame.args.GlobalIx1));    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ref2<A>(ref StackFrame frame) =>
         
-        // The operation to load the global has the index built-in
-        fromEnd switch
-        {
-            1 => fun(ref frame, G1<A>.arg(in g.Index)),   
-            2 => fun(ref frame, G2<A>.arg(in g.Index)),   
-            3 => fun(ref frame, G3<A>.arg(in g.Index)),   
-            4 => fun(ref frame, G4<A>.arg(in g.Index)),
-            _ => throw new InvalidOperationException("argument indexes can only be 1, 2, 3 or 4")
-        };
+        // Each time this runs we acquire the constant value from the globals-list
+        fun(ref frame, G2<A>.arg(in frame.args.GlobalIx2));    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ref3<A>(ref StackFrame frame) =>
+        
+        // Each time this runs we acquire the constant value from the globals-list
+        fun(ref frame, G3<A>.arg(in frame.args.GlobalIx3));    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ref4<A>(ref StackFrame frame) =>
+        
+        // Each time this runs we acquire the constant value from the globals-list
+        fun(ref frame, G4<A>.arg(in frame.args.GlobalIx4));    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool arg1<A>(ref StackFrame frame, in A value) =>
