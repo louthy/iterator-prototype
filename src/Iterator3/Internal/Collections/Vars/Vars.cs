@@ -96,17 +96,17 @@ readonly partial struct Vars
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PeekManaged<A>(out A value)
         where A : class =>
         objs.Peek(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PeekUnmanaged<A>(out A value)
         where A : unmanaged =>
         values.Peek(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Max)]
     public bool SyncTo(ref Tops tops)
     {
         var os      = (uint)(objs.Count   & 0xFF) << 16;
@@ -116,7 +116,7 @@ readonly partial struct Vars
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Max)]
     public bool SyncFrom(in Tops tops)
     {
         var snapshot = tops.Current & 0x00FFFF00;

@@ -90,7 +90,7 @@ readonly unsafe struct Ops
         return true;
     }
 
-    [MethodImpl(Optimisations.InliningOnly)]
+    [MethodImpl(Optimisations.Max)]
     public bool Run<A>(ref StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator

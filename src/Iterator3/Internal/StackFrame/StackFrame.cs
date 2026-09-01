@@ -12,7 +12,7 @@ readonly ref struct StackFrame
     public readonly ref Vars vars;
     public readonly Args args;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Max)]
     public StackFrame(ref Fields fields)
     {
         tops = ref Unsafe.AsRef(in fields.tops);

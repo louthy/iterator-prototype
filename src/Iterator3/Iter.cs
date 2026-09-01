@@ -15,17 +15,16 @@ public readonly struct Iter<A>
         get => ref Unsafe.AsRef(in fields);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal Iter(in Fields fields) =>
         this.fields = fields;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Max)]
     public bool TryGetValue(out A head, out Iter<A> tail)
     {
         head = default!;
         tail = this;
         var frame = tail.Frame();
-        frame.vars.SyncTo(ref frame.tops); // TODO: I'd like this to not be needed
         var r = tail.fields.ops.Run(ref frame, out head);
         return r;
     }
@@ -82,7 +81,7 @@ public readonly struct Iter<A>
         return new StackFrame(ref next.fieldsRef);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal StackFrame Frame() =>
         new(ref fieldsRef);
 
