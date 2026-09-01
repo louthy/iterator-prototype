@@ -216,7 +216,7 @@ readonly struct Globals
     {
         if (DeclaredAtManaged<Box<A>>(ix, out var box))
         {
-            value = box.Value;
+            value = box.Ref;
             return true;
         }
         else
