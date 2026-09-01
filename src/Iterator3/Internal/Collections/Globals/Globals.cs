@@ -12,12 +12,12 @@ readonly struct Globals
     readonly ObjStack2 objs;
     readonly ByteList2 values;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetAtUnmanaged<A>(in ushort ix, out A value)
         where A : unmanaged =>
         values.RestoreAt(in ix, out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetAtManaged<A>(ushort ix, out A value)
         where A : class =>
         objs.RestoreAt(ix, out value);
@@ -41,17 +41,17 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetAtUnmanaged<A>(ushort ix)
         where A : unmanaged =>
         values.RestoreAt<A>(ix, out _);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetAtManaged<A>(ushort ix)
         where A : class =>
         objs.RestoreAt(ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetAtStruct<A>(ushort ix)
         where A : struct
     {
@@ -62,27 +62,27 @@ readonly struct Globals
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A DeclaredAtUnmanaged<A>(ushort ix)
         where A : unmanaged =>
         ref values.DeclaredAt<A>(ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A DeclaredAtManaged<A>(ushort ix)
         where A : class =>
         ref objs.DeclaredAt<A>(ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A DeclaredAtStruct<A>(ushort ix)
         where A : struct =>
         ref DeclaredAtManaged<Box<A>>(ix).Ref;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool DeclaredAtUnmanaged<A>(ushort ix, out A value)
         where A : unmanaged =>
         values.DeclaredAt(ix, out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool DeclaredAtManaged<A>(ushort ix, out A value)
         where A : class =>
         objs.DeclaredAt(ix, out value);
@@ -103,27 +103,27 @@ readonly struct Globals
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A AtUnmanaged<A>(ushort ix)
         where A : unmanaged =>
         ref values.At<A>(ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A AtManaged<A>(ushort ix)
         where A : class =>
         ref objs.At<A>(ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A AtStruct<A>(ushort ix)
         where A : struct =>
         ref AtManaged<Box<A>>(ix).Ref;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AtUnmanaged<A>(in ushort ix, out A value)
         where A : unmanaged =>
         values.At(in ix, out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AtManaged<A>(in ushort ix, out A value)
         where A : class =>
         objs.At(ix, out value);
@@ -144,32 +144,32 @@ readonly struct Globals
         }
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddStruct<A>(in A value)
         where A : struct =>
         AddStruct(in value, out _);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddStruct<A>(in A value, out ushort index)
         where A : struct =>
         objs.Push(new Box<A>(in value), new Box<A>(in value), out index);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddManaged<A>(in A value)
         where A : class =>
         AddManaged(in value, out _);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddManaged<A>(in A value, out ushort index)
         where A : class =>
         objs.Push(value, out index);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddUnmanaged<A>(in A value)
         where A : unmanaged =>
         values.Add(in value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool AddUnmanaged<A>(in A value, out ushort index)
         where A : unmanaged =>
         values.Add(in value, out index);

@@ -37,7 +37,7 @@ readonly struct Tops
     readonly uint begin;
     readonly int count;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public Tops()
     {
         count = 1;
@@ -47,13 +47,13 @@ readonly struct Tops
 
     public int Count
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => count;
     }
 
     public bool IsEmpty
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => count == 0;
     }
 
@@ -62,7 +62,7 @@ readonly struct Tops
     /// </summary>
     ref uint BeginRef
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.AsRef(in begin);
     }
 
@@ -71,7 +71,7 @@ readonly struct Tops
     /// </summary>
     public ref uint CurrentRef
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.AsRef(in current);
     }
 
@@ -80,29 +80,29 @@ readonly struct Tops
     /// </summary>
     public uint Current
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => current;
     }
 
     public int PC
     {
-        [MethodImpl(Optimisations.Default)] 
+        [MethodImpl(Optimisations.InliningOnly)] 
         get => (int)(current & 0x000000ff);
     }
 
     public bool IsSingleton
     {
-        [MethodImpl(Optimisations.Default)] 
+        [MethodImpl(Optimisations.InliningOnly)] 
         get => (current & 0xff000000) == 0;
     }
 
     public bool HasYielded
     {
-        [MethodImpl(Optimisations.Default)] 
+        [MethodImpl(Optimisations.InliningOnly)] 
         get => (current & 0xff000000) != 0;
     } 
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public int IncrementPC()
     {
         unchecked
@@ -113,7 +113,7 @@ readonly struct Tops
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void IncrementYields()
     {
         unchecked
@@ -123,7 +123,7 @@ readonly struct Tops
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void DecrementYields()
     {
         unchecked
@@ -133,14 +133,14 @@ readonly struct Tops
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void ClearYields()
     {
         var     c = current & 0x00FFFFFF;
         CurrentRef = c;
     }
  
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool ResetFrame()
     {
         CurrentRef = begin;
@@ -148,7 +148,7 @@ readonly struct Tops
         return true;
     }
   
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Agro)]
     public bool PopFrame()
     {
         if (count <= 0) return false;
@@ -172,7 +172,7 @@ readonly struct Tops
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.Agro)]
     public bool PushFrame(uint yieldAdd)
     {
         if (count >= Capacity) return false;
@@ -206,13 +206,13 @@ readonly struct Tops
 
     uint Top
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
     }    
 
     ref uint TopRef
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
     }    
 }

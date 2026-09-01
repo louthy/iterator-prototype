@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
+
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
+[SkipLocalsInit]
 public ref struct Args
 {
     public readonly ushort GlobalIx1;

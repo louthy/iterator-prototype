@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Iterator3.Internal;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
 namespace IteratorPrototype.Iterator3;

@@ -8,11 +8,14 @@ public static class Optimisations
     
     public const MethodImplOptions Default = None;
 
+    public const MethodImplOptions Max =
+        MethodImplOptions.AggressiveInlining |
+        MethodImplOptions.AggressiveOptimization;
+
     public const MethodImplOptions InliningOnly =
         MethodImplOptions.AggressiveInlining |
         MethodImplOptions.AggressiveOptimization;
 
     public const MethodImplOptions Agro =
-        MethodImplOptions.AggressiveInlining |
         MethodImplOptions.AggressiveOptimization;
 }
