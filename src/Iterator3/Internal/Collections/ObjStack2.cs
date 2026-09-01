@@ -32,11 +32,11 @@ public readonly struct ObjStack2
 
     public ref object this[int index]
     {
-        [MethodImpl(Optimisations.Default)] 
+        [MethodImpl(Optimisations.InliningOnly)] 
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Object00), index << 1);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Add(in ObjStack2 rhs)
     {
         if (rhs.Count + Count > Capacity) return false;
@@ -80,7 +80,7 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Pop()
     {
         var     count2 = Count << 1;
@@ -115,7 +115,7 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Peek<A>(out A value)
         where A : class
     {
@@ -124,7 +124,7 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool DeclaredPeek<A>(out A value)
         where A : class
     {
@@ -133,7 +133,7 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAt<A>()
         where A : class
     {
@@ -141,7 +141,7 @@ public readonly struct ObjStack2
         return ref Unsafe.As<object, A>(ref entry);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A DeclaredPeekAt<A>()
         where A : class
     {
@@ -149,17 +149,17 @@ public readonly struct ObjStack2
         return ref Unsafe.As<object, A>(ref entry);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Push<A>(in A value)
         where A : class =>
         Push(in value, in value, out _);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Push<A>(in A value, out ushort ix)
         where A : class =>
         Push(in value, in value, out ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Push<A>(in A variable, in A declared)
         where A : class =>
         Push(in variable, in declared, out _);
@@ -188,17 +188,17 @@ public readonly struct ObjStack2
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Prepend<A>(in A variable)
         where A : class =>
         Prepend(in variable, in variable, out _);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Prepend<A>(in A variable, out ushort ix)
         where A : class =>
         Prepend(in variable, in variable, out ix);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Prepend<A>(in A variable, in A declared)
         where A : class =>
         Prepend(in variable, in declared, out _);
@@ -235,11 +235,11 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref object At(int index) =>
         ref Unsafe.Add(ref Unsafe.AsRef(in Object00), index << 1);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool At(int index, out object value)
     {
         if (index < Count)
@@ -255,12 +255,12 @@ public readonly struct ObjStack2
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A At<A>(int index) 
         where A : class =>
         ref Unsafe.As<object, A>(ref At(index));
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool At<A>(int index, out A value)
         where A : class
     {
@@ -277,7 +277,7 @@ public readonly struct ObjStack2
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref object DeclaredAt(int index) =>
         ref Unsafe.Add(ref Unsafe.AsRef(in Object100), index << 1);
 
@@ -319,7 +319,7 @@ public readonly struct ObjStack2
         }
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool RestoreAt(int index)
     {
         if(index >= Count) return false;
@@ -329,7 +329,7 @@ public readonly struct ObjStack2
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A RestoreAt<A>(int index)
         where A : class 
     {

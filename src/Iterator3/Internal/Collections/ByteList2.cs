@@ -32,11 +32,11 @@ public readonly struct ByteList2
     [FieldOffset(IndexCapacity + DataCapacity2 + sizeof(ushort))]
     public readonly ushort Count;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     ref byte Offset(in ushort i) =>
         ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), i * IndexItemSize);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A At<A>(ushort ix)
         where A : unmanaged
     {
@@ -45,7 +45,7 @@ public readonly struct ByteList2
         return ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack, offset));
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool At<A>(in ushort ix, out A value)
         where A : unmanaged
     {
@@ -55,12 +55,12 @@ public readonly struct ByteList2
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A DeclaredAt<A>(ushort ix)
         where A : unmanaged =>
         ref Unsafe.AddByteOffset(ref At<A>(ix), Unsafe.SizeOf<A>());
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool DeclaredAt<A>(in ushort ix, out A value)
         where A : unmanaged
     {
@@ -68,7 +68,7 @@ public readonly struct ByteList2
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A RestoreAt<A>(ushort ix)
         where A : unmanaged
     {
@@ -78,7 +78,7 @@ public readonly struct ByteList2
         return ref variable;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool RestoreAt<A>(in ushort ix, out A value)
         where A : unmanaged
     {
@@ -94,7 +94,7 @@ public readonly struct ByteList2
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Add<A>(in A value)
         where A : unmanaged =>
         Add(in value, out _);
