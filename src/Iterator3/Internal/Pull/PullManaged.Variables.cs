@@ -39,6 +39,26 @@ static partial class PullManaged
         frame.globals.AtManaged(frame.args.GlobalIx4, out value);
 
     [MethodImpl(Optimisations.Default)]
+    public static ref A arg1<A>(ref StackFrame frame)  
+        where A : class =>
+        ref frame.globals.AtManaged<A>(frame.args.GlobalIx1);
+
+    [MethodImpl(Optimisations.Default)]
+    public static ref A arg2<A>(ref StackFrame frame)  
+        where A : class =>
+        ref frame.globals.AtManaged<A>(frame.args.GlobalIx2);
+
+    [MethodImpl(Optimisations.Default)]
+    public static ref A arg3<A>(ref StackFrame frame)  
+        where A : class =>
+        ref frame.globals.AtManaged<A>(frame.args.GlobalIx3);
+
+    [MethodImpl(Optimisations.Default)]
+    public static ref A arg4<A>(ref StackFrame frame)  
+        where A : class =>
+        ref frame.globals.AtManaged<A>(frame.args.GlobalIx4);
+
+    [MethodImpl(Optimisations.Default)]
     public static bool update1<A>(ref StackFrame frame, in A value) 
         where A : class 
     {

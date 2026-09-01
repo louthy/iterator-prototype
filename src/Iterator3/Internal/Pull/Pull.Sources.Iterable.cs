@@ -14,8 +14,8 @@ static partial class Pull
         where IS : unmanaged
         where A : unmanaged
     {
-        PullManaged.arg2<K<T, A>>(ref frame, out var ta);
-        ref var ts = ref PullUnmanaged.arg1<IS>(ref frame);
+        ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
+        ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushUnmanaged(in x);
         return PullState.Continue;
@@ -27,8 +27,8 @@ static partial class Pull
         where IS : unmanaged
         where A : class
     {
-        PullManaged.arg2<K<T, A>>(ref frame, out var ta);
-        ref var ts = ref PullUnmanaged.arg1<IS>(ref frame);
+        ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
+        ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushManaged(in x);
         return PullState.Continue;
@@ -40,8 +40,8 @@ static partial class Pull
         where IS : unmanaged
         where A : struct
     {
-        PullManaged.arg2<K<T, A>>(ref frame, out var ta);
-        ref var ts = ref PullUnmanaged.arg1<IS>(ref frame);
+        ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
+        ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushStruct(in x);
         return PullState.Continue;
@@ -56,16 +56,16 @@ static partial class Pull
         where IS : unmanaged
     {
         // Pop the iterable instance
-        constarg<K<T, A>>(ref frame, out var ta) &&
+        arg1<K<T, A>>(ref frame, out var ta) &&
 
         // Read the iterable state global
-        arg<IS>(ref frame, out var ts, out var gts) &&
+        arg2<IS>(ref frame, out var ts) &&
 
         // Step the iterable
         T.StepImmutable(in ta, in ts, out var x, out var xs) &&
 
         // Update the iterable state
-        gts.Update(ref frame, in xs) &&
+        update1(ref frame, in xs) &&
 
         // Return the value
         @return(ref frame, in x)

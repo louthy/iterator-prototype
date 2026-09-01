@@ -22,15 +22,16 @@ static unsafe partial class Push
         fun(ref frame, GlobalsGen<A>.pull(in ix));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool iterableSetup<T, IS, A>(ref StackFrame frame, in K<T, A> ta) 
+    public static bool iterableSetup<T, IS, A>(ref StackFrame frame, in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
-        where IS : unmanaged  =>
-        
-        // Push the iterable instance onto the globals-list
-        declare(ref frame, in ta) &&
+        where IS : unmanaged =>
 
         // Push a slot for the iterable state onto the globals-list
-        declare(ref frame, T.SetupImmutable(in ta));
+        declare(ref frame, T.SetupImmutable(in ta)) &&
+
+        // Push the iterable instance onto the globals-list
+        declare(ref frame, in ta);
+
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool iterable<T, IS, A>(ref StackFrame frame, in K<T, A> ta)
@@ -42,12 +43,12 @@ static unsafe partial class Push
         
         // Start the co-routine
         coroutine(ref frame) &&
- 
-        // Load the state
-        arg<IS>(ref frame, 1) &&
 
         // Load the args
-        arg<K<T, A>>(ref frame, 2) &&
+        arg<K<T, A>>(ref frame, 1) &&
+ 
+        // Load the state
+        arg<IS>(ref frame, 2) &&
         
         // Push iterable operation
         fun(ref frame, PullGen<A>.iterable<T, IS>()) &&
