@@ -55,13 +55,13 @@ readonly ref struct StackFrame
         // Pop the current tops
         tops.ResetFrame();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool VoidScope() =>
         
         // Pop the current scope
         Pop();
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Push() =>
         
         // Make sure the tops are in-sync with live object
@@ -71,7 +71,7 @@ readonly ref struct StackFrame
         // Push the current tops onto the stack
         tops.PushFrame(0);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Pop()
     {
         if (tops.PopFrame())
@@ -88,7 +88,7 @@ readonly ref struct StackFrame
 
     public bool IsVoid
     {
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => tops.IsEmpty;
     }
 

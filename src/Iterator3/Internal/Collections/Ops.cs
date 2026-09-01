@@ -90,7 +90,7 @@ readonly unsafe struct Ops
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Run<A>(ref StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator
@@ -103,12 +103,15 @@ readonly unsafe struct Ops
         // Cache a reference to the tops
         ref var tops = ref frame.tops;
 
-        // Reset the yield flag for the current frame.   
-        //tops.ClearYields();
+        // Set initial state  
+        var     pc      = tops.PC;
+        ref var ptr     = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
+        var     count   = frame.ops.Count - pc;
+        ref var current = ref frame.tops.CurrentRef;
  
         while(true)
         {
-            if (frame.IsReturn)
+            if (count == 0)
             {
                 // This is where we end up if we haven't been composed with `Iter.pure`. 
                 // So, this is an implicit `Iter.pure`.  It yields what's on the stack
@@ -119,16 +122,20 @@ readonly unsafe struct Ops
             }
         
             // Read the current instruction
-            var     pc  = tops.PC;
-            ref var ptr = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
-            var     op  = (delegate*<ref StackFrame, int>)ptr.Fun;
+            //ref var ptr = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
+            var op = (delegate*<ref StackFrame, int>)ptr.Fun;
 
             // Move the program-counter *before* executing the instruction, this allows
             // tests like frame.IsReturn to work properly.
-            tops.IncrementPC();
+            //tops.IncrementPC();
+            current += 1;
 
             // Run the instruction
             var result = op(ref frame);
+
+            // Next instruction
+            ptr = ref Unsafe.Add(ref ptr, 1);
+            count--;
             
             switch (result)
             {
@@ -139,7 +146,13 @@ readonly unsafe struct Ops
                         head = default!;
                         return false;
                     }
-                    continue;
+                    else
+                    {
+                        pc = tops.PC;
+                        ptr = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
+                        count = frame.ops.Count - pc;
+                        continue;
+                    }
 
                 // Continue 
                 case 1: 
@@ -154,7 +167,7 @@ readonly unsafe struct Ops
             }
         }
 
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         static bool VoidResetToContinuationPoint(ref StackFrame frame)
         {
             // Remove the current scope.
@@ -190,7 +203,7 @@ readonly unsafe struct Ops
             return frame.tops.Count > 0;
         }
 
-        [MethodImpl(Optimisations.Default)]
+        [MethodImpl(Optimisations.InliningOnly)]
         static bool PureResetToContinuationPoint(ref StackFrame frame, out A head)
         {
             ref var tops = ref frame.tops;
