@@ -27,15 +27,15 @@ public partial class Arr :
     FoldableBack<Arr, Arr.FoldState>
     */
 {
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static Option<A> Tr.Indexable<Arr, Index>.At<A>(Index index, K<Arr, A> ta) =>
         ta.As().At(index);
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static Option<A> Tr.Indexable<Arr, int>.At<A>(int index, K<Arr, A> ta) =>
         ta.As().At(index);
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static ref readonly A Tr.RefIndexable<Arr, Index>.AtRef<A>(in Index index, in K<Arr, A> ta)
     {
         if (index.IsFromEnd)
@@ -48,24 +48,24 @@ public partial class Arr :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static ref readonly A Tr.RefIndexable<Arr, int>.AtRef<A>(in int index, in K<Arr, A> ta) =>
         ref Unsafe.Add(ref Unsafe.As<K<Arr, A>, A>(ref Unsafe.AsRef(in ta)), (nint)(uint)index /* force zero-extension */);
     
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static ReadOnlySpan<A> Tr.Iterable<Arr>.AsSpan<A>(K<Arr, A> ta) =>
         (+ta).AsSpan();
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static int Tr.Countable<Arr>.Count<A>(K<Arr, A> fa) =>
         fa is Arr<A> arr ? arr.Count : 0;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static ArrState Tr.IterableImmutable<Arr, ArrState>.SetupImmutable<A>(in K<Arr, A> ta) =>
         new (0, ta.Count);
         
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static bool Tr.IterableImmutable<Arr, ArrState>.StepImmutable<A>(
         in K<Arr, A> ta, 
         in ArrState ts, 
@@ -89,7 +89,8 @@ public partial class Arr :
         return true;    
     }
 
-    public static bool Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
+    [MethodImpl(Optimisations.Default)]
+    static bool Tr.IterableImmutable<Arr, ArrState>.Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
     {
         ref var index = ref Unsafe.AsRef(in ts.Index);
         if (index < ts.Count)
@@ -105,7 +106,7 @@ public partial class Arr :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static ArrStateRef Tr.IterableMutable<Arr, ArrState, ArrStateRef>.SetupMutable<A>(K<Arr, A> ta)
     {
         var array = ta.AsSpan();
@@ -117,7 +118,7 @@ public partial class Arr :
         return Unsafe.As<ArrStateRef<A>, ArrStateRef>(ref stateA);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static bool Tr.IterableMutable<Arr, ArrState, ArrStateRef>.StepMutable<A>(K<Arr, A> ta, ref ArrStateRef ts, out A value)
     {
         ref var          state    = ref Unsafe.As<ArrStateRef, ArrStateRef<A>>(ref ts);
@@ -204,11 +205,11 @@ public partial class Arr :
         return writer.ToArr();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static K<Arr, A> MonoidK<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static K<Arr, A> Alternative<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
@@ -220,11 +221,11 @@ public partial class Arr :
         return writer.ToArr();
     }    
     
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, K<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb : ma;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.Default)]
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, Memo<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb.Value : ma;
 

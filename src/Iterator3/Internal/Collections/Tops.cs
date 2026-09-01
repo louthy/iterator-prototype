@@ -51,21 +51,6 @@ readonly struct Tops
         get => count;
     }
 
-    [MethodImpl(Optimisations.Default)]
-    public bool Sync(in Vars.State snapshot)
-    {
-        // Update the current cache
-        var c = (current & 0xFF0000FF) | (snapshot.Bits & 0x00FFFF00);
-        
-        // Update the top cache 
-        CurrentRef = c;
-        
-        // Sync the top entry to the current cache
-        TopRef = c;
-        
-        return true;
-    }
-
     public bool IsEmpty
     {
         [MethodImpl(Optimisations.Default)]

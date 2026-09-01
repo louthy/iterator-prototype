@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
-using IteratorPrototype.Iterator3.Internal.Collections;
 using LanguageExt.Traits;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 

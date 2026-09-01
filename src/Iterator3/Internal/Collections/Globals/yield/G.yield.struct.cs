@@ -7,29 +7,6 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class GStruct<A>
     where A : struct
 {
-    [MethodImpl(Optimisations.Default)]
-    static int yield(ref StackFrame frame, in ushort ix)
-    {
-        if (frame.vars.PopStruct<A>(out var value))
-        {
-            // Fill the yield variable with the output of whatever ran before us
-            ref var r = ref frame.globals.AtStruct<A>(ix);
-            r = value;
-
-            // Start a new co-routine for the value
-            return frame.StartYieldScope() &&
-
-                   // Push it onto the 'vars' stack in the new co-routine
-                   frame.vars.PushStruct(r)
-                       ? PullState.Continue
-                       : PullState.Void;
-        }
-        else
-        {
-            return PullState.Void;
-        }
-    }
-    
     public static delegate*<ref StackFrame, int> yield(in ushort index) =>
         index switch
         {
@@ -70,133 +47,133 @@ static unsafe partial class GStruct<A>
        
     [MethodImpl(Optimisations.Default)]
     static int yield0(ref StackFrame frame) => 
-        yield(ref frame, 0);
+        frame.vars.YieldStruct<A>(ref frame, 0);
     
     [MethodImpl(Optimisations.Default)] 
     static int yield1(ref StackFrame frame) => 
-        yield(ref frame, 1);
+        frame.vars.YieldStruct<A>(ref frame, 1);
     
     [MethodImpl(Optimisations.Default)] 
     static int yield2(ref StackFrame frame) => 
-        yield(ref frame, 2);
+        frame.vars.YieldStruct<A>(ref frame, 2);
     
     [MethodImpl(Optimisations.Default)]
     static int yield3(ref StackFrame frame) => 
-        yield(ref frame, 3);
+        frame.vars.YieldStruct<A>(ref frame, 3);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield4(ref StackFrame frame) => 
-        yield(ref frame, 4);
+        frame.vars.YieldStruct<A>(ref frame, 4);
     
     [MethodImpl(Optimisations.Default)] 
     static int yield5(ref StackFrame frame) => 
-        yield(ref frame, 5);
+        frame.vars.YieldStruct<A>(ref frame, 5);
     
     [MethodImpl(Optimisations.Default)] 
     static int yield6(ref StackFrame frame) => 
-        yield(ref frame, 6);
+        frame.vars.YieldStruct<A>(ref frame, 6);
     
     [MethodImpl(Optimisations.Default)]
     static int yield7(ref StackFrame frame) => 
-        yield(ref frame, 7);
+        frame.vars.YieldStruct<A>(ref frame, 7);
     
     
     [MethodImpl(Optimisations.Default)]
     static int yield8(ref StackFrame frame) => 
-        yield(ref frame, 8);
+        frame.vars.YieldStruct<A>(ref frame, 8);
     [MethodImpl(Optimisations.Default)]
     static int yield9(ref StackFrame frame) => 
-        yield(ref frame, 9);
+        frame.vars.YieldStruct<A>(ref frame, 9);
     [MethodImpl(Optimisations.Default)]
     static int yield10(ref StackFrame frame) => 
-        yield(ref frame, 10);
+        frame.vars.YieldStruct<A>(ref frame, 10);
     [MethodImpl(Optimisations.Default)]
     static int yield11(ref StackFrame frame) => 
-        yield(ref frame, 11);
+        frame.vars.YieldStruct<A>(ref frame, 11);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield12(ref StackFrame frame) => 
-        yield(ref frame, 12);
+        frame.vars.YieldStruct<A>(ref frame, 12);
     
     [MethodImpl(Optimisations.Default)]
     static int yield13(ref StackFrame frame) => 
-        yield(ref frame, 13);
+        frame.vars.YieldStruct<A>(ref frame, 13);
     
     [MethodImpl(Optimisations.Default)]
     static int yield14(ref StackFrame frame) => 
-        yield(ref frame, 14);
+        frame.vars.YieldStruct<A>(ref frame, 14);
     
     [MethodImpl(Optimisations.Default)]
     static int yield15(ref StackFrame frame) => 
-        yield(ref frame, 15);
+        frame.vars.YieldStruct<A>(ref frame, 15);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield16(ref StackFrame frame) => 
-        yield(ref frame, 16);
+        frame.vars.YieldStruct<A>(ref frame, 16);
     
     [MethodImpl(Optimisations.Default)]
     static int yield17(ref StackFrame frame) => 
-        yield(ref frame, 17);
+        frame.vars.YieldStruct<A>(ref frame, 17);
     
     [MethodImpl(Optimisations.Default)]
     static int yield18(ref StackFrame frame) => 
-        yield(ref frame, 18);
+        frame.vars.YieldStruct<A>(ref frame, 18);
     
     [MethodImpl(Optimisations.Default)]
     static int yield19(ref StackFrame frame) => 
-        yield(ref frame, 19);
+        frame.vars.YieldStruct<A>(ref frame, 19);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield20(ref StackFrame frame) => 
-        yield(ref frame, 20);
+        frame.vars.YieldStruct<A>(ref frame, 20);
     
     [MethodImpl(Optimisations.Default)]
     static int yield21(ref StackFrame frame) => 
-        yield(ref frame, 21);
+        frame.vars.YieldStruct<A>(ref frame, 21);
     
     [MethodImpl(Optimisations.Default)]
     static int yield22(ref StackFrame frame) => 
-        yield(ref frame, 22);
+        frame.vars.YieldStruct<A>(ref frame, 22);
     
     [MethodImpl(Optimisations.Default)]
     static int yield23(ref StackFrame frame) => 
-        yield(ref frame, 23);
+        frame.vars.YieldStruct<A>(ref frame, 23);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield24(ref StackFrame frame) => 
-        yield(ref frame, 24);
+        frame.vars.YieldStruct<A>(ref frame, 24);
     
     [MethodImpl(Optimisations.Default)]
     static int yield25(ref StackFrame frame) => 
-        yield(ref frame, 25);
+        frame.vars.YieldStruct<A>(ref frame, 25);
     
     [MethodImpl(Optimisations.Default)]
     static int yield26(ref StackFrame frame) => 
-        yield(ref frame, 26);
+        frame.vars.YieldStruct<A>(ref frame, 26);
     
     [MethodImpl(Optimisations.Default)]
     static int yield27(ref StackFrame frame) => 
-        yield(ref frame, 27);
+        frame.vars.YieldStruct<A>(ref frame, 27);
 
     
     [MethodImpl(Optimisations.Default)]
     static int yield28(ref StackFrame frame) => 
-        yield(ref frame, 28);
+        frame.vars.YieldStruct<A>(ref frame, 28);
     
     [MethodImpl(Optimisations.Default)]
     static int yield29(ref StackFrame frame) => 
-        yield(ref frame, 29);
+        frame.vars.YieldStruct<A>(ref frame, 29);
     
     [MethodImpl(Optimisations.Default)]
     static int yield30(ref StackFrame frame) => 
-        yield(ref frame, 30);
+        frame.vars.YieldStruct<A>(ref frame, 30);
     
     [MethodImpl(Optimisations.Default)]
     static int yield31(ref StackFrame frame) => 
-        yield(ref frame, 31);
+        frame.vars.YieldStruct<A>(ref frame, 31);
 }

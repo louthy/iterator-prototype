@@ -137,4 +137,19 @@ readonly partial struct Vars
     
     public int ValuesCount => 
         values.Count;
+
+    [MethodImpl(Optimisations.Default)]
+    public int YieldManaged<A>(ref StackFrame frame, in ushort ix)
+        where A : class =>
+        objs.YieldManaged<A>(ref frame, ix);
+
+    [MethodImpl(Optimisations.Default)]
+    public int YieldStruct<A>(ref StackFrame frame, in ushort ix)
+        where A : struct =>
+        objs.YieldStruct<A>(ref frame, ix);
+
+    [MethodImpl(Optimisations.Default)]
+    public int YieldUnmanaged<A>(ref StackFrame frame, in ushort ix)
+        where A : unmanaged =>
+        values.Yield<A>(ref frame, ix);
 }
