@@ -47,7 +47,7 @@ static unsafe partial class Push
         arg<IS>(ref frame, 1) &&
 
         // Load the args
-        constarg<K<T, A>>(ref frame, 2) &&
+        arg<K<T, A>>(ref frame, 2) &&
         
         // Push iterable operation
         fun(ref frame, PullGen<A>.iterable<T, IS>()) &&

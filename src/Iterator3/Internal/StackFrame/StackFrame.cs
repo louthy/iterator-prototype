@@ -6,47 +6,20 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    //public readonly ref Fields fields;
     public readonly ref Tops tops;
     public readonly ref Ops ops;
     public readonly ref Globals globals;
     public readonly ref Vars vars;
+    public readonly Args args;
 
     [MethodImpl(Optimisations.Default)]
     public StackFrame(ref Fields fields)
     {
-        //this.fields = ref fields;
         tops = ref Unsafe.AsRef(in fields.tops);
         ops = ref Unsafe.AsRef(in fields.ops);
         globals = ref Unsafe.AsRef(in fields.globals);
         vars = ref Unsafe.AsRef(in fields.vars);
     }
-
-    /*
-    public ref Tops tops
-    {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AsRef(in fields.tops);
-    }
-
-    public ref Ops ops
-    {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AsRef(in fields.ops);
-    }
-
-    public ref Globals globals
-    {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AsRef(in fields.globals);
-    }
-
-    public ref Vars vars
-    {
-        [MethodImpl(Optimisations.Default)]
-        get => ref Unsafe.AsRef(in fields.vars);
-    }
-    */
 
     [MethodImpl(Optimisations.Default)]
     public bool StartScope() =>

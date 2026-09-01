@@ -4,7 +4,7 @@ using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3;
 
-static unsafe partial class Push
+static unsafe partial class Insert
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool declare<A>(ref StackFrame frame, in A value) =>

@@ -10,10 +10,10 @@ public static class IterTests
     {
         Log.enable();
         
-        //Basic00();
-        //Basic0();
-        //Basic1();
-        //Basic2_0();
+        Basic0();
+        Basic00();
+        Basic1();
+        Basic2_0();
         Basic2_1();
         Basic2();
         

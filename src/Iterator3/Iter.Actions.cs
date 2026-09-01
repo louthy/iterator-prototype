@@ -16,7 +16,7 @@ static class IterAction
     public static Iter<A> take<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Push.take<A>(ref frame, amount)
+        return Insert.take(ref frame, amount)
                    ? ta1
                    : default;
     }
@@ -61,7 +61,7 @@ static class IterAction
     internal static Iter<A> scope<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Push.scope(ref frame)
+        return Insert.scope(ref frame)
                    ? ta1
                    : default;
     }

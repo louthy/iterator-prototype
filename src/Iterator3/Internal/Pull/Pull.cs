@@ -16,6 +16,13 @@ static partial class Pull
         PullState.Pure;
 
     [MethodImpl(Optimisations.Default)]
+    public static int pureV<A>(ref StackFrame frame) =>
+        arg1<A>(ref frame, out var x) &&
+        frame.vars.Push(in x)
+            ? PullState.Pure
+            : PullState.Void;
+
+    [MethodImpl(Optimisations.Default)]
     public static int @continue(ref StackFrame frame) =>
         PullState.Continue;
 
@@ -43,10 +50,10 @@ static partial class Pull
     public static int map<A, B>(ref StackFrame frame) =>
 
         // Peek at the map function
-        constarg<Func<A, B>>(ref frame, out var f) &&
+        arg1<Func<A, B>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the mapped value on the stack
         @return(ref frame, f(a)) 
@@ -58,13 +65,13 @@ static partial class Pull
     public static int bimap<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
-        constarg<Func<A, B, C>>(ref frame, out var f) &&
+        arg1<Func<A, B, C>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<B>(ref frame, out var b) &&
+        pop<B>(ref frame, out var b) &&
 
         // Take the value off the stack
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the mapped value on the stack
         @return(ref frame, f(a, b)) 
@@ -76,10 +83,10 @@ static partial class Pull
     public static int bimap1<A, B, C>(ref StackFrame frame) =>
 
         // Peek at the map function
-        constarg<Func<A, B, C>>(ref frame, out var f) &&
+        arg1<Func<A, B, C>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<(A, B)>(ref frame, out var ab) &&
+        pop<(A, B)>(ref frame, out var ab) &&
 
         // Push the mapped value on the stack
         @return(ref frame, f(ab.Item1, ab.Item2))
@@ -91,16 +98,16 @@ static partial class Pull
     public static int trimap<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
-        constarg<Func<A, B, C, D>>(ref frame, out var f) &&
+        arg1<Func<A, B, C, D>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<C>(ref frame, out var c) &&
+        pop<C>(ref frame, out var c) &&
 
         // Take the value off the stack
-        constarg<B>(ref frame, out var b) &&
+        pop<B>(ref frame, out var b) &&
 
         // Take the value off the stack
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the mapped value on the stack
         @return(ref frame, f(a, b, c))
@@ -112,10 +119,10 @@ static partial class Pull
     public static int trimap1<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
-        constarg<Func<A, B, C, D>>(ref frame, out var f) &&
+        pop<Func<A, B, C, D>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<(A, B, C)>(ref frame, out var abc) &&
+        pop<(A, B, C)>(ref frame, out var abc) &&
 
         // Push the mapped value on the stack
         @return(ref frame, f(abc.Item1, abc.Item2, abc.Item3)) 
@@ -127,13 +134,13 @@ static partial class Pull
     public static int apply<A, B, C>(ref StackFrame frame) =>
 
         // Pop at the apply function
-        constarg<Func<A, B, C>>(ref frame,out var f) && 
+        arg1<Func<A, B, C>>(ref frame,out var f) && 
         
         // Pop the second element
-        constarg<B>(ref frame, out var b) &&
+        pop<B>(ref frame, out var b) &&
 
         // Peek the first element
-        frame.vars.Peek<A>(out var a) && 
+        peek<A>(ref frame, out var a) && 
 
         // Push the tuple
         @return(ref frame, f(a, b)) 
@@ -145,19 +152,19 @@ static partial class Pull
     public static int apply<A, B, C, D>(ref StackFrame frame) =>
 
         // Pop at the apply function
-        constarg<Func<A, B, C, D>>(ref frame,out var f) && 
+        arg1<Func<A, B, C, D>>(ref frame,out var f) && 
 
         // Pop the third element
-        constarg<C>(ref frame, out var c) &&
+        pop<C>(ref frame, out var c) &&
 
         // Pop the second element
-        constarg<B>(ref frame, out var b) && 
+        pop<B>(ref frame, out var b) && 
 
         // Peek the first element
-        frame.vars.Peek<A>(out var a) && 
+        peek<A>(ref frame, out var a) && 
 
         // Re-push the second element
-        frame.vars.Push(in b) && 
+        push(ref frame, in b) && 
 
         // Push the tuple
         @return(ref frame, f(a, b, c)) 
@@ -169,10 +176,10 @@ static partial class Pull
     public static int tuple<A, B>(ref StackFrame frame) =>
 
         // Pop the second element
-        constarg<B>(ref frame, out var b) &&
+        pop<B>(ref frame, out var b) &&
 
         // Pop the first element
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the tuple
         @return(ref frame, (a, b))
@@ -184,13 +191,13 @@ static partial class Pull
     public static int tuple<A, B, C>(ref StackFrame frame) =>
 
         // Pop the second element
-        constarg<C>(ref frame, out var c) &&
+        pop<C>(ref frame, out var c) &&
 
         // Pop the second element
-        constarg<B>(ref frame, out var b) &&
+        pop<B>(ref frame, out var b) &&
 
         // Pop the first element
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the tuple
         @return(ref frame, (a, b, c)) 
@@ -199,30 +206,28 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int take<A>(ref StackFrame frame) =>
+    public static int take(ref StackFrame frame) =>
 
         // Pop the amount 
-        arg<int>(ref frame, out var amount, out var g) && amount > 0
+        arg1<int>(ref frame, out var amount) && amount > 0
 
             // Push the updated amount
-            ? g.Update(ref frame, amount - 1) 
+            ? update1(ref frame, amount - 1) 
                   ? @continue(ref frame)
                   : empty(ref frame)
 
-            // We're voiding this, so we need to pop the top entry
-            // so that we don't leave a stray value on the stack.
-            : constarg<A>(ref frame, out _)
-                | PullState.Void;
+            // Exit!      
+            : empty(ref frame);
 
 
     [MethodImpl(Optimisations.Default)]
     public static int bind<A, B>(ref StackFrame frame) =>
 
         // Pop the bind function
-        constarg<Func<A, Iter<B>>>(ref frame, out var f) &&
+        arg1<Func<A, Iter<B>>>(ref frame, out var f) &&
 
         // Take the value off the stack
-        constarg<A>(ref frame, out var a) &&
+        pop<A>(ref frame, out var a) &&
 
         // Push the mapped value on the stack
         // TODO: This should create a new source from f(a) than they yields all
@@ -236,9 +241,9 @@ static partial class Pull
     [MethodImpl(Optimisations.Default)]
     public static int elements<A, B>(ref StackFrame frame) =>
 
-        frame.vars.Pop<(A, B)>(out var tuple) &&
-        frame.vars.Push(in tuple.Item2)       &&
-        frame.vars.Push(in tuple.Item1)       
+        pop<(A, B)>(ref frame, out var tuple) &&
+        push(ref frame, in tuple.Item2)       &&
+        push(ref frame, in tuple.Item1)
 
             ? @continue(ref frame)
             : empty(ref frame);
@@ -246,10 +251,10 @@ static partial class Pull
     [MethodImpl(Optimisations.Default)]
     public static int elements<A, B, C>(ref StackFrame frame) =>
 
-        frame.vars.Pop<(A, B, C)>(out var tuple) &&
-        frame.vars.Push(in tuple.Item3)          &&
-        frame.vars.Push(in tuple.Item2)          &&
-        frame.vars.Push(in tuple.Item1)          
+        pop<(A, B, C)>(ref frame, out var tuple) &&
+        push(ref frame, in tuple.Item3)          &&
+        push(ref frame, in tuple.Item2)          &&
+        push(ref frame, in tuple.Item1)
 
             ? @continue(ref frame)
             : empty(ref frame);

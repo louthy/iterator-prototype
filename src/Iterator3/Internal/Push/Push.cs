@@ -16,11 +16,10 @@ static unsafe partial class Push
     public static bool pure<A>(ref StackFrame frame, in A value) =>
         
         // Push the constant value
-        @const(ref frame, in value) &&
+        arg1(ref frame, in value) &&
         
         // Push the yield operation
-        fun(ref frame, &Pull.pure);
-    
+        fun(ref frame, &Pull.pureV<A>);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool yield<A>(ref StackFrame frame) =>
@@ -30,7 +29,6 @@ static unsafe partial class Push
         
         // Yield what's stored in the global variable
         fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
-    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool yield<A>(ref StackFrame frame, in A value) =>
@@ -56,18 +54,12 @@ static unsafe partial class Push
         
         // Push the no-arg coroutine operation
         fun(ref frame, &Pull.coroutine);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool scope(ref StackFrame frame) =>
-        
-        // Push the no-arg coroutine operation
-        frame.Prepend(&Pull.coroutine);
  
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool map<A, B>(ref StackFrame frame, in Func<A, B> f) =>
         
         // Push the mapping function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the map operation
         fun(ref frame, &Pull.map<A, B>);
@@ -76,7 +68,7 @@ static unsafe partial class Push
     public static bool bimap<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
         
         // Push the mapping function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the map operation
         fun(ref frame, &Pull.bimap<A, B, C>);
@@ -85,7 +77,7 @@ static unsafe partial class Push
     public static bool bimap1<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
         
         // Push the mapping function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the map operation
         fun(ref frame, &Pull.bimap1<A, B, C>);
@@ -94,7 +86,7 @@ static unsafe partial class Push
     public static bool trimap<A, B, C, D>(ref StackFrame frame, in Func<A, B, C, D> f) =>
         
         // Push the mapping function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the map operation
         fun(ref frame, &Pull.trimap<A, B, C, D>);
@@ -103,7 +95,7 @@ static unsafe partial class Push
     public static bool trimap1<A, B, C, D>(ref StackFrame frame, in Func<A, B, C, D> f) =>
         
         // Push the mapping function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the map operation
         fun(ref frame, &Pull.trimap1<A, B, C, D>);
@@ -112,33 +104,23 @@ static unsafe partial class Push
     public static bool bind<A, B>(ref StackFrame frame, in Func<A, Iter<B>> f) =>
         
         // Push the bind function
-        @const(ref frame, in f) &&
+        arg1(ref frame, in f) &&
         
         // Add the bind operation
         fun(ref frame, &Pull.bind<A, B>);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool take<A>(ref StackFrame frame, in int amount) =>
-
-        // Push the amount
-        var(ref frame, amount) &&
-        
-        // Push take operation
-        fun(ref frame, &Pull.take<A>);
     
     [MethodImpl(Optimisations.Default)]
     internal static bool apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
         
-        @const(ref frame, f) &&
+        arg1(ref frame, f) &&
         
         // Push apply operation
         fun(ref frame, &Pull.apply<A, B, C>);
-
     
     [MethodImpl(Optimisations.Default)]
     internal static bool apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
         
-        @const(ref frame, f) &&
+        arg1(ref frame, f) &&
         
         // Push apply operation
         fun(ref frame, &Pull.apply<A, B, C, D>);

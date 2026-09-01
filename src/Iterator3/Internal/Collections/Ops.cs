@@ -104,7 +104,7 @@ readonly unsafe struct Ops
         ref var tops = ref frame.tops;
 
         // Reset the yield flag for the current frame.   
-        tops.ClearYields();
+        //tops.ClearYields();
  
         while(true)
         {
@@ -193,14 +193,17 @@ readonly unsafe struct Ops
         [MethodImpl(Optimisations.Default)]
         static bool PureResetToContinuationPoint(ref StackFrame frame, out A head)
         {
+            ref var tops = ref frame.tops;
+            ref var vars = ref frame.vars;
+            
             // Just go back to the start of the current frame
-            if(frame.tops.HasYielded)
+            if(tops.HasYielded)
             {
                 frame.ResetFrame(out head);
                 return true;
             }
 
-            if (!frame.vars.Pop(out head))
+            if (!vars.Pop(out head))
             {
                 // Something has gone wrong
                 throw new InvalidOperationException("PureResetToContinuationPoint: StackFrame.vars.Pop() failed");
@@ -210,10 +213,14 @@ readonly unsafe struct Ops
             // top frame to see if it's a singleton frame.  If it is, then
             // we can keep popping until either we have an empty iterator
             // or we have a yielding frame.
-            while (frame.VoidScope() && !frame.tops.HasYielded)
+            while (frame.VoidScope() && !tops.HasYielded)
             {
                 // Empty
             }
+            
+            // At this point we're either at the 0-th frame or a yielding frame
+            if(tops.HasYielded) tops.DecrementYields();
+            
             return true;
         }
     }
