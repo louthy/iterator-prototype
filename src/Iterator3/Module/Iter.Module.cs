@@ -3,7 +3,7 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
-public static class Iter
+public static partial class Iter
 {
     /// <summary>
     /// Await
@@ -80,45 +80,13 @@ public static class Iter
         
         throw new NotImplementedException();
     }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second)> product<A, B>(in Iter<A> ta, in Iter<B> tb)
-    {
-        var frame = ta.Next<A, (A, B)>(out var tab);
-        return Push.iterator(ref frame, in tb) &&
-               Push.apply<A, B, (A, B)>(ref frame, static (x, y) => (x, y))
-                   ? tab
-                   : default;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<(A, B)> tab, in Iter<C> tc)
-    {
-        var frame = tab.Next<(A, B), (A, B, C)>(out var tabc);
-        return Push.iterator(ref frame, in tc) &&
-               Push.apply1<A, B, C, (A, B, C)>(ref frame, static (x, y, z) => (x, y, z))
-                   ? tabc
-                   : default;
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<A> ta, in Iter<B> tb, in Iter<C> tc)
-    {
-        var frame = ta.Next<A, (A, B, C)>(out var tabc);
-        return Push.iterator(ref frame, in ta) &&
-               Push.iterator(ref frame, in tb) &&
-               Push.iterator(ref frame, in tc) &&
-               Push.apply<A, B, C, (A, B, C)>(ref frame, static (x, y, z) => (x, y, z))
-                   ? tabc
-                   : default;
-    }
-    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IterBimap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
+    public static IterMap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
         new(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,10 +94,14 @@ public static class Iter
         new (f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IterBimap<A, B, C> select<A, B, C>(Func<A, B, C> f) =>
+    public static IterMap<A, B, C> select<A, B, C>(Func<A, B, C> f) =>
         new(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IterTrimap<A, B, C, D> select<A, B, C, D>(Func<A, B, C, D> f) =>
+    public static IterMap<A, B, C, D> select<A, B, C, D>(Func<A, B, C, D> f) =>
+        new(f);    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterMap<A, B, C, D, E> select<A, B, C, D, E>(Func<A, B, C, D, E> f) =>
         new(f);    
 }

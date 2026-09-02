@@ -99,7 +99,44 @@ static unsafe partial class Push
         
         // Add the map operation
         fun(ref frame, &Pull.trimap1<A, B, C, D>);
-    
+ 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool quadmap<A, B, C, D, E>(ref StackFrame frame, in Func<A, B, C, D, E> f) =>
+        
+        // Push the mapping function
+        arg1(ref frame, in f) &&
+        
+        // Add the map operation
+        fun(ref frame, &Pull.quadmap<A, B, C, D, E>);
+ 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool quadmap1<A, B, C, D, E>(ref StackFrame frame, in Func<A, B, C, D, E> f) =>
+        
+        // Push the mapping function
+        arg1(ref frame, in f) &&
+        
+        // Add the map operation
+        fun(ref frame, &Pull.quadmap1<A, B, C, D, E>);
+ 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool pentamap<A, B, C, D, E, F>(ref StackFrame frame, in Func<A, B, C, D, E, F> f) =>
+        
+        // Push the mapping function
+        arg1(ref frame, in f) &&
+        
+        // Add the map operation
+        fun(ref frame, &Pull.pentamap<A, B, C, D, E, F>);
+ 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool pentamap1<A, B, C, D, E, F>(ref StackFrame frame, in Func<A, B, C, D, E, F> f) =>
+        
+        // Push the mapping function
+        arg1(ref frame, in f) &&
+        
+        // Add the map operation
+        fun(ref frame, &Pull.pentamap1<A, B, C, D, E, F>);
+
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool bind<A, B>(ref StackFrame frame, in Func<A, Iter<B>> f) =>
         
@@ -108,31 +145,6 @@ static unsafe partial class Push
         
         // Add the bind operation
         fun(ref frame, &Pull.bind<A, B>);
-    
-    [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
-        
-        arg1(ref frame, f) &&
-        
-        // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C>);
-    
-    [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
-        
-        arg1(ref frame, f) &&
-        
-        // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C, D>);
-    
-    [MethodImpl(Optimisations.Default)]
-    internal static bool apply1<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
-        
-        arg1(ref frame, f) &&
-        
-        // Push apply operation
-        fun(ref frame, &Pull.apply1<A, B, C, D>);
-
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool tuple<A, B>(ref StackFrame frame) => 

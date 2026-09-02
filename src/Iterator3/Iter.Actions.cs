@@ -2,13 +2,32 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Iterator3;
 
+[SkipLocalsInit]
 public readonly struct IterAwait;
+
+[SkipLocalsInit]
 public readonly struct IterPure;
+
+[SkipLocalsInit]
 public readonly struct IterScope;
+
+[SkipLocalsInit]
 public readonly record struct IterTake(int amount);
+
+[SkipLocalsInit]
 public readonly record struct IterMap<A, B>(Func<A, B> f);
-public readonly record struct IterBimap<A, B, C>(Func<A, B, C> f);
-public readonly record struct IterTrimap<A, B, C, D>(Func<A, B, C, D> f);
+
+[SkipLocalsInit]
+public readonly record struct IterMap<A, B, C>(Func<A, B, C> f);
+
+[SkipLocalsInit]
+public readonly record struct IterMap<A, B, C, D>(Func<A, B, C, D> f);
+
+[SkipLocalsInit]
+public readonly record struct IterMap<A, B, C, D, E>(Func<A, B, C, D, E> f);
+
+[SkipLocalsInit]
+public readonly record struct IterMap<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f);
 
 static class IterAction
 {
@@ -22,29 +41,47 @@ static class IterAction
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> ta)
+    public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> iterator)
     {
-        var frame = ta.Next<A, B>(out var tb);
+        var frame = iterator.Next<A, B>(out var tb);
         return Push.map(ref frame, f)
                    ? tb
                    : default;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<C> bimap<A, B, C>(Func<A, B, C> f, in Iter<(A, B)> tab)
+    public static Iter<C> map<A, B, C>(Func<A, B, C> f, in Iter<(A, B)> iterator)
     {
-        var frame = tab.Next<(A, B), C>(out var tc);
+        var frame = iterator.Next<(A, B), C>(out var tc);
         return Push.bimap1(ref frame, f)
                    ? tc
                    : default;
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Iter<D> trimap<A, B, C, D>(Func<A, B, C, D> f, in Iter<(A, B, C)> tab)
+    public static Iter<D> map<A, B, C, D>(Func<A, B, C, D> f, in Iter<(A, B, C)> iterator)
     {
-        var frame = tab.Next<(A, B, C), D>(out var tc);
+        var frame = iterator.Next<(A, B, C), D>(out var td);
         return Push.trimap1(ref frame, f)
-                   ? tc
+                   ? td
+                   : default;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<E> map<A, B, C, D, E>(Func<A, B, C, D, E> f, in Iter<(A, B, C, D)> iterator)
+    {
+        var frame = iterator.Next<(A, B, C, D), E>(out var te);
+        return Push.quadmap1(ref frame, f)
+                   ? te
+                   : default;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<F> map<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f, in Iter<(A, B, C, D, E)> iterator)
+    {
+        var frame = iterator.Next<(A, B, C, D, E), F>(out var tf);
+        return Push.pentamap1(ref frame, f)
+                   ? tf
                    : default;
     }
 
