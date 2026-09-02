@@ -370,7 +370,7 @@ public sealed class Arr<A> :
     /// <remarks>NOTE: This needs to create a whole new backing array which in which the item being set has changed.
     /// That is 'okay' for certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure
     /// that can handle an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
-    public LE.Option<Arr<A>> SetItem(Index index, A val)
+    public LE.Option<Arr<A>> SetItem(Index index, in A val)
     {
         var offset = index.GetOffset(Count);
         if(offset < 0 || offset >= Count) return None;
@@ -388,7 +388,7 @@ public sealed class Arr<A> :
     /// That is 'okay' for certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure
     /// that can handle an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public Arr<A> SetItemUnsafe(Index index, A value) =>
+    public Arr<A> SetItemUnsafe(Index index, in A value) =>
         SetItem(index, value).IfNone(() => throw new IndexOutOfRangeException());            
 
     /// <summary>

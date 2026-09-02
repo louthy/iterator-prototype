@@ -109,26 +109,14 @@ readonly unsafe struct Ops
         var     count   = frame.ops.Count - pc;
         ref var current = ref frame.tops.CurrentRef;
  
-        while(true)
+        while(count != 0)
         {
-            if (count == 0)
-            {
-                // This is where we end up if we haven't been composed with `Iter.pure`. 
-                // So, this is an implicit `Iter.pure`.  It yields what's on the stack
-                // and resets the state of the co-routine so it can run again until it
-                // stops yielding values.
-                PureResetToContinuationPoint(ref frame, out head);
-                return true;
-            }
-        
             // Read the current instruction
-            //ref var ptr = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
             var op = (delegate*<ref StackFrame, int>)ptr.Fun;
 
             // Move the program-counter *before* executing the instruction, this allows
             // tests like frame.IsReturn to work properly.
-            //tops.IncrementPC();
-            current += 1;
+            current++;
 
             // Run the instruction
             var result = op(ref frame);
@@ -166,6 +154,13 @@ readonly unsafe struct Ops
                     throw new InvalidOperationException();
             }
         }
+        
+        // This is where we end up if we haven't been composed with `Iter.pure`. 
+        // So, this is an implicit `Iter.pure`.  It yields what's on the stack
+        // and resets the state of the co-routine so it can run again until it
+        // stops yielding values.
+        PureResetToContinuationPoint(ref frame, out head);
+        return true;
 
         [MethodImpl(Optimisations.InliningOnly)]
         static bool VoidResetToContinuationPoint(ref StackFrame frame)

@@ -6,13 +6,13 @@ namespace IteratorPrototype.Iterator3;
 
 static unsafe partial class Push
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool pure(ref StackFrame frame) =>
 
         // Push the yield operation
         fun(ref frame, &Pull.pure);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool pure<A>(ref StackFrame frame, in A value) =>
         
         // Push the constant value
@@ -21,7 +21,7 @@ static unsafe partial class Push
         // Push the yield operation
         fun(ref frame, &Pull.pureV<A>);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool yield<A>(ref StackFrame frame) =>
 
         // Create a global variable, this will be the storage for our yield value
@@ -30,7 +30,7 @@ static unsafe partial class Push
         // Yield what's stored in the global variable
         fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool yield<A>(ref StackFrame frame, in A value) =>
 
         // Create a global variable, this will be the storage for our yield value
@@ -39,23 +39,23 @@ static unsafe partial class Push
         // Yield what's stored in the global variable
         fun(ref frame, GlobalsGen<A>.yieldConst(in yieldIx));
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool dup<A>(ref StackFrame frame) =>
         
         // Push the yield operation
         fun(ref frame, &Pull.dup<A>);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, int> f) =>
         frame.Add(f);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool coroutine(ref StackFrame frame) =>
         
         // Push the no-arg coroutine operation
         fun(ref frame, &Pull.coroutine);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool map<A, B>(ref StackFrame frame, in Func<A, B> f) =>
         
         // Push the mapping function
@@ -64,7 +64,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.map<A, B>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool bimap<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
         
         // Push the mapping function
@@ -73,7 +73,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.bimap<A, B, C>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool bimap1<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
         
         // Push the mapping function
@@ -82,7 +82,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.bimap1<A, B, C>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool trimap<A, B, C, D>(ref StackFrame frame, in Func<A, B, C, D> f) =>
         
         // Push the mapping function
@@ -91,7 +91,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.trimap<A, B, C, D>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool trimap1<A, B, C, D>(ref StackFrame frame, in Func<A, B, C, D> f) =>
         
         // Push the mapping function
@@ -100,7 +100,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.trimap1<A, B, C, D>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool quadmap<A, B, C, D, E>(ref StackFrame frame, in Func<A, B, C, D, E> f) =>
         
         // Push the mapping function
@@ -109,7 +109,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.quadmap<A, B, C, D, E>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool quadmap1<A, B, C, D, E>(ref StackFrame frame, in Func<A, B, C, D, E> f) =>
         
         // Push the mapping function
@@ -118,7 +118,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.quadmap1<A, B, C, D, E>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool pentamap<A, B, C, D, E, F>(ref StackFrame frame, in Func<A, B, C, D, E, F> f) =>
         
         // Push the mapping function
@@ -127,7 +127,7 @@ static unsafe partial class Push
         // Add the map operation
         fun(ref frame, &Pull.pentamap<A, B, C, D, E, F>);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool pentamap1<A, B, C, D, E, F>(ref StackFrame frame, in Func<A, B, C, D, E, F> f) =>
         
         // Push the mapping function
@@ -137,7 +137,7 @@ static unsafe partial class Push
         fun(ref frame, &Pull.pentamap1<A, B, C, D, E, F>);
 
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool bind<A, B>(ref StackFrame frame, in Func<A, Iter<B>> f) =>
         
         // Push the bind function
@@ -146,25 +146,25 @@ static unsafe partial class Push
         // Add the bind operation
         fun(ref frame, &Pull.bind<A, B>);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool tuple<A, B>(ref StackFrame frame) => 
         
         // Push tuple operation
         fun(ref frame, &Pull.tuple<A, B>);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool tuple<A, B, C>(ref StackFrame frame) => 
         
         // Push tuple operation
         fun(ref frame, &Pull.tuple<A, B, C>);    
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static bool elements<A, B>(ref StackFrame frame) => 
         
         // Push elements operation
         fun(ref frame, &Pull.elements<A, B>);
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static bool elements<A, B, C>(ref StackFrame frame) => 
         
         // Push elements operation
