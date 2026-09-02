@@ -13,11 +13,11 @@ public ref struct IterableMutableEnumerator<T, IS, MS, A>(K<T, A> ta)
     MS state = T.SetupMutable(ta);
     A? current;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool MoveNext() =>
         valid && T.StepMutable(ta, ref state, out current);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Reset() =>
         state = T.SetupMutable(ta);
 
@@ -26,7 +26,7 @@ public ref struct IterableMutableEnumerator<T, IS, MS, A>(K<T, A> ta)
 
     public A Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => current!;
     }
 }

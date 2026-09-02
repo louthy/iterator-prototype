@@ -14,7 +14,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> Sort() =>
             T.Sort(ta);
 
@@ -23,7 +23,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> Sort(IComparer<A> comparer) =>
             T.Sort(ta, comparer.Compare);
 
@@ -32,7 +32,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> Sort(Comparison<A> comparer) =>
             T.Sort(ta,comparer);
 
@@ -41,7 +41,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> SortBy<Key>(Func<A, Key> key) =>
             T.SortBy(ta, key, OrdDefault<Key>.Compare);
 
@@ -50,7 +50,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> SortBy<Key>(Func<A, Key> key, IComparer<Key> comparer) =>
             T.SortBy(ta, key, comparer.Compare);
 
@@ -59,7 +59,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> SortBy<Key>(Func<A, Key> key, Comparison<Key> comparer) =>
             T.SortBy(ta, key, comparer);
     }
@@ -73,7 +73,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> Sort() =>
             T.Sort(ta, LE.OrdComparer<OrdA, A>.Default.Compare);
     }
@@ -87,7 +87,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>ReadOnlySpan</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> SortBy(Func<A, Key> key) =>
             T.SortBy(ta, key, LE.OrdComparer<OrdKey, Key>.Default.Compare);
     }

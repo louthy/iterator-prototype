@@ -9,15 +9,15 @@ public readonly struct IterableImmutableEnumerable<T, IS, A>(K<T, A> ta) : IEnum
     where T : IterableImmutable<T, IS>
     where IS : unmanaged
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public IterableImmutableEnumerator<T, IS, A> GetEnumerator() =>
         new (ta);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     IEnumerator<A> IEnumerable<A>.GetEnumerator() =>
         GetEnumerator();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     IEnumerator IEnumerable.GetEnumerator() =>
         GetEnumerator();
 }

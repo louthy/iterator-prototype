@@ -19,7 +19,7 @@ public static class CountableExtensions
         /// <returns></returns>
         public int Count
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(Root.Optimisations.InliningOnly)]
             get => F.Count(fa);
         }
     }

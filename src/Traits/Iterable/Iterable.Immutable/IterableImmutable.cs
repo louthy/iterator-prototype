@@ -15,19 +15,19 @@ public interface IterableImmutable<T, IS> : Iterable<T>
     static abstract IS SetupImmutable<A>(in K<T, A> ta); 
     static abstract bool StepImmutable<A>(in K<T, A> ta, in IS state, out A head, out IS tail);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static virtual bool Next<A>(in K<T, A> ta, ref IS state, out A head) =>
         T.StepImmutable(in ta, in state, out head, out state);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static IEnumerable<A> Iterable<T>.AsEnumerable<A>(K<T, A> ta) =>
         new IterableImmutableEnumerable<T, IS, A>(ta);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Iterator<A> Iterable<T>.Forward<A>(K<T, A> ta) =>
         Iterator.fromWeak<T, IS, A>(in ta);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Unit Iterable<T>.ToWriter<A>(K<T, A> ta, ref ArrayWriter<A> writer)
     {
         var ts = T.SetupImmutable(ta);
@@ -38,7 +38,7 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         return default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Unit Iterable<T>.ToWriter<A, B>(K<T, A> ta, Func<A, B> f, ref ArrayWriter<B> writer)
     {
         var ts = T.SetupImmutable(ta);
@@ -150,7 +150,7 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         return sm.ToString();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<T, A> Iterable<T>.Do<A>(K<T, A> ta, Action<A> f)
     {
         var ts = T.SetupImmutable(ta);

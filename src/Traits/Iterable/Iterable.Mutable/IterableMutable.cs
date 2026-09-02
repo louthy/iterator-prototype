@@ -15,11 +15,11 @@ public interface IterableMutable<T, IS, MS> : IterableImmutable<T, IS>
     static abstract MS SetupMutable<A>(K<T, A> ta);
     static abstract bool StepMutable<A>(K<T, A> ta, ref MS ts, out A value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static IEnumerable<A> Iterable<T>.AsEnumerable<A>(K<T, A> ta) =>
         new IterableMutableEnumerable<T, IS, MS, A>(ta);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Unit Iterable<T>.ToWriter<A>(K<T, A> ta, ref ArrayWriter<A> writer)
     {
         var ts = T.SetupMutable(ta);
@@ -31,7 +31,7 @@ public interface IterableMutable<T, IS, MS> : IterableImmutable<T, IS>
         return default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Unit Iterable<T>.ToWriter<A, B>(K<T, A> ta, Func<A, B> f, ref ArrayWriter<B> writer)
     {
         var ts = T.SetupMutable(ta);
@@ -146,7 +146,7 @@ public interface IterableMutable<T, IS, MS> : IterableImmutable<T, IS>
         return sm.ToString();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<T, A> Iterable<T>.Do<A>(K<T, A> ta, Action<A> f)
     {
         var ts = T.SetupMutable(ta);

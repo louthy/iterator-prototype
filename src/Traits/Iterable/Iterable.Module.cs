@@ -14,7 +14,7 @@ public static class Iterable
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>Iterator</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iterator<A> forward<T, A>(K<T, A> ta)
         where T : Iterable<T> =>
         ta.Forward();
@@ -26,7 +26,7 @@ public static class Iterable
     /// <typeparam name="T">Trait type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static ReadOnlySpan<A> asSpan<T, A>(K<T, A> ta) 
         where T : Iterable<T> =>
         T.AsSpan(ta);
@@ -38,7 +38,7 @@ public static class Iterable
     /// <typeparam name="T">Trait type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static A[] toArray<T, A>(K<T, A> ta) 
         where T : Iterable<T> =>
         [.. T.AsSpan(ta)];
@@ -50,7 +50,7 @@ public static class Iterable
     /// <param name="writer">Writer to emit the elements to</param>
     /// <typeparam name="T">Trait type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static LE.Unit toWriter<T, A>(K<T, A> ta, ref LE.ArrayWriter<A> writer) 
         where T : Iterable<T> =>
         T.ToWriter(ta, ref writer);
@@ -62,7 +62,7 @@ public static class Iterable
     /// <typeparam name="T">Trait type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IEnumerable<A> asEnumerable<T, A>(K<T, A> ta) 
         where T : Iterable<T> =>
         T.AsEnumerable(ta);
@@ -74,7 +74,7 @@ public static class Iterable
     /// <typeparam name="T">Trait type</typeparam>
     /// <typeparam name="A">Value type</typeparam>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterableEnumerator<T, A> getEnumerator<T, A>(K<T, A> ta) 
         where T : Iterable<T> =>
         T.GetEnumerator(ta);
@@ -92,7 +92,7 @@ public static class Iterable
     /// </remarks>
     /// <returns>A constructed string of up to 50 items</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static string toString<T, A>(K<T, A> ta, string separator = ", ") 
         where T : Iterable<T> =>
         T.ToString(ta, separator);
@@ -110,7 +110,7 @@ public static class Iterable
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>A constructed string of up to 50 items</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static string toArrayString<T, A>(K<T, A> ta, string separator = ", ") 
         where T : Iterable<T> =>
         T.ToArrayString(ta, separator);
@@ -128,7 +128,7 @@ public static class Iterable
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>A constructed string of all elements</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static string toFullString<T, A>(K<T, A> ta, string separator = ", ") 
         where T : Iterable<T> =>
         T.ToFullString(ta, separator);
@@ -146,7 +146,7 @@ public static class Iterable
     /// <typeparam name="A">Value type</typeparam>
     /// <returns>A constructed string of all elements</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static string toFullArrayString<T, A>(K<T, A> ta, string separator = ", ") 
         where T : Iterable<T> =>
         T.ToFullArrayString(ta, separator);

@@ -259,7 +259,7 @@ public interface Iterable<T>
     /// <param name="f">Action to perform</param>
     /// <returns>The original unchanged structure</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static virtual K<T, A> Do<A>(K<T, A> ta, Action<A> f)
     {
         var iter = ta.Forward();
@@ -275,7 +275,7 @@ public interface Iterable<T>
     /// </summary>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static virtual ReadOnlySpan<A> Sort<A>(K<T, A> ta)
     {
         var w = ArrayWriter<A>.Init();
@@ -290,7 +290,7 @@ public interface Iterable<T>
     /// </summary>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static virtual ReadOnlySpan<A> Sort<A>(K<T, A> ta, Comparison<A> comparer)
     {
         var w = ArrayWriter<A>.Init();
@@ -305,7 +305,7 @@ public interface Iterable<T>
     /// </summary>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static virtual ReadOnlySpan<A> SortBy<A, Key>(K<T, A> ta, Func<A, Key> key, Comparison<Key> comparer)
     {
         // Blit the keys

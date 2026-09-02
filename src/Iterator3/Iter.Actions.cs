@@ -31,7 +31,7 @@ public readonly record struct IterMap<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f
 
 static class IterAction
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> take<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
@@ -40,7 +40,7 @@ static class IterAction
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> iterator)
     {
         var frame = iterator.Next<A, B>(out var tb);
@@ -49,7 +49,7 @@ static class IterAction
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<C> map<A, B, C>(Func<A, B, C> f, in Iter<(A, B)> iterator)
     {
         var frame = iterator.Next<(A, B), C>(out var tc);
@@ -58,7 +58,7 @@ static class IterAction
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<D> map<A, B, C, D>(Func<A, B, C, D> f, in Iter<(A, B, C)> iterator)
     {
         var frame = iterator.Next<(A, B, C), D>(out var td);
@@ -67,7 +67,7 @@ static class IterAction
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<E> map<A, B, C, D, E>(Func<A, B, C, D, E> f, in Iter<(A, B, C, D)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D), E>(out var te);
@@ -76,7 +76,7 @@ static class IterAction
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<F> map<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f, in Iter<(A, B, C, D, E)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D, E), F>(out var tf);
@@ -85,7 +85,7 @@ static class IterAction
                    : default;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<B> bind<A, B>(in Iter<A> ta, in Func<A, Iter<B>> f)
     {
         var frame = ta.Next<A, B>(out var tb);
@@ -94,7 +94,7 @@ static class IterAction
                    : default;
     }
             
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static Iter<A> scope<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
@@ -103,7 +103,7 @@ static class IterAction
                    : default;
     }
             
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static Iter<A> pure<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);

@@ -26,7 +26,7 @@ public static partial class Iter
     public static IterTake take(int amount) => 
         new (amount);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> from<A>(params ReadOnlySpan<A> ta)
     {
         var array = Arr.create(ta);
@@ -36,7 +36,7 @@ public static partial class Iter
                    : default;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
@@ -47,7 +47,7 @@ public static partial class Iter
                    : default;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> forever<A>(in A head)
     {
         var frame = Iter<A>.Default(out var iter);
@@ -56,7 +56,7 @@ public static partial class Iter
                     : default;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> singleton<A>(in A head)
     {
         var frame = Iter<A>.Default(out var iter);
@@ -64,7 +64,7 @@ public static partial class Iter
                    ? iter
                    : default;
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> lift<A>(in Iter<A> ta)
     {
         var frame = Iter<A>.Default(out var iter);
@@ -73,7 +73,7 @@ public static partial class Iter
                    : default;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<B> apply<A, B>(in Iter<Func<A, B>> tf, in Iter<A> ta)
     {
         // TODO: Consider how I can stack Ops, Vars, and set offsets for Globals, etc.
@@ -81,27 +81,27 @@ public static partial class Iter
         throw new NotImplementedException();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
         new(f);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B> select<A, B>(Func<A, B> f) =>
         new (f);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C> select<A, B, C>(Func<A, B, C> f) =>
         new(f);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C, D> select<A, B, C, D>(Func<A, B, C, D> f) =>
         new(f);    
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C, D, E> select<A, B, C, D, E>(Func<A, B, C, D, E> f) =>
         new(f);    
 }

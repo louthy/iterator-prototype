@@ -5,17 +5,17 @@ namespace IteratorPrototype.Iterator3;
 
 static unsafe partial class Insert
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, int> f) =>
         frame.Prepend(f);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool scope(ref StackFrame frame) =>
         
         // Push the no-arg coroutine operation
         fun(ref frame, &Pull.coroutine);
  
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool take(ref StackFrame frame, in int amount) =>
         
         // Push take operation

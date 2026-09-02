@@ -13,7 +13,7 @@ public static class IterableImmutableExtensions
         /// Get an enumerator for the immutable-iterable in the inheritance chain
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IterableImmutableEnumerator<T, IS, A> GetEnumerator() =>
             new(ta);
 
@@ -22,7 +22,7 @@ public static class IterableImmutableExtensions
         /// </summary>
         /// <param name="f">Action to perform</param>
         /// <returns>The original unchanged structure</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public K<T, A> Do(Action<A> f) =>
             T.Do(ta, f);
 
@@ -31,7 +31,7 @@ public static class IterableImmutableExtensions
         /// </summary>
         /// <returns>Iterable state</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IS SetupImmutable() =>
             T.SetupImmutable(ta);
 
@@ -39,7 +39,7 @@ public static class IterableImmutableExtensions
         /// Set up the mutable state for use with `StepMutable`.
         /// </summary>
         /// <returns>Iterable state</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public bool StepImmutable(in IS ts, out A head, out IS tail) =>
             T.StepImmutable(ta, in ts, out head, out tail);
     }

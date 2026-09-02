@@ -9,7 +9,7 @@ public static class ArrayWriterExtensions
         /// Add a value to the end of the array, expanding automatically if needed.
         /// </summary>
         /// <param name="value">Value to write</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public void Add(A value) => 
             LE.ArrayWriter<A>.Add(ref writer, value);
 
@@ -17,7 +17,7 @@ public static class ArrayWriterExtensions
         /// Add values to the end of the array, expanding automatically if needed.
         /// </summary>
         /// <param name="values">Values to write</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public void AddRange(ReadOnlySpan<A> values) => 
             LE.ArrayWriter<A>.AddRange(ref writer, values);
 
@@ -41,7 +41,7 @@ public static class ArrayWriterExtensions
         /// effectively disposed. 
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Span<A> ToSpan()
         {
             var (xs, start, count) = writer.ToArray();
@@ -70,7 +70,7 @@ public static class ArrayWriterExtensions
         /// effectively disposed. 
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Span<A> ToSpanBack()
         {
             var (xs, start, count) = writer.ToArrayBack();

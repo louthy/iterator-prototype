@@ -10,11 +10,11 @@ public readonly struct IterableMutableEnumerable<T, IS, MS, A>(K<T, A> ta) : IEn
     where IS : unmanaged
     where MS : allows ref struct
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public IterableMutableEnumerator<T, IS, MS, A> GetEnumerator() =>
         new (ta);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     IEnumerator<A> IEnumerable<A>.GetEnumerator()
     {
         var ts = T.SetupImmutable(ta);
@@ -24,7 +24,7 @@ public readonly struct IterableMutableEnumerable<T, IS, MS, A>(K<T, A> ta) : IEn
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     IEnumerator IEnumerable.GetEnumerator()
     {
         var ts = T.SetupImmutable(ta);

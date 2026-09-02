@@ -9,18 +9,18 @@ public ref struct StringMaker(Span<char> buffer)
 
     public int Length
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => pos; 
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Append(char c)
     {
         if (pos >= buffer.Length) MoveToHeap();
         buffer[pos++] = c;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Append(string str)
     {
         if(str.Length + pos > buffer.Length) MoveToHeap();
@@ -30,11 +30,11 @@ public ref struct StringMaker(Span<char> buffer)
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Append<A>(A? item) =>
         Append(item?.ToString() ?? "[null]");
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Undo(int count) =>
         pos = Math.Max(0, pos - count);
     
@@ -45,7 +45,7 @@ public ref struct StringMaker(Span<char> buffer)
         buffer = newBuffer;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override string ToString() =>
         new (buffer[..pos]);
 }

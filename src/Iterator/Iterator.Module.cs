@@ -5,7 +5,7 @@ namespace IteratorPrototype;
 
 public class Iterator
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iterator<A> fromWeak<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged
@@ -15,7 +15,7 @@ public class Iterator
         return Unsafe.As<Iterator<T, IS, A>, Iterator<A>>(ref i);
     }     
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iterator<T, IS, A> from<T, IS, A>(in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged

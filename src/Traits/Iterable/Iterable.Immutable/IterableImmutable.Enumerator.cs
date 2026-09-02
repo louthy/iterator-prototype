@@ -13,23 +13,23 @@ public struct IterableImmutableEnumerator<T, IS, A>(in K<T, A> ta) : IEnumerator
     IS state = T.SetupImmutable(ta);
     A? current;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool MoveNext() =>
         T.StepImmutable(ta, in state, out current, out state);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void Reset() =>
         state = T.SetupImmutable(ta);
 
     public A Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => current!;
     }
 
     object IEnumerator.Current
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => current!;
     }
 

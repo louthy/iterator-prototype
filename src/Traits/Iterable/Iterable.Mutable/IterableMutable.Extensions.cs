@@ -14,7 +14,7 @@ public static class IterableMutableExtensions
         /// Get an enumerator for the iterable
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IterableMutableEnumerator<T, IS, MS, A> GetEnumerator() =>
             new(ta);
 
@@ -23,7 +23,7 @@ public static class IterableMutableExtensions
         /// </summary>
         /// <param name="f">Action to perform</param>
         /// <returns>The original unchanged structure</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public K<T, A> Do(Action<A> f) =>
             T.Do(ta, f);
 
@@ -32,7 +32,7 @@ public static class IterableMutableExtensions
         /// </summary>
         /// <returns>Iterable state</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public MS SetupMutable() =>
             T.SetupMutable(ta);
 
@@ -40,7 +40,7 @@ public static class IterableMutableExtensions
         /// Set up the mutable state for use with `StepMutable`.
         /// </summary>
         /// <returns>Iterable state</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public bool StepMutable(ref MS ts, out A value) =>
             T.StepMutable(ta, ref ts, out value);
     }

@@ -14,7 +14,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> Order() =>
             Root.Arr.create(T.Sort(ta)).Forward();
 
@@ -23,7 +23,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> Order(IComparer<A> comparer) =>
             Root.Arr.create(T.Sort(ta, comparer.Compare)).Forward();
 
@@ -32,7 +32,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> Order(Comparison<A> comparer) =>
             Root.Arr.create(T.Sort(ta,comparer)).Forward();
 
@@ -41,7 +41,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> OrderBy<Key>(Func<A, Key> key) =>
             Root.Arr.create(T.SortBy(ta, key, OrdDefault<Key>.Compare)).Forward();
 
@@ -50,7 +50,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> OrderBy<Key>(Func<A, Key> key, IComparer<Key> comparer) =>
             Root.Arr.create(T.SortBy(ta, key, comparer.Compare)).Forward();
 
@@ -59,7 +59,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> OrderBy<Key>(Func<A, Key> key, Comparison<Key> comparer) =>
             Root.Arr.create(T.SortBy(ta, key, comparer)).Forward();
     }
@@ -73,7 +73,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> Order() =>
             Root.Arr.create(T.Sort(ta, LE.OrdComparer<OrdA, A>.Default.Compare)).Forward();
     }
@@ -87,7 +87,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>Iterator</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> OrderBy(Func<A, Key> key) =>
             Root.Arr.create(T.SortBy(ta, key, LE.OrdComparer<OrdKey, Key>.Default.Compare)).Forward();
     }

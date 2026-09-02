@@ -8,23 +8,23 @@ public sealed class Box<A>
 {
     public readonly A Value;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public Box(in A value) =>
         Value = value;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static implicit operator A(in Box<A> box) =>
         box.Value;
 
     public ref A Ref
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.AsRef(in Value);
     }
     
     public ref readonly A ReadonlyRef
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.AsRef(in Value);
     }
 }

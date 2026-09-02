@@ -14,7 +14,7 @@ public static partial class IterableExtensions
         /// </summary>
         /// <returns>An iterator that enumerates from the 'first' element to the 'last' element.</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public Root.Iterator<A> Forward() =>
             T.Forward(ta);
 
@@ -22,7 +22,7 @@ public static partial class IterableExtensions
         /// Bounce the iterable to a span
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public ReadOnlySpan<A> AsSpan() =>
             T.AsSpan(ta);
 
@@ -30,7 +30,7 @@ public static partial class IterableExtensions
         /// Bounce the iterable to an array
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public A[] ToArray() =>
             [.. T.AsSpan(ta)];
 
@@ -38,7 +38,7 @@ public static partial class IterableExtensions
         /// Write every element of this iterable to the `ArrayWriter` provided
         /// </summary>
         /// <param name="writer">Writer to emit the elements to</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public LE.Unit ToWriter(ref LE.ArrayWriter<A> writer) =>
             T.ToWriter(ta, ref writer);
 
@@ -46,7 +46,7 @@ public static partial class IterableExtensions
         /// Get an enumerable from the iterable 
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IEnumerable<A> AsEnumerable() =>
             T.AsEnumerable(ta);
 
@@ -54,7 +54,7 @@ public static partial class IterableExtensions
         /// Convert to a queryable 
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IQueryable<A> AsQueryable() =>
             // NOTE TO FUTURE ME: Don't delete this thinking it isn't required!
             // NOTE FROM FUTURE ME: Next time you leave a message for your future self, explain your reasoning.
@@ -64,7 +64,7 @@ public static partial class IterableExtensions
         /// Get an enumerator for the iterable 
         /// </summary>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public IterableEnumerator<T, A> GetEnumerator() =>
             T.GetEnumerator(ta);
 
@@ -78,7 +78,7 @@ public static partial class IterableExtensions
         /// <param name="separator">Characters to separate each element by</param>
         /// <returns>A constructed string of up to 50 items</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public string ToString(string separator = ", ") =>
             T.ToString(ta, separator);
 
@@ -92,7 +92,7 @@ public static partial class IterableExtensions
         /// <param name="separator">Characters to separate each element by</param>
         /// <returns>A constructed string of up to 50 items</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public string ToArrayString(string separator = ", ") =>
             T.ToArrayString(ta, separator);
 
@@ -106,7 +106,7 @@ public static partial class IterableExtensions
         /// <param name="separator">Characters to separate each element by</param>
         /// <returns>A constructed string of all elements</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public string ToFullString(string separator = ", ") =>
             T.ToFullString(ta, separator);
 
@@ -120,7 +120,7 @@ public static partial class IterableExtensions
         /// <param name="separator">Characters to separate each element by</param>
         /// <returns>A constructed string of all elements</returns>
         [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(Root.Optimisations.InliningOnly)]
         public string ToFullArrayString(string separator = ", ") =>
             T.ToFullArrayString(ta, separator);
     }

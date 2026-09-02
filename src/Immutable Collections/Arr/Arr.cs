@@ -212,7 +212,7 @@ public sealed class Arr<A> :
     /// </summary>
     /// <param name="index">Index of the element to read</param>
     /// <returns>Optional element value</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal ref readonly  A AtRef(int index) => 
         ref Values[Start + index];
     

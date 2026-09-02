@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class GManaged<A>
     where A : class
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull(ref StackFrame frame, in ushort ix)
     {
         ref var r = ref frame.globals.AtManaged<A>(ix);
@@ -54,135 +54,135 @@ static unsafe partial class GManaged<A>
             _  => throw new ArgumentOutOfRangeException(nameof(index))
         };
        
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull0(ref StackFrame frame) => 
         pull(ref frame, 0);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(Optimisations.InliningOnly)] 
     static int pull1(ref StackFrame frame) => 
         pull(ref frame, 1);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(Optimisations.InliningOnly)] 
     static int pull2(ref StackFrame frame) => 
         pull(ref frame, 2);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull3(ref StackFrame frame) => 
         pull(ref frame, 3);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull4(ref StackFrame frame) => 
         pull(ref frame, 4);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(Optimisations.InliningOnly)] 
     static int pull5(ref StackFrame frame) => 
         pull(ref frame, 5);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(Optimisations.InliningOnly)] 
     static int pull6(ref StackFrame frame) => 
         pull(ref frame, 6);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull7(ref StackFrame frame) => 
         pull(ref frame, 7);
     
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull8(ref StackFrame frame) => 
         pull(ref frame, 8);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull9(ref StackFrame frame) => 
         pull(ref frame, 9);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull10(ref StackFrame frame) => 
         pull(ref frame, 10);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull11(ref StackFrame frame) => 
         pull(ref frame, 11);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull12(ref StackFrame frame) => 
         pull(ref frame, 12);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull13(ref StackFrame frame) => 
         pull(ref frame, 13);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull14(ref StackFrame frame) => 
         pull(ref frame, 14);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull15(ref StackFrame frame) => 
         pull(ref frame, 15);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull16(ref StackFrame frame) => 
         pull(ref frame, 16);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull17(ref StackFrame frame) => 
         pull(ref frame, 17);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull18(ref StackFrame frame) => 
         pull(ref frame, 18);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull19(ref StackFrame frame) => 
         pull(ref frame, 19);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull20(ref StackFrame frame) => 
         pull(ref frame, 20);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull21(ref StackFrame frame) => 
         pull(ref frame, 21);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull22(ref StackFrame frame) => 
         pull(ref frame, 22);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull23(ref StackFrame frame) => 
         pull(ref frame, 23);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull24(ref StackFrame frame) => 
         pull(ref frame, 24);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull25(ref StackFrame frame) => 
         pull(ref frame, 25);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull26(ref StackFrame frame) => 
         pull(ref frame, 26);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull27(ref StackFrame frame) => 
         pull(ref frame, 27);
 
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull28(ref StackFrame frame) => 
         pull(ref frame, 28);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull29(ref StackFrame frame) => 
         pull(ref frame, 29);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull30(ref StackFrame frame) => 
         pull(ref frame, 30);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int pull31(ref StackFrame frame) => 
         pull(ref frame, 31);
 }
