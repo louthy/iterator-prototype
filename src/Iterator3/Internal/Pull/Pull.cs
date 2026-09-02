@@ -119,7 +119,7 @@ static partial class Pull
     public static int trimap1<A, B, C, D>(ref StackFrame frame) =>
 
         // Peek at the map function
-        pop<Func<A, B, C, D>>(ref frame, out var f) &&
+        arg1<Func<A, B, C, D>>(ref frame, out var f) &&
 
         // Take the value off the stack
         pop<(A, B, C)>(ref frame, out var abc) &&
@@ -149,6 +149,21 @@ static partial class Pull
             : empty(ref frame);
 
     [MethodImpl(Optimisations.Default)]
+    public static int apply1<A, B, C>(ref StackFrame frame) =>
+
+        // Pop at the apply function
+        arg1<Func<A, B, C>>(ref frame,out var f) && 
+        
+        // Pop the second element
+        peek<(A, B)>(ref frame, out var ab) &&
+
+        // Push the tuple
+        @return(ref frame, f(ab.Item1, ab.Item2)) 
+
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(Optimisations.Default)]
     public static int apply<A, B, C, D>(ref StackFrame frame) =>
 
         // Pop at the apply function
@@ -168,6 +183,24 @@ static partial class Pull
 
         // Push the tuple
         @return(ref frame, f(a, b, c)) 
+
+            ? @continue(ref frame)
+            : empty(ref frame);
+
+    [MethodImpl(Optimisations.Default)]
+    public static int apply1<A, B, C, D>(ref StackFrame frame) =>
+
+        // Pop at the apply function
+        arg1<Func<A, B, C, D>>(ref frame,out var f) && 
+
+        // Pop the third element
+        pop<C>(ref frame, out var c) &&
+
+        // Pop the first and second elements
+        peek<(A, B)>(ref frame, out var ab) && 
+
+        // Push the tuple
+        @return(ref frame, f(ab.Item1, ab.Item2, c)) 
 
             ? @continue(ref frame)
             : empty(ref frame);

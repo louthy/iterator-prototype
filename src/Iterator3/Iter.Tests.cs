@@ -9,6 +9,8 @@ public static class IterTests
     public static void Tests()
     {
         Log.enable();
+
+        Basic2_2();
         
         Basic0();
         Basic00();
@@ -40,7 +42,7 @@ public static class IterTests
     public static void Basic0()
     {
         var iter = forever(1)
-                      | map<int, string>(x => $"'{x}'")
+                      | select<int, string>(x => $"'{x}'")
                       | take(10);
         
         while(iter.TryGetValue(out var head, out iter))
@@ -54,7 +56,7 @@ public static class IterTests
     public static void Basic1()
     {
         var iter = singleton(1) 
-                      | map<int, string>(x => $"'{x}'");
+                      | select<int, string>(x => $"'{x}'");
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -92,7 +94,7 @@ public static class IterTests
     {
         var iter = from(10, 20)
                  * from(100, 200)
-                 | bimap((int x, int y) => x * y);
+                 | select((int x, int y) => x * y);
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -106,7 +108,22 @@ public static class IterTests
     {
         var iter = from(1, 2, 3)
                  * from("One", "Two", "Three")
-                 | bimap((int x, string y) => $"{x}. {y}");
+                 | select((int x, string y) => $"{x}. {y}");
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic2_2()
+    {
+        var iter = from(1, 2, 3)
+                 * from("One", "Two", "Three")
+                 * from(true, false)
+                 | select((int x, string y, bool z) => $"{x}. {y} ({z.ToString().ToLower()})");
         
         while(iter.TryGetValue(out var head, out iter))
         {

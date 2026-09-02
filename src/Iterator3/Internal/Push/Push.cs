@@ -124,6 +124,14 @@ static unsafe partial class Push
         
         // Push apply operation
         fun(ref frame, &Pull.apply<A, B, C, D>);
+    
+    [MethodImpl(Optimisations.Default)]
+    internal static bool apply1<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
+        
+        arg1(ref frame, f) &&
+        
+        // Push apply operation
+        fun(ref frame, &Pull.apply1<A, B, C, D>);
 
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

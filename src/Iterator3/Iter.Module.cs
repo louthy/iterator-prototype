@@ -76,36 +76,60 @@ public static class Iter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<B> apply<A, B>(in Iter<Func<A, B>> tf, in Iter<A> ta)
     {
+        // TODO: Consider how I can stack Ops, Vars, and set offsets for Globals, etc.
+        
         throw new NotImplementedException();
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<(A First, B Second)> product<A, B>(in Iter<A> ta, in Iter<B> tb)
     {
-        var frame = ta.Next<A, (A, B)>(out var ta1);
+        var frame = ta.Next<A, (A, B)>(out var tab);
         return Push.iterator(ref frame, in tb) &&
                Push.apply<A, B, (A, B)>(ref frame, static (x, y) => (x, y))
-                   ? ta1
+                   ? tab
+                   : default;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<(A, B)> tab, in Iter<C> tc)
+    {
+        var frame = tab.Next<(A, B), (A, B, C)>(out var tabc);
+        return Push.iterator(ref frame, in tc) &&
+               Push.apply1<A, B, C, (A, B, C)>(ref frame, static (x, y, z) => (x, y, z))
+                   ? tabc
                    : default;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Iter<(A First, B Second, C Third)> product<A, B, C>(in Iter<A> ta, in Iter<B> tb, in Iter<C> tc)
     {
-        var frame = ta.Next<A, (A, B, C)>(out var ta1);
+        var frame = ta.Next<A, (A, B, C)>(out var tabc);
         return Push.iterator(ref frame, in ta) &&
                Push.iterator(ref frame, in tb) &&
                Push.iterator(ref frame, in tc) &&
                Push.apply<A, B, C, (A, B, C)>(ref frame, static (x, y, z) => (x, y, z))
-                   ? ta1
+                   ? tabc
                    : default;
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
+        new (f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IterBimap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
         new(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
+    public static IterMap<A, B> select<A, B>(Func<A, B> f) =>
         new (f);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterBimap<A, B, C> select<A, B, C>(Func<A, B, C> f) =>
+        new(f);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IterTrimap<A, B, C, D> select<A, B, C, D>(Func<A, B, C, D> f) =>
+        new(f);    
 }

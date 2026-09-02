@@ -8,22 +8,22 @@ readonly partial struct Vars
     readonly ObjStack objs;
     readonly ByteStack values;
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PushStruct<A>(in A value)
         where A : struct =>
         PushManaged(new Box<A>(in value));
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PushManaged<A>(in A value)
         where A : class =>
         objs.Push(in value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PushUnmanaged<A>(in A value)
         where A : unmanaged =>
         values.Push(in value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopStruct<A>(out A value)
         where A : struct
     {
@@ -39,30 +39,30 @@ readonly partial struct Vars
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopManaged<A>(out A value)
         where A : class =>
         objs.Pop(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopUnmanaged<A>(out A value)
         where A : unmanaged =>
         values.Pop(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopStruct() =>
         PopManaged();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopManaged() =>
         objs.Pop();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PopUnmanaged<A>()
         where A : unmanaged =>
         values.Pop<A>();
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAtStruct<A>()
         where A : struct
     {
@@ -70,17 +70,17 @@ readonly partial struct Vars
         return ref Unsafe.AsRef(in box.Value);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAtManaged<A>()
         where A : class =>
         ref objs.PeekAt<A>();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAtUnmanaged<A>()
         where A : unmanaged =>
         ref values.PeekAt<A>();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool PeekStruct<A>(out A value)
         where A : struct
     {
@@ -128,7 +128,7 @@ readonly partial struct Vars
                values.PopToTop(vs);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool Zero() =>
         objs.PopToTop(0) && values.PopToTop(0);
     
@@ -138,17 +138,17 @@ readonly partial struct Vars
     public int ValuesCount => 
         values.Count;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public int YieldManaged<A>(ref StackFrame frame, in ushort ix)
         where A : class =>
         objs.YieldManaged<A>(ref frame, ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public int YieldStruct<A>(ref StackFrame frame, in ushort ix)
         where A : struct =>
         objs.YieldStruct<A>(ref frame, ix);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public int YieldUnmanaged<A>(ref StackFrame frame, in ushort ix)
         where A : unmanaged =>
         values.Yield<A>(ref frame, ix);

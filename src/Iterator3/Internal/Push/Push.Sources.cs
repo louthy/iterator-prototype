@@ -20,7 +20,8 @@ static unsafe partial class Push
 
         // Pull the value from the global and push it onto the 'vars' stack
         fun(ref frame, GlobalsGen<A>.pull(in ix));
-
+        
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool iterableSetup<T, IS, A>(ref StackFrame frame, in K<T, A> ta)
         where T : Tr.IterableImmutable<T, IS>
@@ -60,7 +61,7 @@ static unsafe partial class Push
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool iterator<A>(ref StackFrame frame, in Iter<A> ta) =>
         
-        // Push the readonly iterator
+        // Push the iterator
         declare1(ref frame, ta) &&
         
         // Start the co-routine

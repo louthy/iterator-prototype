@@ -25,15 +25,12 @@ public static class IterOperators
     extension<A, B, C>(Iter<(A, B)>)
     {
         [MethodImpl(Optimisations.Default)]
-        public static Iter<(A First, B Second, C Third)> operator |(Iter<(A, B)> lhs, Iter<C> rhs) =>
-            throw new NotImplementedException();
-    }
-    
-    extension<A, B, C>(Iter<(A, B)>)
-    {
-        [MethodImpl(Optimisations.Default)]
         public static Iter<C> operator |(Iter<(A, B)> lhs, IterBimap<A, B, C> rhs) =>
             IterAction.bimap(rhs.f, in lhs);
+        
+        [MethodImpl(Optimisations.Default)]
+        public static Iter<(A First, B Second, C Third)> operator *(Iter<(A, B)> lhs, Iter<C> rhs) =>
+            Iter.product(in lhs, in rhs);
     }
         
     extension<A, B, C, D>(Iter<(A, B, C)>)
