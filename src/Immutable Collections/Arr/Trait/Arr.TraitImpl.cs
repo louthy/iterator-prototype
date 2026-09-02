@@ -92,18 +92,32 @@ public partial class Arr :
     [MethodImpl(Optimisations.Default)]
     static bool Tr.IterableImmutable<Arr, ArrState>.Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
     {
-        ref var index = ref Unsafe.AsRef(in ts.Index);
+        // 'unsafe' version.  This reads over the end of the array. However, `head` is undefined when the
+        // return value is `false`. so potentially this is 'okay'. There are obviously potential seg-fault
+        // issues that could occur, or security issues from reading over the end of the array. But, this
+        // avoids the branch (and therefore possible branch prediction issues).
+        
+        ref var arr    = ref Unsafe.As<K<Arr, A>, Arr<A>>(ref Unsafe.AsRef(in ta));
+        ref var values = ref MemoryMarshal.GetArrayDataReference(arr.Values);
+        ref var index  = ref Unsafe.AsRef(in ts.Index);
+        head = Unsafe.Add(ref values, index);
+        index++;
+        return index <= ts.Count;
+
+        // This is the safe version.
+        
+        /*ref var index = ref Unsafe.AsRef(in ts.Index);
         if (index < ts.Count)
         {
             head = ((Arr<A>)ta).Values[index];
             index++;
-            return true;    
+            return true;
         }
         else
         {
             head = default!;
             return false;
-        }
+        }*/
     }
 
     [MethodImpl(Optimisations.Default)]
