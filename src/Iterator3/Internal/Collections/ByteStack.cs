@@ -109,7 +109,7 @@ readonly struct ByteStack
     }
     
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public int Yield<A>(ref StackFrame frame, in ushort ix)
         where A : unmanaged
     {
