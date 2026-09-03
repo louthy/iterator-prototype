@@ -15,23 +15,24 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 static class Boxes<A>
     where A : struct
 {
+    const int MaxSupportedProcessorCount = 256;
     static readonly BoxPool<A>[] boxes;
 
     [MethodImpl(Optimisations.InliningOnly)]
     static Boxes()
     {
-        var count = Environment.ProcessorCount;
+        var count = Math.Min(Environment.ProcessorCount, MaxSupportedProcessorCount);
         boxes = new BoxPool<A>[count];
         for(var i = 0; i < count; i++)
         {
-            boxes[i] = new BoxPool<A>();
+            boxes[i] = new BoxPool<A>(new BoxPoolId(i));
         }
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static Box<A> Alloc(in A value)
     {
-        var pid = Thread.GetCurrentProcessorId();
+        var pid = Thread.GetCurrentProcessorId() % MaxSupportedProcessorCount;
         return boxes[pid].Alloc(in value);
     }
 }

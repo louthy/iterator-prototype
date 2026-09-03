@@ -18,32 +18,56 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 class BoxPool<A>
     where A : struct
 {
-    const int BlockSize = 64;
-    
-    volatile int locked;
+    const int InitialBlockSize = 64;
+    const int MaxPoolSize = 1 << 24;
+
     readonly Box<A> last;
     Box<A> head;
+    int count;
 
+    volatile int locked;
+
+    /// <summary>
+    /// Pool identifier.
+    /// </summary>
+    /// <remarks>
+    /// The bottom 24 bits of a pool identifier are zeroed.  This is so we can create
+    /// identifiers for the boxes and then OR them with the pool identifier, making a
+    /// lookup identifier.
+    /// </remarks>
+    public readonly BoxPoolId Id;
+    
     [MethodImpl(Optimisations.InliningOnly)]
-    internal BoxPool()
+    internal BoxPool(BoxPoolId id)
     {
+        Id = id;
+        
+        // Create a 'root' terminating item that will never yield and will only be
+        // used to test for the end of the list.
         last = new Box<A>(this, null);
+        
+        // Point the head at the last terminating item. This makes an empty linked-list.
         head = last;
         
-        for(var i = 0; i < BlockSize; i++)
+        for(uint i = 0; i < InitialBlockSize; i++)
         {
             head = new Box<A>(this, head);
         }
     }
-
+        
     [MethodImpl(Optimisations.InliningOnly)]
-    static Box<A> CreateNewBlock(Box<A> head)
+    void CreateNewBlock()
     {
-        for (var i = 0; i < BlockSize; i++)
+        // We already have `count` boxes, so adding `count` more doubles the collection.
+        var ncount = count << 1;
+        var nhead  = head;
+        for (var i = count; i < ncount; i++)
         {
-            head = new Box<A>(head.pool, head);
+            nhead = new Box<A>(this, nhead);
         }
-        return head;
+        
+        // Switch to the new index and head
+        head = nhead;
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -58,12 +82,19 @@ class BoxPool<A>
                 if (ReferenceEquals(head, last))
                 {
                     // Create a new block of `BlockSize` boxes
-                    head = CreateNewBlock(head);
+                    CreateNewBlock();
                 }
                 
+                // Allocate
                 var box = head;
-                head = head.next!; 
+                
+                // Remove from the free-list
+                head = head.next!;
+                
+                // Unlock the allocator
                 locked = 0;
+                
+                // Initialise the boxed value
                 box.OnAlloc(in value);
                 return box;
             }

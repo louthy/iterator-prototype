@@ -8,13 +8,14 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 /// the pool when it is no longer in use.
 /// </summary>
 /// <typeparam name="A"></typeparam>
+[SkipLocalsInit]
 public class Box<A>
     where A : struct
 {
-    internal readonly BoxPool<A> pool;
+    readonly BoxPool<A> pool;
     internal Box<A>? next;
     A value;
-
+    
     [MethodImpl(Optimisations.InliningOnly)]
     internal Box(BoxPool<A> pool, Box<A>? next)
     {
