@@ -61,7 +61,7 @@ readonly unsafe struct Ops
     readonly Op Fun1F;
     
     [MethodImpl(Optimisations.Default)]
-    public bool Add(in delegate*<ref StackFrame, int> f)
+    public bool Add(in IterOp f)
     {
         if (Count + 1 > Capacity) return false;
         ref var count = ref Unsafe.AsRef(in Count);
@@ -72,7 +72,7 @@ readonly unsafe struct Ops
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Prepend(in delegate*<ref StackFrame, int> f)
+    public bool Prepend(in IterOp f)
     {
         if (Count + 1 > Capacity) return false;
         ref var count = ref Unsafe.AsRef(in Count);
@@ -112,7 +112,7 @@ readonly unsafe struct Ops
         while(count != 0)
         {
             // Read the current instruction
-            var op = (delegate*<ref StackFrame, int>)ptr.Fun;
+            var op = (IterOp)ptr.Fun;
 
             // Move the program-counter *before* executing the instruction, this allows
             // tests like frame.IsReturn to work properly.

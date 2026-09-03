@@ -62,7 +62,7 @@ public readonly struct Iter<A>
         
         // We waste a bit of space for the first global, so that 0 is a valid index
         // for the input.  But awaiting it should be considered an error.
-        f.globals.Add(0xDEADBEEF);
+        f.globals.Add(0xDeadBeef);
         
         return f;
     }

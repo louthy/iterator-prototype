@@ -6,7 +6,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Insert
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, int> f) =>
+    public static bool fun(ref StackFrame frame, in IterOp f) =>
         frame.Prepend(f);
     
     [MethodImpl(Optimisations.InliningOnly)]

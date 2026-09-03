@@ -99,11 +99,11 @@ readonly ref struct StackFrame
     }
         
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Add(delegate*<ref StackFrame, int> f) =>
+    public unsafe bool Add(IterOp f) =>
         ops.Add(f);
         
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Prepend(delegate*<ref StackFrame, int> f) =>
+    public unsafe bool Prepend(IterOp f) =>
         ops.Prepend(f);
 
     public override string ToString()

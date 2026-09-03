@@ -11,6 +11,13 @@ public static class IterOperators
             rhs;
     }
     
+    extension<A>(Iter<A>)
+    {
+        [MethodImpl(Optimisations.Default)]
+        public static Iter<A> operator +(Iter<A> lhs, Iter<A> rhs) =>
+            Iter.combine(in lhs, in rhs);
+    }
+    
     extension<A, B>(Iter<A>)
     {
         [MethodImpl(Optimisations.Default)]

@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class GUnmanaged<A>
     where A : unmanaged
 {
-    public static delegate*<ref StackFrame, int> yield(in ushort index) =>
+    public static IterOp yield(in ushort index) =>
         index switch
         {
             0  => &yield0,

@@ -46,7 +46,7 @@ static unsafe partial class Push
         fun(ref frame, &Pull.dup<A>);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool fun(ref StackFrame frame, in delegate*<ref StackFrame, int> f) =>
+    public static bool fun(ref StackFrame frame, in IterOp f) =>
         frame.Add(f);
     
     [MethodImpl(Optimisations.InliningOnly)]

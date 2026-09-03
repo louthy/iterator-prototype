@@ -26,7 +26,7 @@ static unsafe partial class GUnmanaged<A>
         }
     }
 
-    public static delegate*<ref StackFrame, int> push(in ushort index) =>
+    public static IterOp push(in ushort index) =>
         index switch
         {
             0  => &push0,

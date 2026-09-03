@@ -9,7 +9,9 @@ public static class IterTests
     public static void Tests()
     {
         Log.enable();
-
+        
+        Basic4();
+        
         Basic0();
         Basic00();
         Basic1();
@@ -140,6 +142,18 @@ public static class IterTests
                  * from(true, false)
                  * from(ConsoleColor.Red, ConsoleColor.Green, ConsoleColor.Blue)
                  | select((int x, string y, bool z, ConsoleColor c) => $"{x}. {y} {z.ToString().ToLower()} {c.ToString()}");
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic4()
+    {
+        var iter = from(1, 2) + from(3, 4);
         
         while(iter.TryGetValue(out var head, out iter))
         {

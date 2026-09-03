@@ -13,7 +13,7 @@ static unsafe partial class G1<A>
         return PullState.Continue;
     }
     
-    public static delegate*<ref StackFrame, int> arg(in ushort index) =>
+    public static IterOp arg(in ushort index) =>
         index switch
         {
             0  => &arg0,

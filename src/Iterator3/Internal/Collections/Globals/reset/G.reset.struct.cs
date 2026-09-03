@@ -13,7 +13,7 @@ static unsafe partial class GStruct<A>
             ? PullState.Continue
             : PullState.Void;
     
-    public static delegate*<ref StackFrame, int> reset(in ushort index) =>
+    public static IterOp reset(in ushort index) =>
         index switch
         {
             0  => &reset0,

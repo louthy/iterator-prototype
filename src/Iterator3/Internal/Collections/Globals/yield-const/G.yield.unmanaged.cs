@@ -22,7 +22,7 @@ static unsafe partial class GUnmanaged<A>
                    : PullState.Void;
     }
     
-    public static delegate*<ref StackFrame, int> yieldConst(in ushort index) =>
+    public static IterOp yieldConst(in ushort index) =>
         index switch
         {
             0  => &yieldConst0,

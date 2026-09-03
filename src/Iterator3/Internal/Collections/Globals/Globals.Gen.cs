@@ -32,26 +32,26 @@ abstract class GlobalsGen<A>
         }
     }
 
-    public static unsafe delegate*<ref StackFrame, int> yield(in ushort index) => 
+    public static unsafe IterOp yield(in ushort index) => 
         Instance.Yield(in index);
 
-    public static unsafe delegate*<ref StackFrame, int> yieldConst(in ushort index) => 
+    public static unsafe IterOp yieldConst(in ushort index) => 
         Instance.YieldConst(in index);
 
-    public static unsafe delegate*<ref StackFrame, int> pull(in ushort index) => 
+    public static unsafe IterOp pull(in ushort index) => 
         Instance.Pull(in index);
 
-    public static unsafe delegate*<ref StackFrame, int> push(in ushort index) => 
+    public static unsafe IterOp push(in ushort index) => 
         Instance.Push(in index);
 
-    public static unsafe delegate*<ref StackFrame, int> reset(in ushort index) => 
+    public static unsafe IterOp reset(in ushort index) => 
         Instance.Reset(in index);
 
-    public abstract unsafe delegate*<ref StackFrame, int> Yield(in ushort index);
-    public abstract unsafe delegate*<ref StackFrame, int> YieldConst(in ushort index);
-    public abstract unsafe delegate*<ref StackFrame, int> Pull(in ushort index);
-    public abstract unsafe delegate*<ref StackFrame, int> Push(in ushort index);
-    public abstract unsafe delegate*<ref StackFrame, int> Reset(in ushort index);
+    public abstract unsafe IterOp Yield(in ushort index);
+    public abstract unsafe IterOp YieldConst(in ushort index);
+    public abstract unsafe IterOp Pull(in ushort index);
+    public abstract unsafe IterOp Push(in ushort index);
+    public abstract unsafe IterOp Reset(in ushort index);
 
     public abstract bool At(ref Globals list, in ushort ix, out A value);
     public abstract ref A At(ref Globals list, ushort ix);
@@ -71,19 +71,19 @@ class ManagedGlobals<A> : GlobalsGen<A>
     static ManagedGlobals() =>
         Instance = new ManagedGlobals<A>();
 
-    public override unsafe delegate*<ref StackFrame, int> Yield(in ushort index) =>
+    public override unsafe IterOp Yield(in ushort index) =>
         GManaged<A>.yield(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> YieldConst(in ushort index) =>
+    public override unsafe IterOp YieldConst(in ushort index) =>
         GManaged<A>.yieldConst(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Pull(in ushort index) =>
+    public override unsafe IterOp Pull(in ushort index) =>
         GManaged<A>.pull(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Push(in ushort index) =>
+    public override unsafe IterOp Push(in ushort index) =>
         GManaged<A>.push(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Reset(in ushort index) =>
+    public override unsafe IterOp Reset(in ushort index) =>
         GManaged<A>.reset(in index);
 
     public override bool At(ref Globals list, in ushort ix, out A value) =>
@@ -120,19 +120,19 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
     static UnmanagedGlobals() =>
         Instance = new UnmanagedGlobals<A>();
 
-    public override unsafe delegate*<ref StackFrame, int> Yield(in ushort index) =>
+    public override unsafe IterOp Yield(in ushort index) =>
         GUnmanaged<A>.yield(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> YieldConst(in ushort index) =>
+    public override unsafe IterOp YieldConst(in ushort index) =>
         GUnmanaged<A>.yieldConst(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Pull(in ushort index) =>
+    public override unsafe IterOp Pull(in ushort index) =>
         GUnmanaged<A>.pull(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Push(in ushort index) =>
+    public override unsafe IterOp Push(in ushort index) =>
         GUnmanaged<A>.push(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Reset(in ushort index) =>
+    public override unsafe IterOp Reset(in ushort index) =>
         GUnmanaged<A>.reset(in index);
 
     public override bool At(ref Globals list, in ushort ix, out A value) =>
@@ -169,19 +169,19 @@ class StructGlobals<A> : GlobalsGen<A>
     static StructGlobals() =>
         Instance = new StructGlobals<A>();
 
-    public override unsafe delegate*<ref StackFrame, int> Yield(in ushort index) =>
+    public override unsafe IterOp Yield(in ushort index) =>
         GStruct<A>.yield(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> YieldConst(in ushort index) =>
+    public override unsafe IterOp YieldConst(in ushort index) =>
         GStruct<A>.yieldConst(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Pull(in ushort index) =>
+    public override unsafe IterOp Pull(in ushort index) =>
         GStruct<A>.pull(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Push(in ushort index) =>
+    public override unsafe IterOp Push(in ushort index) =>
         GStruct<A>.push(in index);
 
-    public override unsafe delegate*<ref StackFrame, int> Reset(in ushort index) =>
+    public override unsafe IterOp Reset(in ushort index) =>
         GStruct<A>.reset(in index);
 
     public override bool At(ref Globals list, in ushort ix, out A value) =>

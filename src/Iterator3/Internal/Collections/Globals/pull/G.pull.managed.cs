@@ -16,7 +16,7 @@ static unsafe partial class GManaged<A>
                    : PullState.Void;
     }
     
-    public static delegate*<ref StackFrame, int> pull(in ushort index) =>
+    public static IterOp pull(in ushort index) =>
         index switch
         {
             0  => &pull0,
