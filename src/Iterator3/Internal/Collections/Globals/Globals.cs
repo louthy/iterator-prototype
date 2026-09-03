@@ -152,7 +152,7 @@ readonly struct Globals
     [MethodImpl(Optimisations.InliningOnly)]
     public bool AddStruct<A>(in A value, out ushort index)
         where A : struct =>
-        objs.Push(new Box<A>(in value), new Box<A>(in value), out index);
+        objs.Push(Boxes.alloc(in value), Boxes.alloc(in value), out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public bool AddManaged<A>(in A value)

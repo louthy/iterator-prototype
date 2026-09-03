@@ -1,3 +1,4 @@
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System.Runtime.CompilerServices;
 using LanguageExt.Traits;
 
@@ -82,11 +83,37 @@ public static partial class Iter
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> flatten<A>(params ReadOnlySpan<Iter<A>> ts)
+    {
+        var iters = from(ts);
+        var frame = Iter<A>.Default(out var iter);
+        return Push.flatten(ref frame, in iters)
+                   ? iter
+                   : default;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C> bimap<A, B, C>(Func<A, B, C> f) =>
+        new(f);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D> trimap<A, B, C, D>(Func<A, B, C, D> f) =>
+        new(f);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E> quadmap<A, B, C, D, E>(Func<A, B, C, D, E> f) =>
+        new(f);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E, F> quadmap<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f) =>
+        new(f);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E, F, G> pentamap<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f) =>
         new(f);
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -103,5 +130,13 @@ public static partial class Iter
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C, D, E> select<A, B, C, D, E>(Func<A, B, C, D, E> f) =>
+        new(f);    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E, F> select<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f) =>
+        new(f);    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E, F, G> select<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f) =>
         new(f);    
 }

@@ -76,18 +76,13 @@ static unsafe partial class Push
         yield<A>(ref frame);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool iterators<A>(ref StackFrame frame, in Iter<A> tx, in Iter<A> ty) =>
+    public static bool flatten<A>(ref StackFrame frame, in Iter<Iter<A>> ts) =>
 
-        // Push the first iterable instance onto the globals-list
-        declare1(ref frame, in tx) &&
+        // Create a slot for the current iterator to go
+        declare1(ref frame, default(Iter<A>)) &&
         
-        // Push the second iterable instance onto the globals-list
-        declare2(ref frame, in ty) &&
-        
-        // Push the function to call to process the iterators.  This is switched
-        // once the first iterator is empty so that we don't keep checking it and
-        // simply focus on the second iterator.
-        declare3(ref frame, (nint)Pull.iteratorsOp<A>()) &&
+        // Declare a slot for the iterators
+        declare2(ref frame, in ts) &&
         
         // Start the co-routine
         coroutine(ref frame) &&
@@ -96,13 +91,10 @@ static unsafe partial class Push
         ref1<Iter<A>>(ref frame) &&
         
         // Load the second iterator 
-        ref2<Iter<A>>(ref frame) &&
-        
-        // Load iteration function 
-        ref3<nint>(ref frame) &&
+        ref2<Iter<Iter<A>>>(ref frame) &&
 
         // Iterate over multiple iterators
-        fun(ref frame, &Pull.iterators) &&
+        fun(ref frame, &Pull.flatten<A>) &&
             
         // Fill the yield variable with the output of the iterator
         yield<A>(ref frame);

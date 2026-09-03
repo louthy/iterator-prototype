@@ -109,5 +109,4 @@ static unsafe partial class Push
         
         // Make sure it gets loaded from the globals each time we run
         fun(ref frame, G4<A>.arg(in ix));    
-    
 }

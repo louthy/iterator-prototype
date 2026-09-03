@@ -11,7 +11,7 @@ readonly partial struct Vars
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PushStruct<A>(in A value)
         where A : struct =>
-        PushManaged(new Box<A>(in value));
+        PushManaged(Boxes.alloc(in value));
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PushManaged<A>(in A value)
@@ -64,11 +64,8 @@ readonly partial struct Vars
     
     [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAtStruct<A>()
-        where A : struct
-    {
-        ref var box = ref objs.PeekAt<Box<A>>();
-        return ref Unsafe.AsRef(in box.Value);
-    }
+        where A : struct =>
+        ref objs.PeekAt<Box<A>>().Ref;
 
     [MethodImpl(Optimisations.InliningOnly)]
     public ref A PeekAtManaged<A>()

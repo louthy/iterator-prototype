@@ -1,3 +1,4 @@
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Iterator3;
@@ -28,6 +29,9 @@ public readonly record struct IterMap<A, B, C, D, E>(Func<A, B, C, D, E> f);
 
 [SkipLocalsInit]
 public readonly record struct IterMap<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f);
+
+[SkipLocalsInit]
+public readonly record struct IterMap<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f);
 
 static class IterAction
 {
