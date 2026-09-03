@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 // ReSharper disable ParameterHidesMember
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal.Memory;
 
 /// <summary>
 /// Manages `Environment.ProcessorCount` pools of boxes.
@@ -11,7 +11,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 /// allocated from the pool for the current processor. When `Free` is called, the box is returned to the
 /// pool for the current processor.
 /// </remarks>
-static class Boxes
+static class Box
 {
     [MethodImpl(Optimisations.InliningOnly)]
     public static Box<A> alloc<A>(in A value)

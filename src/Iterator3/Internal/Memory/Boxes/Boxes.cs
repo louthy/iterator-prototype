@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 // ReSharper disable ParameterHidesMember
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal.Memory;
 
 /// <summary>
 /// Manages `Environment.ProcessorCount` pools of boxes.
@@ -25,7 +25,8 @@ static class Boxes<A>
         boxes = new BoxPool<A>[count];
         for(var i = 0; i < count; i++)
         {
-            boxes[i] = new BoxPool<A>(new BoxPoolId(i));
+            //boxes[i] = new BoxPool<A>(new BoxPoolId(i));
+            boxes[i] = new BoxPool<A>();
         }
     }
 

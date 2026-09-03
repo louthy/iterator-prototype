@@ -79,7 +79,7 @@ class StructVars<A> : VarsGen<A>
     
     [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars) =>
-        vars.PopStruct();
+        vars.PopStruct<A>();
     
     [MethodImpl(Optimisations.Default)]
     public override bool PushImpl(ref Vars vars, in A value) =>

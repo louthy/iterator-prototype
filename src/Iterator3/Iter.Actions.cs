@@ -33,6 +33,9 @@ public readonly record struct IterMap<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f
 [SkipLocalsInit]
 public readonly record struct IterMap<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f);
 
+[SkipLocalsInit]
+public readonly record struct IterBind<A, B>(Func<A, Iter<B>> f);
+
 static class IterAction
 {
     [MethodImpl(Optimisations.InliningOnly)]
@@ -92,8 +95,8 @@ static class IterAction
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<B> bind<A, B>(in Iter<A> ta, in Func<A, Iter<B>> f)
     {
-        var frame = ta.Next<A, B>(out var tb);
-        return Push.bind(ref frame, f)
+        var frame = Iter<B>.Default(out var tb);
+        return Push.bind(ref frame, ta, f)
                    ? tb
                    : default;
     }

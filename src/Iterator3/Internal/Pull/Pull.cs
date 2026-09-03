@@ -260,22 +260,30 @@ static partial class Pull
 
 
     [MethodImpl(Optimisations.Default)]
-    public static int bind<A, B>(ref StackFrame frame) =>
+    public static int bind<A, B>(ref StackFrame frame)
+    {
+        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
+        ref var tb = ref PullStruct.arg2<Iter<B>>(ref frame);
+        ref var f  = ref PullManaged.arg3<Func<A, Iter<B>>>(ref frame);
+        
+        while (true)
+        {
+            if (tb.TryGetValue(out var b, out tb))
+            {
+                return @return(ref frame, b)
+                           ? PullState.Continue
+                           : PullState.Void;
+            }
 
-        // Pop the bind function
-        arg1<Func<A, Iter<B>>>(ref frame, out var f) &&
+            if (ta.TryGetValue(out var a, out ta))
+            {
+                tb = f(a);
+                continue;
+            }
 
-        // Take the value off the stack
-        pop<A>(ref frame, out var a) &&
-
-        // Push the mapped value on the stack
-        // TODO: This should create a new source from f(a) than they yields all
-
-        // Push the value
-        @return(ref frame, f(a)) 
-
-            ? @continue(ref frame)
-            : empty(ref frame);
+            return PullState.Void;
+        }
+    }
 
     [MethodImpl(Optimisations.Default)]
     public static int elements<A, B>(ref StackFrame frame) =>

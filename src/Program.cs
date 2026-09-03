@@ -2,11 +2,12 @@
 using IteratorPrototype.Iterator3;
 using IteratorPrototype.Traits;
 using static LanguageExt.Prelude;
+using static IteratorPrototype.Iterator3.Iter;
 
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-IterTests.Tests();
+//IterTests.Tests();
 
 /*
 Bench<CSharpVersion>.Mark();
@@ -19,11 +20,14 @@ Bench<WeakIteratorVersion>.Mark();
 Bench<Iterator2Version>.Mark();
 Bench<Iterator2ForEachVersion>.Mark();
 */
-Bench<Iterator3Version>.Mark();
+//Bench<Iterator3Version>.Mark();
+Bench<IterBindTest>.Mark();
+//Bench<IterBoxingTest>.Mark();
 //Bench<Iterator3ForEachVersion>.Mark();
 
 //Bench<MappedIteratorVersion>.Mark();
 //Bench<MonadBindIteratorVersion>.Mark();
+
 Bench.Key();
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -254,7 +258,7 @@ public class Iterator2ForEachVersion : Bench<Iterator2ForEachVersion>
 public class Iterator3Version : Bench<Iterator3Version>
 {
     readonly Iter<int> iterator = 
-        Iter.from<Arr, ArrState, int>(Arr.create(..Count));
+        from<Arr, ArrState, int>(Arr.create(..Count));
 
     protected override string Explain =>
         $"Iter3, for Arr, using while TryGetValue ({Count:N0} items)";
@@ -275,6 +279,66 @@ public class Iterator3Version : Bench<Iterator3Version>
         Bench.Iterator3;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+public class IterBindTest : Bench<IterBindTest>
+{
+    static readonly Iter<int> ty = from<Arr, ArrState, int>(Arr.create(..1000));
+    static readonly Iter<int> iterator = from<Arr, ArrState, int>(Arr.create(..1000)) >>
+                                         bind((int _) => ty);
+    
+    protected override string Explain =>
+        "Monad bind of two iterators";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Iterator3;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+public class IterBoxingTest : Bench<IterBoxingTest>
+{
+    // Structs with managed members
+     readonly Iter<(int, int, string)> iterator = from<Arr, ArrState, int>(Arr.create(..200))
+                                                * from<Arr, ArrState, int>(Arr.create(..200))
+                                                * from("One", "Two", "Three");
+    
+    // Structs with unmanaged members
+    //readonly Iter<(int, int, int)> iterator = from<Arr, ArrState, int>(Arr.create(..200))
+    //                                        * from<Arr, ArrState, int>(Arr.create(..200))
+    //                                        * from(1, 2, 3);
+    
+    protected override string Explain =>
+        "Use the product of two iterators to cause a need for boxes. They should come from the Box Pool";
+
+    protected override void Main()
+    {
+        var iter  = iterator;
+        var total = 0;
+        while (iter.TryGetValue(out var x, out iter))
+        {
+            total += x.Item1;
+        }
+
+        ignore(total);
+    }
+
+    protected override ConsoleColor Color => 
+        Bench.Iterator3;
+}
 /*
 public class Iterator3ForEachVersion : Bench<Iterator3ForEachVersion>
 {

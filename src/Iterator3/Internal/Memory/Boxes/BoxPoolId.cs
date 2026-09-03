@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal.Memory;
 
 [StructLayout(LayoutKind.Explicit, Size = sizeof(uint))]
 public readonly struct BoxPoolId : IEquatable<BoxPoolId>

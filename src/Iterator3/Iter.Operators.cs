@@ -27,6 +27,10 @@ public static class IterOperators
         [MethodImpl(Optimisations.Default)]
         public static Iter<B> operator |(in Iter<A> lhs, in IterMap<A, B> rhs) =>
             IterAction.map(rhs.f, in lhs);
+    
+        [MethodImpl(Optimisations.Default)]
+        public static Iter<B> operator >>(in Iter<A> lhs, in IterBind<A, B> rhs) =>
+            IterAction.bind(in lhs, rhs.f);
     }
     
     extension<A, B, C>(Iter<(A, B)>)

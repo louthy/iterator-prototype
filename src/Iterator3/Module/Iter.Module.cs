@@ -93,6 +93,10 @@ public static partial class Iter
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
+    public static IterBind<A, B> bind<A, B>(Func<A, Iter<B>> f) =>
+        new (f);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B> map<A, B>(Func<A, B> f) =>
         new (f);
 

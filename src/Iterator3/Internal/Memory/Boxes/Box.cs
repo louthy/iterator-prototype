@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 // ReSharper disable ParameterHidesMember
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal.Memory;
 
 /// <summary>
 /// Contains a struct allocated from a pool.  It automatically releases back to
@@ -9,7 +9,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 /// </summary>
 /// <typeparam name="A"></typeparam>
 [SkipLocalsInit]
-public class Box<A>
+public sealed class Box<A> : BoxBase
     where A : struct
 {
     readonly BoxPool<A> pool;
@@ -17,33 +17,36 @@ public class Box<A>
     A value;
     
     [MethodImpl(Optimisations.InliningOnly)]
-    internal Box(BoxPool<A> pool, Box<A>? next)
-    {
+    internal Box(BoxPool<A> pool) =>
         this.pool = pool;
-        this.next = next;
-    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     ~Box() =>
-        // Release back to the pool
-        pool.Free(this);
+        Free();
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public void OnAlloc(in A value)
+    public void Alloc(in A value)
     {
         // Tell the GC that we want to finalise once we're no longer in the pool
         GC.ReRegisterForFinalize(this);
         this.value = value;
-        next = null;
+        //next = null;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public void OnFree(Box<A> head)
+    public override void VirtualFree() =>
+        Free();
+
+    /// <summary>
+    /// Release back to the pool
+    /// </summary>
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void Free()
     {
         // We don't need the finaliser to run if we're in the pool
         GC.SuppressFinalize(this);
+        pool.Free(this);
         value = default!;
-        next = head;
     }
     
     public A Value

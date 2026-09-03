@@ -33,6 +33,10 @@ public readonly struct Iter<A>
     public Iter<B> Map<B>(Func<A, B> f) =>
         IterAction.map(f, in this);
 
+    [MethodImpl(Optimisations.Default)]
+    public Iter<B> Bind<B>(Func<A, Iter<B>> f) =>
+        IterAction.bind(in this, f);
+
     /*
     [MethodImpl(Optimisations.Default)]
     public Iter<A> Prepend(A value) =>

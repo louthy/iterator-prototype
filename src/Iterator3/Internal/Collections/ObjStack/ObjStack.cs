@@ -4,6 +4,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -62,6 +63,10 @@ readonly struct ObjStack
         while (tref > top)
         {
             tref--;
+            if (entry is BoxBase b)
+            {
+                b.VirtualFree();
+            }
             entry = null!;
             entry = ref Unsafe.Add(ref entry, -1);
         }
@@ -75,6 +80,10 @@ readonly struct ObjStack
         ref var top = ref Unsafe.AsRef(in Count);
         top--;
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
+        if (entry is BoxBase b)
+        {
+            b.VirtualFree();
+        }
         entry = null!;
         return true;
     }

@@ -75,27 +75,4 @@ static unsafe partial class Push
         // Fill the yield variable with the output of the iterator
         yield<A>(ref frame);
 
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static bool flatten<A>(ref StackFrame frame, in Iter<Iter<A>> ts) =>
-
-        // Create a slot for the current iterator to go
-        declare1(ref frame, default(Iter<A>)) &&
-        
-        // Declare a slot for the iterators
-        declare2(ref frame, in ts) &&
-        
-        // Start the co-routine
-        coroutine(ref frame) &&
-        
-        // Load the first iterator 
-        ref1<Iter<A>>(ref frame) &&
-        
-        // Load the second iterator 
-        ref2<Iter<Iter<A>>>(ref frame) &&
-
-        // Iterate over multiple iterators
-        fun(ref frame, &Pull.flatten<A>) &&
-            
-        // Fill the yield variable with the output of the iterator
-        yield<A>(ref frame);
 }

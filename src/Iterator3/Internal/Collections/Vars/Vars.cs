@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -11,7 +12,7 @@ readonly partial struct Vars
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PushStruct<A>(in A value)
         where A : struct =>
-        PushManaged(Boxes.alloc(in value));
+        PushManaged(Box.alloc(in value));
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PushManaged<A>(in A value)
@@ -30,6 +31,7 @@ readonly partial struct Vars
         if (PopManaged<Box<A>>(out var box))
         {
             value = box.Value;
+            box.Free();
             return true;
         }
         else
@@ -50,8 +52,19 @@ readonly partial struct Vars
         values.Pop(out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool PopStruct() =>
-        PopManaged();
+    public bool PopStruct<A>()
+        where A : struct
+    {
+        if (PopManaged<Box<A>>(out var box))
+        {
+            box.Free();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PopManaged() =>

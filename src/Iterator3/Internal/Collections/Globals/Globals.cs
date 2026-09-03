@@ -3,6 +3,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -152,7 +153,7 @@ readonly struct Globals
     [MethodImpl(Optimisations.InliningOnly)]
     public bool AddStruct<A>(in A value, out ushort index)
         where A : struct =>
-        objs.Push(Boxes.alloc(in value), Boxes.alloc(in value), out index);
+        objs.Push(Box.alloc(in value), Box.alloc(in value), out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public bool AddManaged<A>(in A value)
