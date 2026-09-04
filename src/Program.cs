@@ -288,8 +288,8 @@ public class IterBindTest : Bench<IterBindTest>
 
     public IterBindTest()
     {
-        var tx = from<Arr, ArrState, int>(Arr.create(..10000000));
-        var ty = from<Arr, ArrState, int>(Arr.create(..1));
+        var tx = from<Arr, ArrState, int>(Arr.create(..1000));
+        var ty = from<Arr, ArrState, int>(Arr.create(..1000));
         
         iterator = tx >> bind((int _) => ty);
     }
