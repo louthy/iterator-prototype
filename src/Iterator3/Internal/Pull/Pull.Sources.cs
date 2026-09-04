@@ -23,33 +23,4 @@ static partial class Pull
 
             ? @continue(ref frame)
             : empty(ref frame);
-
-    [MethodImpl(Optimisations.Default)]
-    public static int flatten<A>(ref StackFrame frame) =>
-
-        iterator<A>(ref frame) switch
-        {
-            PullState.Void =>
-
-                // Pop the iterators
-                arg2<Iter<Iter<A>>>(ref frame, out var tta) &&
-
-                // Read the next value
-                tta.TryGetValue(out var ta, out var tta1) &&
-
-                // Push the updated iterator
-                update1(ref frame, in ta) &&
-
-                // Push the updated iterators
-                update2(ref frame, in tta1)
-
-                    // Run the iterator
-                    ? iterator<A>(ref frame)
-
-                    : empty(ref frame),
-
-            var result =>
-                result
-
-        };
 }

@@ -284,9 +284,15 @@ public class Iterator3Version : Bench<Iterator3Version>
 
 public class IterBindTest : Bench<IterBindTest>
 {
-    static readonly Iter<int> ty = from<Arr, ArrState, int>(Arr.create(..1000));
-    static readonly Iter<int> iterator = from<Arr, ArrState, int>(Arr.create(..1000)) >>
-                                         bind((int _) => ty);
+    readonly Iter<int> iterator;
+
+    public IterBindTest()
+    {
+        var tx = from<Arr, ArrState, int>(Arr.create(..10000000));
+        var ty = from<Arr, ArrState, int>(Arr.create(..1));
+        
+        iterator = tx >> bind((int _) => ty);
+    }
     
     protected override string Explain =>
         "Monad bind of two iterators";

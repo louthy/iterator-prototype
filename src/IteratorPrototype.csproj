@@ -12,6 +12,6 @@
       <PackageReference Include="LanguageExt.Core" Version="5.0.0-beta-77" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Iterator3\Internal\Memory\" />
+      <Folder Include="Iterator3\Internal\Memory\Iterators\" />
     </ItemGroup>
 </Project>
