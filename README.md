@@ -1,6 +1,6 @@
 # `Iterator<A>` prototype
 
-_Prototyping ideas around `IterableK` trait and an allocation free `Iterator`..._
+_Prototyping ideas around `IterableK` trait and an allocation free `Iterator`. This is prototype code, not for human consumption, for performance and rapid iteration of ideas_
 
 ## Introduction
 
