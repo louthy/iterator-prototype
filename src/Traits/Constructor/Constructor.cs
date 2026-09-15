@@ -1,5 +1,11 @@
 namespace IteratorPrototype.Traits;
 
+public interface Constructor<out SELF>
+    where SELF : Constructor<SELF>
+{
+    static abstract SELF Construct();
+}
+
 public interface Constructor<out SELF, ARG>
     where SELF : Constructor<SELF, ARG>
     where ARG : notnull, allows ref struct 

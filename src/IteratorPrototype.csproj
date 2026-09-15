@@ -13,5 +13,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Iterator3\Internal\Memory\Iterators\" />
+      <Folder Include="Iterator4\Internal\" />
     </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 
+[module:System.Runtime.CompilerServices.SkipLocalsInit]
+
 namespace IteratorPrototype;
 
 public static class Optimisations

@@ -5,7 +5,8 @@ namespace IteratorPrototype;
 public abstract class Bench<A>
     where A : Bench<A>, new()
 {
-    protected const int Count = 10_000_000;
+    protected static int DefaultCount = 1_000_000;
+    protected abstract int Count { get; }
     protected abstract string Explain { get; }
     protected abstract void Main();
     protected abstract ConsoleColor Color { get; }
@@ -25,12 +26,14 @@ public abstract class Bench<A>
             Main();
         }
 
-        var elapsed = TimeSpan.Zero;
-        var memory  = 0L;
+        var elapsed         = TimeSpan.Zero;
+        var memoryAllocated = 0L;
+        var memoryRequired  = 0L;
         
         for (var i = 0; i < runs; i++)
         {
-            var ms = GC.GetTotalAllocatedBytes(true);
+            var total = GC.GetTotalMemory(true)         + 40 /* stopwatch size */;
+            var alloc = GC.GetTotalAllocatedBytes(true) + 40 /* stopwatch size */;
             
             // Inner timer begin
             var sw = Stopwatch.StartNew();
@@ -38,17 +41,33 @@ public abstract class Bench<A>
             sw.Stop();
             // Inner timer end
 
-            memory += Math.Max(0, GC.GetTotalAllocatedBytes(true) - ms - 40 /* stopwatch size */);
+            memoryAllocated += Math.Max(0, GC.GetTotalAllocatedBytes(true) - alloc);
+            memoryRequired += Math.Max(0, GC.GetTotalMemory(true)             - total);
             
             elapsed += sw.Elapsed;
         }
     
         elapsed /= runs;
-        memory /= runs;
-    
+        memoryAllocated /= runs;
+        memoryRequired /= runs;
+
+        var memAllocStr = memoryAllocated switch
+                          {
+                              < 10   * 1024 => $"Mem (used): {memoryAllocated} bytes",
+                              < 1024 * 1024 => $"Mem (used): {memoryAllocated / 1024} kb",
+                              _             => $"Mem (used): {memoryAllocated / 1024 / 1024} mb",
+                          };
+
+        var memRequiredStr = memoryRequired switch
+                             {
+                                 < 10   * 1024 => $"Mem (req): {memoryRequired} bytes",
+                                 < 1024 * 1024 => $"Mem (req): {memoryRequired / 1024} kb",
+                                 _             => $"Mem (req): {memoryRequired / 1024 / 1024} mb",
+                             };
+        
         var restore = Console.ForegroundColor;
         Console.ForegroundColor = Color;
-        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns  \t Memory: {memory} bytes \t{Explain}");
+        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t {memAllocStr} \t {memRequiredStr} \t{Explain}");
         Console.ForegroundColor = restore;
         return elapsed;
     }
@@ -61,6 +80,7 @@ public static class Bench
     public const ConsoleColor Immutable = ConsoleColor.Magenta;
     public const ConsoleColor Iterator2 = ConsoleColor.Red;
     public const ConsoleColor Iterator3 = ConsoleColor.White;
+    public const ConsoleColor Iterator4 = ConsoleColor.Green;
 
     public static void Key()
     {
@@ -89,6 +109,16 @@ public static class Bench
         Console.Write("■");
         Console.ForegroundColor = restore;
         Console.Write(" iterator2 ideas   ");
+
+        Console.ForegroundColor = Iterator3;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" iterator3 ideas   ");
+
+        Console.ForegroundColor = Iterator4;
+        Console.Write("■");
+        Console.ForegroundColor = restore;
+        Console.Write(" iterator4 ideas   ");
 
         Console.WriteLine();        
     }
