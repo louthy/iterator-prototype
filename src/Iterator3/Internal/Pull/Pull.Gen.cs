@@ -2,13 +2,12 @@
 
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
-using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3;
 
 abstract class PullGen<A>
 {
-    public static PullGen<A> Instance;
+    internal static PullGen<A> Instance;
 
     [MethodImpl(Optimisations.Default)]
     static PullGen()
@@ -34,14 +33,24 @@ abstract class PullGen<A>
         }
     }
 
+    public static unsafe IterOp bimap1<X, Y>() => 
+        Instance.BiMapImpl<X, Y>();
+
     public static unsafe IterOp iterable<T, IS>() 
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged =>
         Instance.IterableImpl<T, IS>();
+
+    public static unsafe IterOp iterator => 
+        Instance.IteratorImpl;
+
+    public abstract unsafe IterOp BiMapImpl<X, Y>();
  
     public abstract unsafe IterOp IterableImpl<T, IS>()
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged;
+
+    public abstract unsafe IterOp IteratorImpl { get; }
 }
 
 class ManagedPull<A> : PullGen<A>
@@ -50,8 +59,14 @@ class ManagedPull<A> : PullGen<A>
     static ManagedPull() =>
         Instance = new ManagedPull<A>();
 
+    public override unsafe IterOp BiMapImpl<X, Y>() =>
+        &Pull.bimapManaged1<X, Y, A>;
+
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableManaged<T, IS, A>;
+
+    public override unsafe IterOp IteratorImpl =>
+        &Pull.iteratorManaged<A>;
 }
 
 class UnmanagedPull<A> : PullGen<A>
@@ -59,9 +74,15 @@ class UnmanagedPull<A> : PullGen<A>
 {
     static UnmanagedPull() =>
         Instance = new UnmanagedPull<A>();
+
+    public override unsafe IterOp BiMapImpl<X, Y>() =>
+        &Pull.bimapUnmanaged1<X, Y, A>;
     
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableUnmanaged<T, IS, A>;
+
+    public override unsafe IterOp IteratorImpl =>
+        &Pull.iteratorUnmanaged<A>;
 }
 
 class StructPull<A> : PullGen<A>
@@ -70,6 +91,12 @@ class StructPull<A> : PullGen<A>
     static StructPull() =>
         Instance = new StructPull<A>();
 
+    public override unsafe IterOp BiMapImpl<X, Y>() =>
+        &Pull.bimapStruct1<X, Y, A>;
+
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableStruct<T, IS, A>;
+
+    public override unsafe IterOp IteratorImpl =>
+        &Pull.iteratorStruct<A>;
 }

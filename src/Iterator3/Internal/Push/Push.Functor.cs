@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
-using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3;
 
@@ -13,7 +12,7 @@ static unsafe partial class Push
         arg1(ref frame, in f) &&
         
         // Add the map operation
-        fun(ref frame, &Pull.map<A, B>);
+        fun(ref frame, PullGen<A, B>.map);
  
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool bimap<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
@@ -22,7 +21,7 @@ static unsafe partial class Push
         arg1(ref frame, in f) &&
         
         // Add the map operation
-        fun(ref frame, &Pull.bimap<A, B, C>);
+        fun(ref frame, PullGen<A, B, C>.bimap);
  
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool bimap1<A, B, C>(ref StackFrame frame, in Func<A, B, C> f) =>
@@ -31,7 +30,7 @@ static unsafe partial class Push
         arg1(ref frame, in f) &&
         
         // Add the map operation
-        fun(ref frame, &Pull.bimap1<A, B, C>);
+        fun(ref frame, PullGen<C>.bimap1<A, B>());
  
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool trimap<A, B, C, D>(ref StackFrame frame, in Func<A, B, C, D> f) =>

@@ -2,8 +2,16 @@ using System.Reflection;
 
 namespace IteratorPrototype.Iterator3.Internal;
 
+public enum TyFlavour
+{
+    Managed = 1,
+    Unmanaged = 2,
+    Struct = 3
+}
+
 public static class Ty<A>
 {
+    public static readonly TyFlavour Flavour;
     public static readonly bool IsManaged;
     public static readonly bool IsUnmanaged;
     public static readonly bool IsValue;
@@ -13,6 +21,11 @@ public static class Ty<A>
         IsUnmanaged = IsTypeUnmanaged(typeof(A));
         IsValue = typeof(A).IsValueType;
         IsManaged = !IsValue && !IsUnmanaged;
+        Flavour = IsUnmanaged 
+                      ? TyFlavour.Unmanaged 
+                      : IsValue 
+                          ? TyFlavour.Struct 
+                          : TyFlavour.Managed;
     }
 
     static bool IsTypeUnmanaged(Type type)

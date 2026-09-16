@@ -32,18 +32,23 @@ abstract class GlobalsGen<A>
         }
     }
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp yield(in ushort index) => 
         Instance.Yield(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp yieldConst(in ushort index) => 
         Instance.YieldConst(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp pull(in ushort index) => 
         Instance.Pull(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp push(in ushort index) => 
         Instance.Push(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp reset(in ushort index) => 
         Instance.Reset(in index);
 
@@ -71,45 +76,59 @@ class ManagedGlobals<A> : GlobalsGen<A>
     static ManagedGlobals() =>
         Instance = new ManagedGlobals<A>();
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Yield(in ushort index) =>
         GManaged<A>.yield(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp YieldConst(in ushort index) =>
         GManaged<A>.yieldConst(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>
         GManaged<A>.pull(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Push(in ushort index) =>
         GManaged<A>.push(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Reset(in ushort index) =>
         GManaged<A>.reset(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool At(ref Globals list, in ushort ix, out A value) =>
         list.AtManaged(in ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtManaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
         list.DeclaredAtManaged(ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A DeclaredAt(ref Globals list, ushort ix) =>
         ref list.DeclaredAtManaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
         list.ResetAtManaged(ix, out value);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix) =>
         list.ResetAtManaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value) =>
         list.AddManaged(in value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddManaged(in value, out index);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
         list.AtEndManaged(ix, out global);
 }
@@ -120,45 +139,59 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
     static UnmanagedGlobals() =>
         Instance = new UnmanagedGlobals<A>();
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Yield(in ushort index) =>
         GUnmanaged<A>.yield(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp YieldConst(in ushort index) =>
         GUnmanaged<A>.yieldConst(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>
         GUnmanaged<A>.pull(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Push(in ushort index) =>
         GUnmanaged<A>.push(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Reset(in ushort index) =>
         GUnmanaged<A>.reset(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool At(ref Globals list, in ushort ix, out A value) =>
         list.AtUnmanaged(in ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtUnmanaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
         list.DeclaredAtUnmanaged(ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A DeclaredAt(ref Globals list, ushort ix) =>
         ref list.DeclaredAtUnmanaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
         list.ResetAtUnmanaged(ix, out value);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix) =>
         list.ResetAtUnmanaged<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value) =>
         list.AddUnmanaged(in value);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddUnmanaged(in value, out index);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
         list.AtEndUnmanaged(ix, out global);
 }
@@ -169,45 +202,59 @@ class StructGlobals<A> : GlobalsGen<A>
     static StructGlobals() =>
         Instance = new StructGlobals<A>();
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Yield(in ushort index) =>
         GStruct<A>.yield(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp YieldConst(in ushort index) =>
         GStruct<A>.yieldConst(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>
         GStruct<A>.pull(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Push(in ushort index) =>
         GStruct<A>.push(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Reset(in ushort index) =>
         GStruct<A>.reset(in index);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool At(ref Globals list, in ushort ix, out A value) =>
         list.AtStruct(in ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A At(ref Globals list, ushort ix)=>
         ref list.AtStruct<A>(ix);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool DeclaredAt(ref Globals list, in ushort ix, out A value) =>
         list.DeclaredAtStruct(ix, out value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A DeclaredAt(ref Globals list, ushort ix) =>
         ref list.DeclaredAtStruct<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix, out A value) =>
         list.ResetAtStruct(ix, out value);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(ref Globals list, in ushort ix) =>
         list.ResetAtStruct<A>(ix);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value) =>
         list.AddStruct(in value);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool Add(ref Globals list, in A value, out ushort index) =>
         list.AddStruct(in value, out index);
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
         list.AtEndStruct(ix, out global);
 }

@@ -7,31 +7,31 @@ namespace IteratorPrototype.Iterator3;
 
 static partial class Pull
 {
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int empty(ref StackFrame frame) =>
         PullState.Void;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int pure(ref StackFrame frame) =>
         PullState.Pure;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int pureV<A>(ref StackFrame frame) =>
         arg1<A>(ref frame, out var x) &&
         frame.vars.Push(in x)
             ? PullState.Pure
             : PullState.Void;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int @continue(ref StackFrame frame) =>
         PullState.Continue;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool coroutine1(ref StackFrame frame) =>
 
         frame.StartScope();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int coroutine(ref StackFrame frame) =>
 
         coroutine1(ref frame)
@@ -39,7 +39,7 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int dup<A>(ref StackFrame frame) =>
         frame.vars.Peek<A>(out var x) &&
         frame.vars.Push(in x)         

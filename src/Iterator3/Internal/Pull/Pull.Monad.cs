@@ -58,7 +58,5 @@ static partial class Pull
 
             var result =>
                 result
-
         };
-
 }

@@ -6,6 +6,47 @@ namespace IteratorPrototype.Iterator3;
 
 static partial class Pull
 {
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static unsafe int iterator<A>(ref StackFrame frame) =>
+        PullGen<A>.iterator(ref frame);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int iteratorManaged<A>(ref StackFrame frame)
+        where A : class
+    {
+        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
+        return ta.TryGetValue(out var x, out ta) &&
+               PullManaged.@return(ref frame, in x)
+                   ? PullState.Continue
+                   : PullState.Void;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int iteratorUnmanaged<A>(ref StackFrame frame)
+        where A : unmanaged
+    {
+        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
+        return ta.TryGetValue(out var x, out ta) &&
+               PullUnmanaged.@return(ref frame, in x)
+                   ? PullState.Continue
+                   : PullState.Void;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int iteratorStruct<A>(ref StackFrame frame)
+        where A : struct
+    {
+        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
+        return ta.TryGetValue(out var x, out ta) &&
+               PullStruct.@return(ref frame, in x)
+                   ? PullState.Continue
+                   : PullState.Void;
+    }
+    
+
+    /*
+        Unoptimised reference
+
     [MethodImpl(Optimisations.Default)]
     public static int iterator<A>(ref StackFrame frame) =>
 
@@ -22,5 +63,5 @@ static partial class Pull
         @return(ref frame, in x) 
 
             ? @continue(ref frame)
-            : empty(ref frame);
+            : empty(ref frame);*/    
 }
