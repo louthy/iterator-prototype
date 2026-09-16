@@ -39,13 +39,6 @@ static partial class Pull
             ? @continue(ref frame)
             : empty(ref frame);
 
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static int dup<A>(ref StackFrame frame) =>
-        frame.vars.Peek<A>(out var x) &&
-        frame.vars.Push(in x)         
-            ? @continue(ref frame)
-            : empty(ref frame);
-
     [MethodImpl(Optimisations.Default)]
     public static int tuple<A, B>(ref StackFrame frame) =>
 

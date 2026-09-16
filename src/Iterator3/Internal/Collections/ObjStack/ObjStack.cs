@@ -101,6 +101,20 @@ readonly struct ObjStack
     }
 
     [MethodImpl(Optimisations.Default)]
+    public bool Dup()
+    {
+        if (Count == Capacity) return false;
+        ref var last = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), Count - 1);
+        ref var next = ref Unsafe.Add(ref last, 1);
+        last = next;
+        
+        ref var top  = ref Unsafe.AsRef(in Count);
+        top++;
+        
+        return true;
+    }
+
+    [MethodImpl(Optimisations.Default)]
     public bool Peek<A>(out A value)
         where A : class
     {

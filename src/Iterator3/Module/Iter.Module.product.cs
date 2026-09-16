@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
@@ -10,7 +9,7 @@ public static partial class Iter
     {
         var frame = ta.Next<A, (A, B)>(out var tab);
         return Push.iterator(ref frame, in tb) &&
-               Push.apply<A, B, (A, B)>(ref frame, static (x, y) => (x, y))
+               Push.productMerge<A, B>(ref frame)
                    ? tab
                    : default;
     }

@@ -38,12 +38,6 @@ static unsafe partial class Push
         
         // Yield what's stored in the global variable
         fun(ref frame, GlobalsGen<A>.yieldConst(in yieldIx));
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static bool dup<A>(ref StackFrame frame) =>
-        
-        // Push the yield operation
-        fun(ref frame, &Pull.dup<A>);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(ref StackFrame frame, in IterOp f) =>
@@ -77,5 +71,12 @@ static unsafe partial class Push
     internal static bool elements<A, B, C>(ref StackFrame frame) => 
         
         // Push elements operation
-        fun(ref frame, &Pull.elements<A, B, C>);    
+        fun(ref frame, &Pull.elements<A, B, C>);
+    
+    [MethodImpl(Optimisations.Default)]
+    public static bool productMerge<A, B>(ref StackFrame frame) =>
+        
+        // Push merge operation
+        fun(ref frame, &Pull.productMerge<A, B>);
+
 }

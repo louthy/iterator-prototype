@@ -17,21 +17,51 @@ static partial class Pull
         return frame.vars.Push(value);
     }
 
+    /// <summary>
+    /// Pushes the return value to the stack
+    /// </summary>
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool @return<A, B>(ref StackFrame frame, in A value1, in B value2)
+    {
+        //Log.value($"return: {value}", ref frame);
+        return frame.vars.Push(value1, value2);
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool dup<A>(ref StackFrame frame) =>
+        frame.vars.Dup<A>();
+    
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool pop<A>(ref StackFrame frame, out A value) =>
         frame.vars.Pop(out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static bool pop<A, B>(ref StackFrame frame, out A value1, out B value2) =>
+        frame.vars.Pop(out value1, out value2);
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool pop<A>(ref StackFrame frame) =>
         frame.vars.Pop<A>();
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool pop<A, B>(ref StackFrame frame) =>
+        frame.vars.Pop<A, B>();
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool peek<A>(ref StackFrame frame, out A value) =>
         frame.vars.Peek(out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
+    public static bool peek<A, B>(ref StackFrame frame, out A value1, out B value2) =>
+        frame.vars.Peek(out value1, out value2);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool push<A>(ref StackFrame frame, in A value) =>
         frame.vars.Push(in value);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool push<A, B>(ref StackFrame frame, in A value1, in B value2) =>
+        frame.vars.Push(in value1, in value2);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg1<A>(ref StackFrame frame, out A value) =>

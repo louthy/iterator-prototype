@@ -8,6 +8,21 @@ readonly partial struct Vars
 {
     readonly ObjStack objs;
     readonly ByteStack values;
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool DupStruct<A>()
+        where A : struct =>
+        objs.Dup();
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool DupManaged<A>() 
+        where A : class =>
+        objs.Dup();
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool DupUnmanaged<A>()
+        where A : unmanaged =>
+        values.Dup<A>();
     
     [MethodImpl(Optimisations.InliningOnly)]
     public bool PushStruct<A>(in A value)

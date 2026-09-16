@@ -59,6 +59,24 @@ readonly struct ByteStack
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
         return true;
     }
+    
+    [MethodImpl(Optimisations.Default)]
+    public bool Dup<A>()
+    {
+        var     sizeOf = Unsafe.SizeOf<A>();
+        if (Count + sizeOf > Capacity) return false;
+        
+        var     last = Count - sizeOf;
+        var     next = Count;
+        ref var src  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), last);
+        ref var dst  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), next);
+        Unsafe.CopyBlock(ref dst, ref src, (uint)sizeOf);
+        
+        ref var top  = ref Unsafe.AsRef(in Count);
+        top += sizeOf;
+        
+        return true;
+    }
 
     [MethodImpl(Optimisations.Default)]
     public bool Peek<A>(out A value)

@@ -33,6 +33,7 @@ abstract class VarsGen<A>
         }
     }
 
+    public abstract bool DupImpl(ref Vars vars);    
     public abstract bool PopImpl(ref Vars vars, out A value);
     public abstract bool PopImpl(ref Vars vars);
     public abstract bool PushImpl(ref Vars vars, in A value);
@@ -45,6 +46,10 @@ class ManagedVars<A> : VarsGen<A>
 {
     static ManagedVars() =>
         Instance = new ManagedVars<A>();
+    
+    [MethodImpl(Optimisations.Default)]
+    public override bool DupImpl(ref Vars vars) =>
+        vars.DupManaged<A>();
     
     [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
@@ -72,6 +77,10 @@ class StructVars<A> : VarsGen<A>
 {
     static StructVars() =>
         Instance = new StructVars<A>();
+    
+    [MethodImpl(Optimisations.Default)]
+    public override bool DupImpl(ref Vars vars) =>
+        vars.DupStruct<A>();
 
     [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
@@ -99,6 +108,10 @@ class UnmanagedVars<A> : VarsGen<A>
 {
     static UnmanagedVars() =>
         Instance = new UnmanagedVars<A>();
+    
+    [MethodImpl(Optimisations.Default)]
+    public override bool DupImpl(ref Vars vars) =>
+        vars.DupUnmanaged<A>();
     
     [MethodImpl(Optimisations.Default)]
     public override bool PopImpl(ref Vars vars, out A value) =>
