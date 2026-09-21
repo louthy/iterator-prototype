@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace IteratorPrototype.Internal.Source.Factories;
 
-public static class Ty<A>
+public static class TyMan<A>
 {
     public static readonly bool IsUnmanaged = IsTypeUnmanaged(typeof(A));
 

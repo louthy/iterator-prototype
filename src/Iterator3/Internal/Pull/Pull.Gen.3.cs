@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3;
 

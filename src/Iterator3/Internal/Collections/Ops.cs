@@ -108,7 +108,9 @@ readonly unsafe struct Ops
         ref var ptr     = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), pc);
         var     count   = frame.ops.Count - pc;
         ref var current = ref frame.tops.CurrentRef;
- 
+
+        //Log.msg("run entry", ref frame);
+        
         while(count != 0)
         {
             // Read the current instruction
@@ -165,9 +167,13 @@ readonly unsafe struct Ops
         [MethodImpl(Optimisations.InliningOnly)]
         static bool VoidResetToContinuationPoint(ref StackFrame frame)
         {
+            Log.function("start-void", ref frame);
+            
             // Remove the current scope.
             // This is the most basic process of leaving a scope with no value: we must step up one scope level.
             frame.VoidScope();
+            
+            Log.function("popped the voided scope", ref frame);
             
             // Leave if the iterator is now empty
             if (frame.tops.Count == 0)
@@ -180,19 +186,26 @@ readonly unsafe struct Ops
             // that generates values (because it might have more to yield).
             while (frame.tops.IsSingleton && frame.VoidScope())
             {
+                Log.stack(ref frame);
                 // Empty
             }
             
             // Leave if the iterator is now empty
             if (frame.tops.Count == 0)
             {
+                Log.terminator("end-void (empty)", ref frame);
                 return false;
             }
             
             // Clear the yield flag.  We do this because anything that yields creates a subroutine. We've just
             // popped the singleton subroutine(s), so this is the flag we need to clear in our generator's scope
             // to say that this generator has no more values to yield.
-            frame.tops.DecrementYields();
+            if (frame.tops.HasYielded)
+            {
+                frame.tops.DecrementYields();
+            }
+
+            Log.warn("end-void (more to go)", ref frame);
             
             // If there are scopes remaining, then there are more values to yield...
             return frame.tops.Count > 0;
@@ -204,18 +217,25 @@ readonly unsafe struct Ops
             ref var tops = ref frame.tops;
             ref var vars = ref frame.vars;
             
-            // Just go back to the start of the current frame
+            Log.function("start-pure", ref frame);
+            
+            // Just go back to the start of the current frame if we have already yielded a value.
+            // We get here if a value has already been returned to the caller, and then there were
+            // some later operations.
             if(tops.HasYielded)
             {
                 frame.ResetFrame(out head);
+                Log.function("frame-reset", ref frame);
                 return true;
             }
 
-            if (!vars.Pop(out head))
+            if (!vars.Pop(out head, false))
             {
                 // Something has gone wrong
                 throw new InvalidOperationException("PureResetToContinuationPoint: StackFrame.vars.Pop() failed");
             }
+
+            //Log.value($"yielded: {head}", ref frame);
             
             // Pop the current frame off the stack and then checks the new
             // top frame to see if it's a singleton frame.  If it is, then
@@ -223,11 +243,18 @@ readonly unsafe struct Ops
             // or we have a yielding frame.
             while (frame.VoidScope() && !tops.HasYielded)
             {
+                Log.stack(ref frame);
                 // Empty
             }
             
             // At this point we're either at the 0-th frame or a yielding frame
-            if(tops.HasYielded) tops.DecrementYields();
+            if(tops.HasYielded)
+            {
+                // Unmark this frame as yielding
+                tops.DecrementYields();
+            }
+
+            Log.terminator("end-pure", ref frame);
             
             return true;
         }

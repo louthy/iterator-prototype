@@ -14,7 +14,7 @@ static unsafe partial class GUnmanaged<A>
         ref var r = ref frame.globals.AtUnmanaged<A>(ix);
         
         // Pop the value from the stack
-        if (frame.vars.PopUnmanaged<A>(out var x))
+        if (frame.vars.PopUnmanaged<A>(out var x, false))
         {
             // Set the global to be what was on the top of the stack
             r = x;

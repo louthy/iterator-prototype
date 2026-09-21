@@ -23,21 +23,22 @@ static unsafe partial class Push
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool yield<A>(ref StackFrame frame) =>
-
-        // Create a global variable, this will be the storage for our yield value
-        frame.globals.Add(default(A), out var yieldIx) &&
         
-        // Yield what's stored in the global variable
-        fun(ref frame, GlobalsGen<A>.yield(in yieldIx));
+        // Start a new co-routine with what's at the top of the stack as an input argument
+        fun(ref frame, VarsGen<A>.yield);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool yield<A>(ref StackFrame frame, in A value) =>
-
-        // Create a global variable, this will be the storage for our yield value
-        frame.globals.Add(value, out var yieldIx) &&
         
-        // Yield what's stored in the global variable
-        fun(ref frame, GlobalsGen<A>.yieldConst(in yieldIx));
+        // Create a global-var to store the constant value
+        frame.globals.Add(in value, out var gix) &&
+        
+        // Push the constant value to the top of the stack
+        fun(ref frame, GlobalsGen<A>.pull(gix)) &&
+        
+        // Start a new co-routine with what's at the top of the stack as an input argument
+        fun(ref frame, VarsGen<A>.yield);
+
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(ref StackFrame frame, in IterOp f) =>
@@ -72,11 +73,4 @@ static unsafe partial class Push
         
         // Push elements operation
         fun(ref frame, &Pull.elements<A, B, C>);
-    
-    [MethodImpl(Optimisations.Default)]
-    public static bool productMerge<A, B>(ref StackFrame frame) =>
-        
-        // Push merge operation
-        fun(ref frame, &Pull.productMerge<A, B>);
-
 }

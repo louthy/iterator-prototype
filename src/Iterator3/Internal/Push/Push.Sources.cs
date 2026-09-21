@@ -70,7 +70,7 @@ static unsafe partial class Push
         ref1<Iter<A>>(ref frame) &&
 
         // Push iterator operation
-        fun(ref frame, &Pull.iterator<A>) &&
+        fun(ref frame, PullGen<A>.iterator) &&
         
         // Fill the yield variable with the output of the iterator
         yield<A>(ref frame);

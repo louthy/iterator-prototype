@@ -2,19 +2,34 @@ using System.Reflection;
 
 namespace IteratorPrototype.Types;
 
+public enum TyFlavour
+{
+    Managed = 1,
+    Unmanaged = 2,
+    Struct = 3
+}
+
 public static class Ty<A>
 {
+    public static readonly TyFlavour Flavour;
     public static readonly bool IsManaged;
     public static readonly bool IsUnmanaged;
     public static readonly bool IsValue;
-    public static readonly bool IsDisposable;
+    public static readonly string Pretty;
 
     static Ty()
     {
-        IsUnmanaged = IsTypeUnmanaged(typeof(A));
-        IsValue = typeof(A).IsValueType;
+
+        var typeA = typeof(A);
+        Pretty = TyPretty.Make(typeA);
+        IsUnmanaged = IsTypeUnmanaged(typeA);
+        IsValue = typeA.IsValueType;
         IsManaged = !IsValue && !IsUnmanaged;
-        IsDisposable = typeof(IDisposable).IsAssignableFrom(typeof(A));
+        Flavour = IsUnmanaged 
+                      ? TyFlavour.Unmanaged 
+                      : IsValue 
+                          ? TyFlavour.Struct 
+                          : TyFlavour.Managed;
     }
 
     static bool IsTypeUnmanaged(Type type)

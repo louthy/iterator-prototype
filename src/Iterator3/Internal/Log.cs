@@ -1,11 +1,11 @@
-using System.Runtime.CompilerServices;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3.Internal;
 
 static class Log
 {
     public static string ty<A>() => 
-        typeof(A).Name;
+        Ty<A>.Pretty;
     
 #if DEBUG
 
@@ -69,6 +69,9 @@ static class Log
         Console.WriteLine();
         return PullState.Continue;
     }
+
+    public static void stack(ref StackFrame frame) =>
+        write("", ConsoleColor.DarkBlue, ref frame);
 
     public static int function(string message, ref StackFrame frame) =>
         write(message, ConsoleColor.Green, ref frame);

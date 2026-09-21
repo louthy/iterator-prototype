@@ -47,6 +47,7 @@ readonly struct ByteStack
         var     sizeOf = Unsafe.SizeOf<A>();
         ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
+        
         return true;
     }
     
@@ -57,6 +58,7 @@ readonly struct ByteStack
         ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
+        
         return true;
     }
     
@@ -125,24 +127,4 @@ readonly struct ByteStack
         top += sizeOf;
         return true;
     }
-    
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public int Yield<A>(ref StackFrame frame, in ushort ix)
-        where A : unmanaged
-    {
-        // Not the natural place for this function: we want to not have
-        // overhead of a pop and push. So it's here because the += sizeOf and -= sizeOf
-        // are basically free here.
-        
-        var     sizeOf = Unsafe.SizeOf<A>();
-        ref var top    = ref Unsafe.AsRef(in Count);
-        top -= sizeOf;
-        ref var entry  = ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
-        ref var global = ref frame.globals.AtUnmanaged<A>(ix);
-        global = entry;
-        frame.StartYieldScope();
-        top += sizeOf;
-        return PullState.Continue;
-    }    
 }

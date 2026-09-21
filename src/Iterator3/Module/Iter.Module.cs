@@ -143,4 +143,8 @@ public static partial class Iter
     [MethodImpl(Optimisations.InliningOnly)]
     public static IterMap<A, B, C, D, E, F, G> select<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f) =>
         new(f);    
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static IterMap<A, B, C, D, E, F, G, H> select<A, B, C, D, E, F, G, H>(Func<A, B, C, D, E, F, G, H> f) =>
+        new(f);
 }

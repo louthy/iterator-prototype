@@ -55,5 +55,5 @@ static unsafe partial class Push
         fun(ref frame, &Pull.bind<A, B>) &&
             
         // Fill the yield variable with the output of the iterator
-        yield<A>(ref frame);
+        yield<B>(ref frame);
 }

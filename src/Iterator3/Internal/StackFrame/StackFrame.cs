@@ -41,7 +41,7 @@ readonly ref struct StackFrame
     public bool EndScope<A>(out A head) =>
         
         // Get the return value
-        vars.Pop(out head) &&
+        vars.Pop(out head, false) &&
 
         // Pop the current scope
         Pop();
@@ -50,7 +50,7 @@ readonly ref struct StackFrame
     public bool ResetFrame<A>(out A result) =>
         
         // Get the return value
-        vars.Pop(out result) &&
+        vars.Pop(out result, true) &&
 
         // Pop the current tops
         tops.ResetFrame();
@@ -111,7 +111,7 @@ readonly ref struct StackFrame
         var pc      = tops.Current & 0xff;
         var objs    = vars.ObjsCount;
         var vals    = vars.ValuesCount;
-        var yielded = tops.HasYielded.ToString().ToLower();
-        return $"[pc:{pc}, objs:{objs}, vals:{vals}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
+        var yielded = tops.YieldsInFrame;
+        return $"[pc:{pc}, objs:{objs}/{tops.ObjsCount}, vals:{vals}/{tops.ValuesCount}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
     }
 }

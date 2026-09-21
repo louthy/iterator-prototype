@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3;
 
@@ -78,8 +79,7 @@ abstract class PullGen<A, B>
             }
             
             default:
-                throw new Exception("We have a type {typeof(Ty).Name} that apparently isn't managed, unmanaged, or a value-type!");
-
+                throw new Exception("We have a type that apparently isn't managed, unmanaged, or a value-type!");
         }
     }
 

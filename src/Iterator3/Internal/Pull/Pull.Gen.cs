@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3;
 
@@ -29,12 +30,9 @@ abstract class PullGen<A>
         }
         else
         {
-            throw new Exception("We have a type {typeof(Ty).Name} that apparently isn't managed, unmanaged, or a value-type!");
+            throw new Exception($"We have a type {Ty<A>.Pretty} that apparently isn't managed, unmanaged, or a value-type!");
         }
     }
-
-    public static unsafe IterOp bimap1<X, Y>() => 
-        Instance.BiMapImpl<X, Y>();
 
     public static unsafe IterOp iterable<T, IS>() 
         where T : Tr.IterableImmutable<T, IS>
@@ -43,8 +41,6 @@ abstract class PullGen<A>
 
     public static unsafe IterOp iterator => 
         Instance.IteratorImpl;
-
-    public abstract unsafe IterOp BiMapImpl<X, Y>();
  
     public abstract unsafe IterOp IterableImpl<T, IS>()
         where T : Tr.IterableImmutable<T, IS>
@@ -59,9 +55,6 @@ class ManagedPull<A> : PullGen<A>
     static ManagedPull() =>
         Instance = new ManagedPull<A>();
 
-    public override unsafe IterOp BiMapImpl<X, Y>() =>
-        &Pull.bimapManaged1<X, Y, A>;
-
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableManaged<T, IS, A>;
 
@@ -74,9 +67,6 @@ class UnmanagedPull<A> : PullGen<A>
 {
     static UnmanagedPull() =>
         Instance = new UnmanagedPull<A>();
-
-    public override unsafe IterOp BiMapImpl<X, Y>() =>
-        &Pull.bimapUnmanaged1<X, Y, A>;
     
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableUnmanaged<T, IS, A>;
@@ -90,9 +80,6 @@ class StructPull<A> : PullGen<A>
 {
     static StructPull() =>
         Instance = new StructPull<A>();
-
-    public override unsafe IterOp BiMapImpl<X, Y>() =>
-        &Pull.bimapStruct1<X, Y, A>;
 
     public override unsafe IterOp IterableImpl<T, IS>() =>
         &Pull.iterableStruct<T, IS, A>;

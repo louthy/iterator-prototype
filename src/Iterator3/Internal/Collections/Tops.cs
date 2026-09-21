@@ -12,10 +12,29 @@ readonly struct Tops
 {
     const int Capacity = 16;
     
-    // 0x000000FF = PC 
-    // 0x0000FF00 = Values top 
-    // 0x00FF0000 = Objs top 
-    // 0xFF000000 = Yield 
+    // Program counter: Bits 0 to 7  (8 bits)
+    // Values top:      Bits 8 to 15 (8 bits)
+    // Objects top:     Bits 16 - 21 (6 bits)
+    // Vars top:        Bits 22, 23, 24, 25, 26, 27 (6 bits)
+    // Yield counter:   Bits 28 - 31 (4 bits)
+
+    public const uint ProgramCounterMask = 0b00000000_00000000_00000000_11111111;
+    public const uint ValuesMask         = 0b00000000_00000000_11111111_00000000;
+    public const uint ObjsMask           = 0b00000000_00111111_00000000_00000000;
+    public const uint VarsMask           = 0b00001111_11000000_00000000_00000000;
+    public const uint YieldCounterMask   = 0b11110000_00000000_00000000_00000000;
+
+    public const uint NotProgramCounterMask = ~ProgramCounterMask;
+    public const uint NotValuesMask         = ~ValuesMask;
+    public const uint NotObjsMask           = ~ObjsMask;
+    public const uint NotVarsMask           = ~VarsMask;
+    public const uint NotYieldCounterMask   = ~YieldCounterMask;
+
+    public const int ProgramCounterShift = 0;
+    public const int ValuesShift         = 8;
+    public const int ObjsShift           = 16;
+    public const int VarsShift           = 22;
+    public const int YieldCounterShift   = 28;
     
     readonly uint item0;
     readonly uint item1;
@@ -86,20 +105,44 @@ readonly struct Tops
 
     public int PC
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
-        get => (int)(current & 0x000000ff);
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => (int)((current & ProgramCounterMask) >> ProgramCounterShift);
     }
 
     public bool IsSingleton
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
-        get => (current & 0xff000000) == 0;
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => YieldsInFrame == 0;
     }
 
     public bool HasYielded
     {
         [MethodImpl(Optimisations.InliningOnly)] 
-        get => (current & 0xff000000) != 0;
+        get => YieldsInFrame > 0;
+    } 
+
+    public int YieldsInFrame
+    {
+        [MethodImpl(Optimisations.InliningOnly)] 
+        get => (int)((current & YieldCounterMask) >> YieldCounterShift);
+    } 
+
+    public int ValuesCount
+    {
+        [MethodImpl(Optimisations.InliningOnly)] 
+        get => (int)((current & ValuesMask) >> ValuesShift);
+    } 
+
+    public int ObjsCount
+    {
+        [MethodImpl(Optimisations.InliningOnly)] 
+        get => (int)((current & ObjsMask) >> ObjsShift);
+    } 
+
+    public int VarsCount
+    {
+        [MethodImpl(Optimisations.InliningOnly)] 
+        get => (int)((current & VarsMask) >> VarsShift);
     } 
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -107,9 +150,9 @@ readonly struct Tops
     {
         unchecked
         {
-            var c = current + 1;
+            var c = current + (1 << ProgramCounterShift);
             CurrentRef = c;
-            return (int)(c & 0x000000ff);
+            return (int)(c & ProgramCounterMask);
         }
     }
 
@@ -118,7 +161,7 @@ readonly struct Tops
     {
         unchecked
         {
-            var     c = current + 0x01000000;
+            var     c = current + (1 << YieldCounterShift);
             CurrentRef = c;
         }
     }
@@ -128,7 +171,7 @@ readonly struct Tops
     {
         unchecked
         {
-            var     c = current - 0x01000000;
+            var     c = current - (1 << YieldCounterShift);
             CurrentRef = c;
         }
     }
@@ -136,7 +179,7 @@ readonly struct Tops
     [MethodImpl(Optimisations.InliningOnly)]
     public void ClearYields()
     {
-        var     c = current & 0x00FFFFFF;
+        var     c = current & NotYieldCounterMask;
         CurrentRef = c;
     }
  
@@ -151,25 +194,50 @@ readonly struct Tops
     [MethodImpl(Optimisations.Agro)]
     public bool PopFrame()
     {
-        if (count <= 0) return false;
-        
-        // Clear the top entry
-        TopRef = 0;
-        
-        // Make the stack 1 quieter
-        ref var c = ref Unsafe.AsRef(in count);
-        c--;
+        switch (count)
+        {
+            case 0:
+                return false;
 
-        // Load the previous frame's state
-        var top = Top;
+            case 1:
+            {
+                // Clear the top entry
+                TopRef = 0;
         
-        // Reload the current state cache
-        CurrentRef = top;
+                // Make the stack 1 quieter
+                ref var c = ref Unsafe.AsRef(in count);
+                c = 0;
+
+                // Reload the current state cache
+                CurrentRef = 0;
         
-        // Make sure we remember the start of this frame
-        BeginRef = top;
+                // Make sure we remember the start of this frame
+                BeginRef = 0;
         
-        return true;
+                return true;
+            }
+
+            default:
+            {
+                // Clear the top entry
+                TopRef = 0;
+
+                // Make the stack 1 quieter
+                ref var c = ref Unsafe.AsRef(in count);
+                c--;
+
+                // Load the previous frame's state
+                var top = Top;
+
+                // Reload the current state cache
+                CurrentRef = top;
+
+                // Make sure we remember the start of this frame
+                BeginRef = top;
+
+                return true;
+            }
+        }
     }
     
     [MethodImpl(Optimisations.Agro)]
@@ -178,11 +246,12 @@ readonly struct Tops
         if (count >= Capacity) return false;
 
         // The new top state will be the current state with the yields reset
-        var newState = current & 0x00FFFFFF;
+        var newState = current & NotYieldCounterMask;
         
         // The state we're about to save (before pushing a new one) will have its program-counter reset back to the
         // start of this frame, so when it's popped, we'll be back at the start (loops).
-        var newCurrent = ((current & 0xFFFFFF00) | (begin & 0x000000FF)) + (yieldAdd << 24);
+        var newCurrent = ((current & NotProgramCounterMask) | (begin & ProgramCounterMask)) +
+                         (yieldAdd << YieldCounterShift);
         
         // This takes the current state (with the program-counter reset back to the start of this frame) and
         // copies it to the current top entry at the top of the stack (before we push).

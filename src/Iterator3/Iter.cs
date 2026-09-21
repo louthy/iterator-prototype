@@ -25,7 +25,9 @@ public readonly struct Iter<A>
         head = default!;
         tail = this;
         var frame = tail.Frame();
+        Log.scope();
         var r = tail.fields.ops.Run(ref frame, out head);
+        Log.descope();
         return r;
     }
 

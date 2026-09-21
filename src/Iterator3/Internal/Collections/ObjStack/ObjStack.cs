@@ -162,40 +162,4 @@ readonly struct ObjStack
         top++;
         return true;
     }
-    
-    [MethodImpl(Optimisations.Default)]
-    public int YieldStruct<A>(ref StackFrame frame, in ushort ix)
-        where A : struct
-    {
-        // Not the natural place for this function: we want to not have
-        // overhead of a pop and push. So it's here because the ++ and --
-        // are basically free here.
-        
-        ref var top = ref Unsafe.AsRef(in Count);
-        top--;
-        ref var entry  = ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top));
-        ref var global = ref frame.globals.AtStruct<A>(ix);
-        global = entry;
-        frame.StartYieldScope();
-        top++;
-        return PullState.Continue;
-    }    
-    
-    [MethodImpl(Optimisations.Default)]
-    public int YieldManaged<A>(ref StackFrame frame, in ushort ix)
-        where A : class
-    {
-        // Not the natural place for this function: we want to not have
-        // overhead of a pop and push. So it's here because the ++ and --
-        // are basically free here.
-        
-        ref var top = ref Unsafe.AsRef(in Count);
-        top--;
-        ref var entry = ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top));
-        ref var global = ref frame.globals.AtManaged<A>(ix);
-        global = entry;
-        frame.StartYieldScope();
-        top++;
-        return PullState.Continue;
-    }    
 }

@@ -43,7 +43,7 @@ abstract class ValueStack<A>
     [MethodImpl(Optimisations.Default)]
     static ValueStack()
     {
-        if (Ty<A>.IsUnmanaged)
+        if (TyMan<A>.IsUnmanaged)
         {
             var type = typeof(UnmanagedValueStack<>).MakeGenericType(typeof(A));
             RuntimeHelpers.RunClassConstructor(type.TypeHandle);

@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
 namespace IteratorPrototype.Iterator3;
@@ -9,14 +11,22 @@ static partial class PullUnmanaged
     /// Pushes the return value to the stack
     /// </summary>
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool @return<A>(ref StackFrame frame, in A value) 
-        where A : unmanaged =>
-        frame.vars.PushUnmanaged(value);
+    public static bool @return<A>(ref StackFrame frame, in A value)
+        where A : unmanaged
+    {
+        var r = frame.vars.PushUnmanaged(value, false);
+        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        return r;
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool pop<A>(ref StackFrame frame, out A value)
-        where A : unmanaged =>
-        frame.vars.PopUnmanaged(out value);
+        where A : unmanaged
+    {
+        var r = frame.vars.PopUnmanaged(out value, false);
+        //Log.value($"pop {value} : {Ty<A>.Pretty}", ref frame);
+        return r;
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg1<A>(ref StackFrame frame, out A value)  

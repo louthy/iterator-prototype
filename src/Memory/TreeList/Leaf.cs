@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Memory;
 
@@ -49,7 +50,7 @@ readonly partial struct TreeList<A>
             if (items.Length > Pages<A>.ItemsPerPage)
             {
                 throw new ArgumentException(
-                    $"Too many initial items for a leaf-node of {typeof(A).Name}, limit is {Pages<A>.ItemsPerPage}");
+                    $"Too many initial items for a leaf-node of {Ty<A>.Pretty}, limit is {Pages<A>.ItemsPerPage}");
             }
 
             var p = PageAlloc();

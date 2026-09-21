@@ -11,7 +11,7 @@ static unsafe partial class GStruct<A>
     static int pull(ref StackFrame frame, in ushort ix)
     {
         ref var r = ref frame.globals.AtStruct<A>(ix);
-        return frame.vars.PushStruct(in r)
+        return frame.vars.PushStruct(in r, false)
                    ? PullState.Continue
                    : PullState.Void;
     }

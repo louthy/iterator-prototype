@@ -3,14 +3,18 @@ using IteratorPrototype.Iterator3;
 using IteratorPrototype.Iterator4;
 using IteratorPrototype.Memory;
 using IteratorPrototype.Traits;
+using IteratorPrototype.Types;
 using static LanguageExt.Prelude;
 using static IteratorPrototype.Iterator3.Iter;
 // ReSharper disable VirtualMemberCallInConstructor
 
+Console.WriteLine(Ty<ConsoleColor>.Pretty);
+    
+
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-//IterTests.Tests();
+IterTests.Tests();
 //IterTests4.Tests();
 
 /*
@@ -347,14 +351,20 @@ public class IterApplyTest : Bench<IterApplyTest>
 {
     readonly Iter<int> iterator;
     
-    const int X = 100;
-    const int Y = 10000;
+    const int X = 100000;
+    const int Y = 10;
     
     public IterApplyTest()
     {
         iterator = from<Arr, ArrState, int>(Arr.create(..X))
                  * from<Arr, ArrState, int>(Arr.create(..Y))
                  | select((int x, int y) => x + y);
+        
+        /*
+        iterator = from<Arr, ArrState, int>(Arr.create(..X))
+                 * from<Arr, ArrState, int>(Arr.create(..Y))
+                 | Iter.pure;        
+    */
     }
     
     protected override int Count => 

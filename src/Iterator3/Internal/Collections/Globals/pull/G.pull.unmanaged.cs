@@ -11,7 +11,7 @@ static unsafe partial class GUnmanaged<A>
     static int pull(ref StackFrame frame, in ushort ix)
     {
         ref var r = ref frame.globals.AtUnmanaged<A>(ix);
-        return frame.vars.PushUnmanaged(in r)
+        return frame.vars.PushUnmanaged(in r, false)
                    ? PullState.Continue
                    : PullState.Void;
     }

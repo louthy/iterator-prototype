@@ -7,61 +7,22 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static unsafe int iterator<A>(ref StackFrame frame) =>
-        PullGen<A>.iterator(ref frame);
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static int iteratorManaged<A>(ref StackFrame frame)
-        where A : class
+    public static int iterator<A>(ref StackFrame frame)
     {
-        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
-               PullManaged.@return(ref frame, in x)
-                   ? PullState.Continue
-                   : PullState.Void;
+        unsafe
+        {
+            return PullGen<A>.iterator(ref frame);
+        }
     }
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int iteratorUnmanaged<A>(ref StackFrame frame)
-        where A : unmanaged
+    public static int iterable<T, IS, A>(ref StackFrame frame)
+        where T : Tr.IterableImmutable<T, IS>
+        where IS : unmanaged
     {
-        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
-               PullUnmanaged.@return(ref frame, in x)
-                   ? PullState.Continue
-                   : PullState.Void;
+        unsafe
+        {
+            return PullGen<A>.iterable<T, IS>()(ref frame);            
+        }
     }
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static int iteratorStruct<A>(ref StackFrame frame)
-        where A : struct
-    {
-        ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
-               PullStruct.@return(ref frame, in x)
-                   ? PullState.Continue
-                   : PullState.Void;
-    }
-    
-
-    /*
-        Unoptimised reference
-
-    [MethodImpl(Optimisations.Default)]
-    public static int iterator<A>(ref StackFrame frame) =>
-
-        // Pop the iterator
-        arg1<Iter<A>>(ref frame, out var ta) &&
-        
-        // Read the next value
-        ta.TryGetValue(out var x, out var xs) &&
-
-        // Push the updated iterator
-        update1(ref frame, in xs) &&
-
-        // Return the value
-        @return(ref frame, in x) 
-
-            ? @continue(ref frame)
-            : empty(ref frame);*/    
 }

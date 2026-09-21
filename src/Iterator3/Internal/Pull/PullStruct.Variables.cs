@@ -1,4 +1,6 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
 namespace IteratorPrototype.Iterator3;
@@ -10,13 +12,21 @@ static partial class PullStruct
     /// </summary>
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool @return<A>(ref StackFrame frame, in A value) 
-        where A : struct =>
-        frame.vars.PushStruct(value);
+        where A : struct
+    {
+        var r = frame.vars.PushStruct(value, false);
+        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        return r;        
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool pop<A>(ref StackFrame frame, out A value)
-        where A : struct =>
-        frame.vars.PopStruct(out value);
+        where A : struct
+    {
+        var r = frame.vars.PopStruct(out value, false);
+        //Log.value($"pop {value} : {Ty<A>.Pretty}", ref frame);
+        return r;
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg1<A>(ref StackFrame frame, out A value)  

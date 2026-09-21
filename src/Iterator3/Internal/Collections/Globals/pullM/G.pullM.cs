@@ -10,7 +10,7 @@ static unsafe partial class G
     static int pullM<A>(ref StackFrame frame, in ushort ix)
     {
         var g = new Global<A>(in ix);
-        return frame.vars.PushUnmanaged(in g) 
+        return frame.vars.PushUnmanaged(in g, false) 
                    ? PullState.Continue 
                    : PullState.Void;
     }

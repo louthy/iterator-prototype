@@ -1,7 +1,8 @@
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
 using System.Runtime.CompilerServices;
-    
+using IteratorPrototype.Types;
+
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 abstract class GlobalsGen<A>
@@ -28,17 +29,9 @@ abstract class GlobalsGen<A>
         }
         else
         {
-            throw new Exception("We have a type {typeof(Ty).Name} that apparently isn't managed, unmanaged, or a value-type!");
+            throw new Exception($"We have a type {Ty<A>.Pretty} that apparently isn't managed, unmanaged, or a value-type!");
         }
     }
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static unsafe IterOp yield(in ushort index) => 
-        Instance.Yield(in index);
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static unsafe IterOp yieldConst(in ushort index) => 
-        Instance.YieldConst(in index);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe IterOp pull(in ushort index) => 
@@ -52,8 +45,6 @@ abstract class GlobalsGen<A>
     public static unsafe IterOp reset(in ushort index) => 
         Instance.Reset(in index);
 
-    public abstract unsafe IterOp Yield(in ushort index);
-    public abstract unsafe IterOp YieldConst(in ushort index);
     public abstract unsafe IterOp Pull(in ushort index);
     public abstract unsafe IterOp Push(in ushort index);
     public abstract unsafe IterOp Reset(in ushort index);
@@ -75,14 +66,6 @@ class ManagedGlobals<A> : GlobalsGen<A>
 {
     static ManagedGlobals() =>
         Instance = new ManagedGlobals<A>();
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp Yield(in ushort index) =>
-        GManaged<A>.yield(in index);
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp YieldConst(in ushort index) =>
-        GManaged<A>.yieldConst(in index);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>
@@ -140,14 +123,6 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
         Instance = new UnmanagedGlobals<A>();
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp Yield(in ushort index) =>
-        GUnmanaged<A>.yield(in index);
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp YieldConst(in ushort index) =>
-        GUnmanaged<A>.yieldConst(in index);
-
-    [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>
         GUnmanaged<A>.pull(in index);
 
@@ -201,14 +176,6 @@ class StructGlobals<A> : GlobalsGen<A>
 {
     static StructGlobals() =>
         Instance = new StructGlobals<A>();
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp Yield(in ushort index) =>
-        GStruct<A>.yield(in index);
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public override unsafe IterOp YieldConst(in ushort index) =>
-        GStruct<A>.yieldConst(in index);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public override unsafe IterOp Pull(in ushort index) =>

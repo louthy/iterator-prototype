@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
+using IteratorPrototype.Types;
 using LanguageExt.Traits;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
@@ -16,7 +17,8 @@ static partial class Pull
         ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
         ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
-        frame.vars.PushUnmanaged(in x);
+        frame.vars.PushUnmanaged(in x, false);
+        Log.value($"return: {x} : {Ty<A>.Pretty}", ref frame);
         return PullState.Continue;
     }
     
@@ -29,7 +31,8 @@ static partial class Pull
         ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
         ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
-        frame.vars.PushManaged(in x);
+        frame.vars.PushManaged(in x, false);
+        Log.value($"return: {x} : {Ty<A>.Pretty}", ref frame);
         return PullState.Continue;
     }
         
@@ -42,7 +45,8 @@ static partial class Pull
         ref var ta = ref PullManaged.arg1<K<T, A>>(ref frame);
         ref var ts = ref PullUnmanaged.arg2<IS>(ref frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
-        frame.vars.PushStruct(in x);
+        frame.vars.PushStruct(in x, false);
+        Log.value($"return: {x} : {Ty<A>.Pretty}", ref frame);
         return PullState.Continue;
     }
     

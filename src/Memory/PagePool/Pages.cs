@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Memory.Internal;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Memory;
 
@@ -91,7 +92,7 @@ static class Pages<A>
             >= 16   => 16,
             >= 8    => 8,
             >= 4    => 4,
-            _ => throw new InvalidOperationException($"The structure '{typeof(A).Name}' is too large for the "   +
+            _ => throw new InvalidOperationException($"The structure '{Ty<A>.Pretty}' is too large for the "    +
                                                      "Page-pooling system. Efficiency can't be guaranteed, so " +
                                                      "use other methods to manage large value-types")
         };

@@ -16,8 +16,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -30,8 +29,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b)   &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -44,8 +42,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)  &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -59,8 +56,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a)   &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -73,8 +69,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -87,8 +82,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)    &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -102,8 +96,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)  &&
-               PullManaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -116,8 +109,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)    &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -130,8 +122,7 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullManaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -146,8 +137,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -160,8 +150,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b)   &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -174,8 +163,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)  &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -188,8 +176,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a)   &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -202,8 +189,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -216,8 +202,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)    &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -230,8 +215,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)  &&
-               PullManaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -244,8 +228,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)    &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -258,8 +241,7 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullUnmanaged.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -274,8 +256,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -288,8 +269,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b)   &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -302,8 +282,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullManaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)  &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -317,8 +296,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullManaged.pop<A>(ref frame, out var a)   &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -331,8 +309,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
@@ -345,8 +322,7 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullUnmanaged.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a)    &&
+        return pop<A, B>(ref frame, out var a, out var b) &&
                PullStruct.@return(ref frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;

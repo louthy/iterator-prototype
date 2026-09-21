@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Memory.Internal;
+using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Memory;
 
@@ -103,7 +104,7 @@ static class Lines<A>
             >= 6  => 6,
             >= 4  => 4,
             >= 2  => 2,
-            _ => throw new InvalidOperationException($"The structure '{typeof(A).Name}' is too large for the "   +
+            _ => throw new InvalidOperationException($"The structure '{Ty<A>.Pretty}' is too large for the "    +
                                                      "Line-pooling system. Efficiency can't be guaranteed, so " +
                                                      "use other methods to manage large value-types")
         };

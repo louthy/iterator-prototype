@@ -18,7 +18,7 @@ static partial class Pull
     [MethodImpl(Optimisations.InliningOnly)]
     public static int pureV<A>(ref StackFrame frame) =>
         arg1<A>(ref frame, out var x) &&
-        frame.vars.Push(in x)
+        frame.vars.Push(in x, false)
             ? PullState.Pure
             : PullState.Void;
 
