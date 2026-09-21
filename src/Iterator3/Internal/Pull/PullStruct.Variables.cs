@@ -15,7 +15,7 @@ static partial class PullStruct
         where A : struct
     {
         var r = frame.vars.PushStruct(value, false);
-        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
         return r;        
     }
 

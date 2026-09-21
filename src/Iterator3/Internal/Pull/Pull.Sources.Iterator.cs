@@ -11,7 +11,7 @@ static partial class Pull
         where A : class
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
+        return Iter<A>.TryRef(ref ta, out var x) &&
                PullManaged.@return(ref frame, in x)
                    ? PullState.Continue
                    : PullState.Void;
@@ -22,7 +22,7 @@ static partial class Pull
         where A : unmanaged
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
+        return Iter<A>.TryRef(ref ta, out var x) &&
                PullUnmanaged.@return(ref frame, in x)
                    ? PullState.Continue
                    : PullState.Void;
@@ -33,7 +33,7 @@ static partial class Pull
         where A : struct
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(ref frame);
-        return ta.TryGetValue(out var x, out ta) &&
+        return Iter<A>.TryRef(ref ta, out var x) &&
                PullStruct.@return(ref frame, in x)
                    ? PullState.Continue
                    : PullState.Void;

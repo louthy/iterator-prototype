@@ -16,7 +16,7 @@ static partial class Pull
     public static bool @return<A>(ref StackFrame frame, in A value)
     {
         var r = frame.vars.Push(value, false);
-        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
         return r;        
     }
 

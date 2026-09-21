@@ -22,12 +22,21 @@ public readonly struct Iter<A>
     [MethodImpl(Optimisations.Max)]
     public bool TryGetValue(out A head, out Iter<A> tail)
     {
-        head = default!;
         tail = this;
         var frame = tail.Frame();
-        Log.scope();
+        //Log.scope();
         var r = tail.fields.ops.Run(ref frame, out head);
-        Log.descope();
+        //Log.descope();
+        return r;
+    }
+
+    [MethodImpl(Optimisations.Max)]
+    internal static bool TryRef(ref Iter<A> tail, out A head)
+    {
+        var frame = tail.Frame();
+        //Log.scope();
+        var r     = tail.fields.ops.Run(ref frame, out head);
+        //Log.descope();
         return r;
     }
 

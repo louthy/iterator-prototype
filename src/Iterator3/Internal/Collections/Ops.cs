@@ -167,13 +167,13 @@ readonly unsafe struct Ops
         [MethodImpl(Optimisations.InliningOnly)]
         static bool VoidResetToContinuationPoint(ref StackFrame frame)
         {
-            Log.function("start-void", ref frame);
+            //Log.function("start-void", ref frame);
             
             // Remove the current scope.
             // This is the most basic process of leaving a scope with no value: we must step up one scope level.
             frame.VoidScope();
             
-            Log.function("popped the voided scope", ref frame);
+            //Log.function("popped the voided scope", ref frame);
             
             // Leave if the iterator is now empty
             if (frame.tops.Count == 0)
@@ -186,14 +186,14 @@ readonly unsafe struct Ops
             // that generates values (because it might have more to yield).
             while (frame.tops.IsSingleton && frame.VoidScope())
             {
-                Log.stack(ref frame);
+                //Log.stack(ref frame);
                 // Empty
             }
             
             // Leave if the iterator is now empty
             if (frame.tops.Count == 0)
             {
-                Log.terminator("end-void (empty)", ref frame);
+                //Log.terminator("end-void (empty)", ref frame);
                 return false;
             }
             
@@ -205,7 +205,7 @@ readonly unsafe struct Ops
                 frame.tops.DecrementYields();
             }
 
-            Log.warn("end-void (more to go)", ref frame);
+            //Log.warn("end-void (more to go)", ref frame);
             
             // If there are scopes remaining, then there are more values to yield...
             return frame.tops.Count > 0;
@@ -217,7 +217,7 @@ readonly unsafe struct Ops
             ref var tops = ref frame.tops;
             ref var vars = ref frame.vars;
             
-            Log.function("start-pure", ref frame);
+            //Log.function("start-pure", ref frame);
             
             // Just go back to the start of the current frame if we have already yielded a value.
             // We get here if a value has already been returned to the caller, and then there were
@@ -225,7 +225,7 @@ readonly unsafe struct Ops
             if(tops.HasYielded)
             {
                 frame.ResetFrame(out head);
-                Log.function("frame-reset", ref frame);
+                //Log.function("frame-reset", ref frame);
                 return true;
             }
 
@@ -243,7 +243,7 @@ readonly unsafe struct Ops
             // or we have a yielding frame.
             while (frame.VoidScope() && !tops.HasYielded)
             {
-                Log.stack(ref frame);
+                //Log.stack(ref frame);
                 // Empty
             }
             
@@ -254,7 +254,7 @@ readonly unsafe struct Ops
                 tops.DecrementYields();
             }
 
-            Log.terminator("end-pure", ref frame);
+            //Log.terminator("end-pure", ref frame);
             
             return true;
         }

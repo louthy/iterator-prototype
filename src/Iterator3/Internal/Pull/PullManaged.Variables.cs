@@ -15,7 +15,7 @@ static partial class PullManaged
         where A : class
     {
         var r = frame.vars.PushManaged(value, false);
-        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
         return r;        
     }
 
@@ -24,7 +24,7 @@ static partial class PullManaged
         where A : class
     {
         var r = frame.vars.PopManaged(out value, false);
-        Log.value($"pop {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.value($"pop {value} : {Ty<A>.Pretty}", ref frame);
         return r;
     }
 

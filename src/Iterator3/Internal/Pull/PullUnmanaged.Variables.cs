@@ -15,7 +15,7 @@ static partial class PullUnmanaged
         where A : unmanaged
     {
         var r = frame.vars.PushUnmanaged(value, false);
-        Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
         return r;
     }
 

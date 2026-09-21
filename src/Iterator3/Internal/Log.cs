@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3.Internal;
