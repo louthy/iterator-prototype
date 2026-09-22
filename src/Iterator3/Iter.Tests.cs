@@ -10,8 +10,6 @@ public static class IterTests
     {
         Log.enable();
         
-        Basic4();
-        
         Basic1();
         Basic2();
         Basic3();
@@ -144,22 +142,6 @@ public static class IterTests
         
         Console.WriteLine();
     }
-    
-    /*
-    public static void Basic3()
-    {
-        var iter = singleton(1)
-                 | singleton("Hello")
-                 | pair<int, string>()
-                 | bimap<int, string, string>((x, y) => $"'{x}' '{y}'");
-        
-        while(iter.TryGetValue(out var head, out iter))
-        {
-            Console.Write($"{head} ");
-        }
-        
-        Console.WriteLine();
-    }*/
 
     public static void Test0()
     {

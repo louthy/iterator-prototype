@@ -13,6 +13,13 @@ public static class IterExtensions
         
         [MethodImpl(Optimisations.Default)]
         internal StackFrame Next<B>(out Iter<B> next) =>
-            Iter<A>.Next(in self, out next);        
+            Iter<A>.Next(in self, out next);
+    }
+    
+    extension<A>(ref Iter<A> self)
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        internal bool TryGetValue(out A head) =>
+            Iter<A>.TryRef(ref self, out head);
     }
 }

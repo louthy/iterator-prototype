@@ -1,4 +1,6 @@
-﻿using IteratorPrototype;
+﻿// ReSharper disable VirtualMemberCallInConstructor
+
+using IteratorPrototype;
 using IteratorPrototype.Iterator3;
 using IteratorPrototype.Iterator4;
 using IteratorPrototype.Memory;
@@ -6,7 +8,6 @@ using IteratorPrototype.Traits;
 using IteratorPrototype.Types;
 using static LanguageExt.Prelude;
 using static IteratorPrototype.Iterator3.Iter;
-// ReSharper disable VirtualMemberCallInConstructor
 
 Console.WriteLine(Ty<ConsoleColor>.Pretty);
     
@@ -14,7 +15,7 @@ Console.WriteLine(Ty<ConsoleColor>.Pretty);
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-IterTests.Tests();
+//IterTests.Tests();
 //IterTests4.Tests();
 
 /*
@@ -28,8 +29,8 @@ Bench<WeakIteratorVersion>.Mark();
 Bench<Iterator2Version>.Mark();
 Bench<Iterator2ForEachVersion>.Mark();
 */
-//Bench<Iterator3Version>.Mark();
-Bench<IterApplyTest>.Mark();
+Bench<Iterator3Version>.Mark();
+//Bench<IterApplyTest>.Mark();
 //Bench<IterBindTest>.Mark();
 //Bench<IterBoxingTest>.Mark();
 
@@ -333,7 +334,7 @@ public class Iterator3Version : Bench<Iterator3Version>
     {
         var iter  = iterator;
         var total = 0;
-        while (iter.TryGetValue(out var x, out iter))
+        while (iter.TryGetValue(out var x))
         {
             total += x;
         }
@@ -359,12 +360,6 @@ public class IterApplyTest : Bench<IterApplyTest>
         iterator = from<Arr, ArrState, int>(Arr.create(..X))
                  * from<Arr, ArrState, int>(Arr.create(..Y))
                  | select((int x, int y) => x + y);
-        
-        /*
-        iterator = from<Arr, ArrState, int>(Arr.create(..X))
-                 * from<Arr, ArrState, int>(Arr.create(..Y))
-                 | Iter.pure;        
-    */
     }
     
     protected override int Count => 
@@ -377,7 +372,7 @@ public class IterApplyTest : Bench<IterApplyTest>
     {
         var iter  = iterator;
         var total = 0;
-        while (iter.TryGetValue(out var x, out iter))
+        while (iter.TryGetValue(out var x))
         {
             total += x;
         }
