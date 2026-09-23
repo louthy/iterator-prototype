@@ -38,10 +38,10 @@ static class Log
         return PullState.Continue;
     }
 
-    public static void stackInfo(ref StackFrame frame) =>
+    public static void stackInfo(in StackFrame frame) =>
         Console.Write(frame.ToString());
 
-    public static void stackLine(ref StackFrame frame) =>
+    public static void stackLine(in StackFrame frame) =>
         Console.WriteLine(frame.ToString());
 
     static int write(string msg, ConsoleColor colour)
@@ -56,7 +56,7 @@ static class Log
         return PullState.Continue;
     }
 
-    static int write(string msg, ConsoleColor colour, ref StackFrame frame)
+    static int write(string msg, ConsoleColor colour, in StackFrame frame)
     {
         if (!enabled) return PullState.Continue;
         var c = Console.ForegroundColor;
@@ -65,53 +65,53 @@ static class Log
         Console.Write(msg);
         Console.Write(' ');
         Console.ForegroundColor = ConsoleColor.Gray;
-        stackInfo(ref frame);
+        stackInfo(in frame);
         Console.ForegroundColor = c;
         Console.WriteLine();
         return PullState.Continue;
     }
 
-    public static void stack(ref StackFrame frame) =>
-        write("", ConsoleColor.DarkBlue, ref frame);
+    public static void stack(in StackFrame frame) =>
+        write("", ConsoleColor.DarkBlue, in frame);
 
-    public static int function(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Green, ref frame);
+    public static int function(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Green, in frame);
 
     public static int function(string message) =>
         write(message, ConsoleColor.Green);
 
-    public static int coroutine(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Cyan, ref frame);
+    public static int coroutine(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Cyan, in frame);
 
     public static int coroutine(string message) =>
         write(message, ConsoleColor.Cyan);
 
-    public static int value(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Magenta, ref frame);
+    public static int value(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Magenta, in frame);
 
     public static int value(string message) =>
         write(message, ConsoleColor.Magenta);
 
-    public static int terminator(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Blue, ref frame);
+    public static int terminator(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Blue, in frame);
 
     public static int terminator(string message) =>
         write(message, ConsoleColor.Blue);
 
-    public static int msg(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.White, ref frame);
+    public static int msg(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.White, in frame);
 
     public static int msg(string message) =>
         write(message, ConsoleColor.White);
 
-    public static int warn(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Yellow, ref frame);
+    public static int warn(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Yellow, in frame);
 
     public static int warn(string message) =>
         write(message, ConsoleColor.Yellow);
 
-    public static int err(string message, ref StackFrame frame) =>
-        write(message, ConsoleColor.Red, ref frame);
+    public static int err(string message, in StackFrame frame) =>
+        write(message, ConsoleColor.Red, in frame);
 
     public static int err(string message) =>
         write(message, ConsoleColor.Red);
@@ -130,7 +130,7 @@ static class Log
     }
     
     [MethodImpl(Optimisations.Default)]
-    public static string stackInfo(ref StackFrame frame)
+    public static string stackInfo(in StackFrame frame)
     {
         return default!;
     }
@@ -142,7 +142,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    static int write(string msg, ConsoleColor colour, ref StackFrame frame)
+    static int write(string msg, ConsoleColor colour, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -154,7 +154,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int function(string message, ref StackFrame frame)
+    public static int function(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -166,7 +166,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int coroutine(string message, ref StackFrame frame)
+    public static int coroutine(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -178,7 +178,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int value(string message, ref StackFrame frame)
+    public static int value(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -190,7 +190,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int terminator(string message, ref StackFrame frame)
+    public static int terminator(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -202,7 +202,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int msg(string message, ref StackFrame frame)
+    public static int msg(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -214,7 +214,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int warn(string message, ref StackFrame frame)
+    public static int warn(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }
@@ -226,7 +226,7 @@ static class Log
     }
 
     [MethodImpl(Optimisations.Default)]
-    public static int err(string message, ref StackFrame frame)
+    public static int err(string message, in StackFrame frame)
     {
         return PullState.Continue;
     }

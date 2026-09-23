@@ -11,13 +11,13 @@ public readonly struct Global<A>(in ushort index)
     public readonly ushort Index = index;
 
     [MethodImpl(Optimisations.Default)]
-    internal ref A Value(ref StackFrame frame) =>
+    internal ref A Value(in StackFrame frame) =>
         ref frame.globals.At<A>(Index);
 
     [MethodImpl(Optimisations.Default)]
-    internal bool Update(ref StackFrame frame, in A value)
+    internal bool Update(in StackFrame frame, in A value)
     {
-        Value(ref frame) = value;
+        Value(in frame) = value;
         return true;
     }
 }

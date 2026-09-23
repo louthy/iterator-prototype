@@ -7,70 +7,70 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Push
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool pure(ref StackFrame frame) =>
+    public static bool pure(in StackFrame frame) =>
 
         // Push the yield operation
-        fun(ref frame, &Pull.pure);
+        fun(in frame, &Pull.pure);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool pure<A>(ref StackFrame frame, in A value) =>
+    public static bool pure<A>(in StackFrame frame, in A value) =>
         
         // Push the constant value
-        arg1(ref frame, in value) &&
+        arg1(in frame, in value) &&
         
         // Push the yield operation
-        fun(ref frame, &Pull.pureV<A>);
+        fun(in frame, &Pull.pureV<A>);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool yield<A>(ref StackFrame frame) =>
+    public static bool yield<A>(in StackFrame frame) =>
         
         // Start a new co-routine with what's at the top of the stack as an input argument
-        fun(ref frame, VarsGen<A>.yield);
+        fun(in frame, VarsGen<A>.yield);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool yield<A>(ref StackFrame frame, in A value) =>
+    public static bool yield<A>(in StackFrame frame, in A value) =>
         
         // Create a global-var to store the constant value
-        frame.globals.Add(in value, out var gix) &&
+        frame.globals.AddMutable(in value, out var gix) &&
         
         // Push the constant value to the top of the stack
-        fun(ref frame, GlobalsGen<A>.pull(gix)) &&
+        fun(in frame, GlobalsGen<A>.pull(gix)) &&
         
         // Start a new co-routine with what's at the top of the stack as an input argument
-        fun(ref frame, VarsGen<A>.yield);
+        fun(in frame, VarsGen<A>.yield);
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool fun(ref StackFrame frame, in IterOp f) =>
+    public static bool fun(in StackFrame frame, in IterOp f) =>
         frame.Add(f);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool coroutine(ref StackFrame frame) =>
+    public static bool coroutine(in StackFrame frame) =>
         
         // Push the no-arg coroutine operation
-        fun(ref frame, &Pull.coroutine);
+        fun(in frame, &Pull.coroutine);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool tuple<A, B>(ref StackFrame frame) => 
+    public static bool tuple<A, B>(in StackFrame frame) => 
         
         // Push tuple operation
-        fun(ref frame, &Pull.tuple<A, B>);
+        fun(in frame, &Pull.tuple<A, B>);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool tuple<A, B, C>(ref StackFrame frame) => 
+    public static bool tuple<A, B, C>(in StackFrame frame) => 
         
         // Push tuple operation
-        fun(ref frame, &Pull.tuple<A, B, C>);    
+        fun(in frame, &Pull.tuple<A, B, C>);    
 
     [MethodImpl(Optimisations.InliningOnly)]
-    internal static bool elements<A, B>(ref StackFrame frame) => 
+    internal static bool elements<A, B>(in StackFrame frame) => 
         
         // Push elements operation
-        fun(ref frame, &Pull.elements<A, B>);
+        fun(in frame, &Pull.elements<A, B>);
         
     [MethodImpl(Optimisations.InliningOnly)]
-    internal static bool elements<A, B, C>(ref StackFrame frame) => 
+    internal static bool elements<A, B, C>(in StackFrame frame) => 
         
         // Push elements operation
-        fun(ref frame, &Pull.elements<A, B, C>);
+        fun(in frame, &Pull.elements<A, B, C>);
 }

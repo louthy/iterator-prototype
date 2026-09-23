@@ -36,24 +36,6 @@ public readonly struct ObjStack2
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Object00), index << 1);
     }
 
-    [MethodImpl(Optimisations.InliningOnly)]
-    public bool Add(in ObjStack2 rhs)
-    {
-        if (rhs.Count + Count > Capacity) return false;
-        
-        var     sizeOfPtr = Unsafe.SizeOf<nint>() << 1;
-        var     srcSize   = (uint)(rhs.Count * sizeOfPtr);
-        
-        ref var dobj      = ref Unsafe.AsRef(in Object00);
-        ref var dest      = ref Unsafe.AddByteOffset(ref Unsafe.As<object, byte>(ref dobj), rhs.Count * sizeOfPtr);
-        
-        ref var sobj      = ref Unsafe.AsRef(in rhs.Object00);
-        ref var src       = ref Unsafe.As<object, byte>(ref sobj);
-
-        Unsafe.CopyBlock(ref dest, ref src, srcSize);
-        return true;
-    }
-
     [MethodImpl(Optimisations.Default)]
     public bool PopToTop(int newTop)
     {
@@ -150,22 +132,22 @@ public readonly struct ObjStack2
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool Push<A>(in A value)
+    public bool PushMutable<A>(in A value)
         where A : class =>
-        Push(in value, in value, out _);
+        PushMutable(in value, in value, out _);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool Push<A>(in A value, out ushort ix)
+    public bool PushMutable<A>(in A value, out ushort ix)
         where A : class =>
-        Push(in value, in value, out ix);
+        PushMutable(in value, in value, out ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool Push<A>(in A variable, in A declared)
+    public bool PushMutable<A>(in A variable, in A declared)
         where A : class =>
-        Push(in variable, in declared, out _);
+        PushMutable(in variable, in declared, out _);
 
     [MethodImpl(Optimisations.Default)]
-    public bool Push<A>(in A variable, in A declared, out ushort ix)
+    public bool PushMutable<A>(in A variable, in A declared, out ushort ix)
         where A : class
     {
         if (Count == Capacity)
@@ -178,9 +160,35 @@ public readonly struct ObjStack2
         var     count2 = Count << 1;
         ref var entry0 = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), count2);
         ref var entry1 = ref Unsafe.Add(ref entry0, 1);
-        
+
         entry0 = variable;
         entry1 = declared;
+        
+        ref var top = ref Unsafe.AsRef(in Count);
+        top++;
+
+        return true;
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool PushConst<A>(in A variable)
+        where A : class =>
+        PushConst(in variable, out _);
+
+    [MethodImpl(Optimisations.Default)]
+    public bool PushConst<A>(in A variable, out ushort ix)
+        where A : class
+    {
+        if (Count == Capacity)
+        {
+            ix = ushort.MinValue;
+            return false;
+        }
+        ix = (ushort)Count;
+
+        var     count2 = Count << 1;
+        ref var entry0 = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), count2);
+        entry0 = variable;
         
         ref var top = ref Unsafe.AsRef(in Count);
         top++;

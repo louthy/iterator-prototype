@@ -307,10 +307,10 @@ readonly partial struct Vars
         values.Count;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int yieldManaged<A>(ref StackFrame frame)
+    public static int yieldManaged<A>(in StackFrame frame)
         where A : class
     {
-        //Log.coroutine($"start-yield [managed : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", ref frame);
+        //Log.coroutine($"start-yield [managed : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
         
         // Set the flag for stating this is a coroutine argument
         ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in frame.vars.flag0), frame.vars.top - 1);
@@ -329,16 +329,16 @@ readonly partial struct Vars
         // Virtually re-push the top value (it will become the argument to the co-routine).
         topRef = topValue;
 
-        //Log.coroutine("end-yield", ref frame);
+        //Log.coroutine("end-yield", in frame);
         
         return PullState.Continue;        
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int yieldUnmanaged<A>(ref StackFrame frame)
+    public static int yieldUnmanaged<A>(in StackFrame frame)
         where A : unmanaged
     {
-        //Log.coroutine($"start-yield [unmanaged : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", ref frame);
+        //Log.coroutine($"start-yield [unmanaged : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
         
         // Set the flag for stating this is a coroutine argument
         ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in frame.vars.flag0), frame.vars.top - 1);
@@ -358,13 +358,13 @@ readonly partial struct Vars
         // Virtually re-push the top value (it will become the argument to the co-routine).
         topRef = topValue;
 
-        //Log.coroutine("end-yield", ref frame);
+        //Log.coroutine("end-yield", in frame);
         
         return PullState.Continue;        
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int yieldStruct<A>(ref StackFrame frame)
+    public static int yieldStruct<A>(in StackFrame frame)
         where A : struct =>
-        yieldManaged<Box<A>>(ref frame);
+        yieldManaged<Box<A>>(in frame);
 }

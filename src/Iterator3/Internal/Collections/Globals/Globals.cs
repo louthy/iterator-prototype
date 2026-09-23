@@ -146,34 +146,71 @@ readonly struct Globals
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddStruct<A>(in A value)
+    public bool AddMutableStruct<A>(in A value)
         where A : struct =>
-        AddStruct(in value, out _);
+        AddMutableStruct(in value, out _);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddStruct<A>(in A value, out ushort index)
+    public bool AddMutableStruct<A>(in A value, out ushort index)
         where A : struct =>
-        objs.Push(Box.alloc(in value), Box.alloc(in value), out index);
+        objs.PushMutable(Box.alloc(in value), Box.alloc(in value), out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddManaged<A>(in A value)
+    public bool AddMutableManaged<A>(in A value)
         where A : class =>
-        AddManaged(in value, out _);
+        AddMutableManaged(in value, out _);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddManaged<A>(in A value, out ushort index)
+    public bool AddMutableManaged<A>(in A value, out ushort index)
         where A : class =>
-        objs.Push(value, out index);
+        objs.PushMutable(value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddUnmanaged<A>(in A value)
+    public bool AddMutableUnmanaged<A>(in A value)
         where A : unmanaged =>
-        values.Add(in value);
+        values.AddMutable(in value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AddUnmanaged<A>(in A value, out ushort index)
+    public bool AddMutableUnmanaged<A>(in A value, out ushort index)
         where A : unmanaged =>
-        values.Add(in value, out index);
+        values.AddMutable(in value, out index);
+    
+    
+    
+        
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstStruct<A>(in A value)
+        where A : struct =>
+        AddMutableStruct(in value, out _);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstStruct<A>(in A value, out ushort index)
+        where A : struct =>
+        objs.PushConst(Box.alloc(in value), out index);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstManaged<A>(in A value)
+        where A : class =>
+        AddConstManaged(in value, out _);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstManaged<A>(in A value, out ushort index)
+        where A : class =>
+        objs.PushConst(value, out index);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstUnmanaged<A>(in A value)
+        where A : unmanaged =>
+        values.AddConst(in value);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConstUnmanaged<A>(in A value, out ushort index)
+        where A : unmanaged =>
+        values.AddConst(in value, out index);
+
+    
+    
+    
 
     [MethodImpl(Optimisations.Default)]
     public bool AtEndStruct<A>(in ushort ix, out Global<A> global)

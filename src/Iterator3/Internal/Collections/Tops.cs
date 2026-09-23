@@ -85,6 +85,10 @@ readonly struct Tops
         get => ref Unsafe.AsRef(in begin);
     }
 
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void NextOp() =>
+        Unsafe.AsRef(in current) = current + 1;
+
     /// <summary>
     /// This is the current state of the frame
     /// </summary>

@@ -8,7 +8,7 @@ static unsafe partial class GManaged<A>
     where A : class
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push(ref StackFrame frame, in ushort ix)
+    static int push(in StackFrame frame, in ushort ix)
     {
         // Get a reference to the global
         ref var r = ref frame.globals.AtManaged<A>(ix);
@@ -65,137 +65,137 @@ static unsafe partial class GManaged<A>
         };       
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push0(ref StackFrame frame) => 
-        push(ref frame, 0);
+    static int push0(in StackFrame frame) => 
+        push(in frame, 0);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int push1(ref StackFrame frame) => 
-        push(ref frame, 1);
+    static int push1(in StackFrame frame) => 
+        push(in frame, 1);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int push2(ref StackFrame frame) => 
-        push(ref frame, 2);
+    static int push2(in StackFrame frame) => 
+        push(in frame, 2);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push3(ref StackFrame frame) => 
-        push(ref frame, 3);
+    static int push3(in StackFrame frame) => 
+        push(in frame, 3);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push4(ref StackFrame frame) => 
-        push(ref frame, 4);
+    static int push4(in StackFrame frame) => 
+        push(in frame, 4);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int push5(ref StackFrame frame) => 
-        push(ref frame, 5);
+    static int push5(in StackFrame frame) => 
+        push(in frame, 5);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int push6(ref StackFrame frame) => 
-        push(ref frame, 6);
+    static int push6(in StackFrame frame) => 
+        push(in frame, 6);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push7(ref StackFrame frame) => 
-        push(ref frame, 7);
+    static int push7(in StackFrame frame) => 
+        push(in frame, 7);
     
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push8(ref StackFrame frame) => 
-        push(ref frame, 8);
+    static int push8(in StackFrame frame) => 
+        push(in frame, 8);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push9(ref StackFrame frame) => 
-        push(ref frame, 9);
+    static int push9(in StackFrame frame) => 
+        push(in frame, 9);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push10(ref StackFrame frame) => 
-        push(ref frame, 10);
+    static int push10(in StackFrame frame) => 
+        push(in frame, 10);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push11(ref StackFrame frame) => 
-        push(ref frame, 11);
+    static int push11(in StackFrame frame) => 
+        push(in frame, 11);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push12(ref StackFrame frame) => 
-        push(ref frame, 12);
+    static int push12(in StackFrame frame) => 
+        push(in frame, 12);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push13(ref StackFrame frame) => 
-        push(ref frame, 13);
+    static int push13(in StackFrame frame) => 
+        push(in frame, 13);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push14(ref StackFrame frame) => 
-        push(ref frame, 14);
+    static int push14(in StackFrame frame) => 
+        push(in frame, 14);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push15(ref StackFrame frame) => 
-        push(ref frame, 15);
+    static int push15(in StackFrame frame) => 
+        push(in frame, 15);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push16(ref StackFrame frame) => 
-        push(ref frame, 16);
+    static int push16(in StackFrame frame) => 
+        push(in frame, 16);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push17(ref StackFrame frame) => 
-        push(ref frame, 17);
+    static int push17(in StackFrame frame) => 
+        push(in frame, 17);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push18(ref StackFrame frame) => 
-        push(ref frame, 18);
+    static int push18(in StackFrame frame) => 
+        push(in frame, 18);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push19(ref StackFrame frame) => 
-        push(ref frame, 19);
+    static int push19(in StackFrame frame) => 
+        push(in frame, 19);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push20(ref StackFrame frame) => 
-        push(ref frame, 20);
+    static int push20(in StackFrame frame) => 
+        push(in frame, 20);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push21(ref StackFrame frame) => 
-        push(ref frame, 21);
+    static int push21(in StackFrame frame) => 
+        push(in frame, 21);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push22(ref StackFrame frame) => 
-        push(ref frame, 22);
+    static int push22(in StackFrame frame) => 
+        push(in frame, 22);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push23(ref StackFrame frame) => 
-        push(ref frame, 23);
+    static int push23(in StackFrame frame) => 
+        push(in frame, 23);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push24(ref StackFrame frame) => 
-        push(ref frame, 24);
+    static int push24(in StackFrame frame) => 
+        push(in frame, 24);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push25(ref StackFrame frame) => 
-        push(ref frame, 25);
+    static int push25(in StackFrame frame) => 
+        push(in frame, 25);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push26(ref StackFrame frame) => 
-        push(ref frame, 26);
+    static int push26(in StackFrame frame) => 
+        push(in frame, 26);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push27(ref StackFrame frame) => 
-        push(ref frame, 27);
+    static int push27(in StackFrame frame) => 
+        push(in frame, 27);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push28(ref StackFrame frame) => 
-        push(ref frame, 28);
+    static int push28(in StackFrame frame) => 
+        push(in frame, 28);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push29(ref StackFrame frame) => 
-        push(ref frame, 29);
+    static int push29(in StackFrame frame) => 
+        push(in frame, 29);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push30(ref StackFrame frame) => 
-        push(ref frame, 30);
+    static int push30(in StackFrame frame) => 
+        push(in frame, 30);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push31(ref StackFrame frame) => 
-        push(ref frame, 31);
+    static int push31(in StackFrame frame) => 
+        push(in frame, 31);
 }

@@ -8,7 +8,7 @@ static unsafe partial class GManaged<A>
     where A : class
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset(ref StackFrame frame, in ushort ix) =>
+    static int reset(in StackFrame frame, in ushort ix) =>
         frame.globals.ResetAtManaged<A>(ix)
             ? PullState.Continue
             : PullState.Void;
@@ -52,137 +52,137 @@ static unsafe partial class GManaged<A>
         };
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset0(ref StackFrame frame) => 
-        reset(ref frame, 0);
+    static int reset0(in StackFrame frame) => 
+        reset(in frame, 0);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int reset1(ref StackFrame frame) => 
-        reset(ref frame, 1);
+    static int reset1(in StackFrame frame) => 
+        reset(in frame, 1);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int reset2(ref StackFrame frame) => 
-        reset(ref frame, 2);
+    static int reset2(in StackFrame frame) => 
+        reset(in frame, 2);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset3(ref StackFrame frame) => 
-        reset(ref frame, 3);
+    static int reset3(in StackFrame frame) => 
+        reset(in frame, 3);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset4(ref StackFrame frame) => 
-        reset(ref frame, 4);
+    static int reset4(in StackFrame frame) => 
+        reset(in frame, 4);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int reset5(ref StackFrame frame) => 
-        reset(ref frame, 5);
+    static int reset5(in StackFrame frame) => 
+        reset(in frame, 5);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int reset6(ref StackFrame frame) => 
-        reset(ref frame, 6);
+    static int reset6(in StackFrame frame) => 
+        reset(in frame, 6);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset7(ref StackFrame frame) => 
-        reset(ref frame, 7);
+    static int reset7(in StackFrame frame) => 
+        reset(in frame, 7);
     
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset8(ref StackFrame frame) => 
-        reset(ref frame, 8);
+    static int reset8(in StackFrame frame) => 
+        reset(in frame, 8);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset9(ref StackFrame frame) => 
-        reset(ref frame, 9);
+    static int reset9(in StackFrame frame) => 
+        reset(in frame, 9);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset10(ref StackFrame frame) => 
-        reset(ref frame, 10);
+    static int reset10(in StackFrame frame) => 
+        reset(in frame, 10);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset11(ref StackFrame frame) => 
-        reset(ref frame, 11);
+    static int reset11(in StackFrame frame) => 
+        reset(in frame, 11);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset12(ref StackFrame frame) => 
-        reset(ref frame, 12);
+    static int reset12(in StackFrame frame) => 
+        reset(in frame, 12);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset13(ref StackFrame frame) => 
-        reset(ref frame, 13);
+    static int reset13(in StackFrame frame) => 
+        reset(in frame, 13);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset14(ref StackFrame frame) => 
-        reset(ref frame, 14);
+    static int reset14(in StackFrame frame) => 
+        reset(in frame, 14);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset15(ref StackFrame frame) => 
-        reset(ref frame, 15);
+    static int reset15(in StackFrame frame) => 
+        reset(in frame, 15);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset16(ref StackFrame frame) => 
-        reset(ref frame, 16);
+    static int reset16(in StackFrame frame) => 
+        reset(in frame, 16);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset17(ref StackFrame frame) => 
-        reset(ref frame, 17);
+    static int reset17(in StackFrame frame) => 
+        reset(in frame, 17);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset18(ref StackFrame frame) => 
-        reset(ref frame, 18);
+    static int reset18(in StackFrame frame) => 
+        reset(in frame, 18);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset19(ref StackFrame frame) => 
-        reset(ref frame, 19);
+    static int reset19(in StackFrame frame) => 
+        reset(in frame, 19);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset20(ref StackFrame frame) => 
-        reset(ref frame, 20);
+    static int reset20(in StackFrame frame) => 
+        reset(in frame, 20);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset21(ref StackFrame frame) => 
-        reset(ref frame, 21);
+    static int reset21(in StackFrame frame) => 
+        reset(in frame, 21);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset22(ref StackFrame frame) => 
-        reset(ref frame, 22);
+    static int reset22(in StackFrame frame) => 
+        reset(in frame, 22);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset23(ref StackFrame frame) => 
-        reset(ref frame, 23);
+    static int reset23(in StackFrame frame) => 
+        reset(in frame, 23);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset24(ref StackFrame frame) => 
-        reset(ref frame, 24);
+    static int reset24(in StackFrame frame) => 
+        reset(in frame, 24);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset25(ref StackFrame frame) => 
-        reset(ref frame, 25);
+    static int reset25(in StackFrame frame) => 
+        reset(in frame, 25);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset26(ref StackFrame frame) => 
-        reset(ref frame, 26);
+    static int reset26(in StackFrame frame) => 
+        reset(in frame, 26);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset27(ref StackFrame frame) => 
-        reset(ref frame, 27);
+    static int reset27(in StackFrame frame) => 
+        reset(in frame, 27);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset28(ref StackFrame frame) => 
-        reset(ref frame, 28);
+    static int reset28(in StackFrame frame) => 
+        reset(in frame, 28);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset29(ref StackFrame frame) => 
-        reset(ref frame, 29);
+    static int reset29(in StackFrame frame) => 
+        reset(in frame, 29);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset30(ref StackFrame frame) => 
-        reset(ref frame, 30);
+    static int reset30(in StackFrame frame) => 
+        reset(in frame, 30);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset31(ref StackFrame frame) => 
-        reset(ref frame, 31);
+    static int reset31(in StackFrame frame) => 
+        reset(in frame, 31);
 }

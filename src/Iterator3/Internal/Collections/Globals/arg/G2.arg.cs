@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class G2<A>
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg(ref StackFrame frame, in ushort ix)
+    static int arg(in StackFrame frame, in ushort ix)
     {
         Unsafe.AsRef(in frame.args.GlobalIx2) = ix;
         return PullState.Continue;
@@ -52,134 +52,134 @@ static unsafe partial class G2<A>
         };
        
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg0(ref StackFrame frame) => 
-        arg(ref frame, 0);
+    static int arg0(in StackFrame frame) => 
+        arg(in frame, 0);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int arg1(ref StackFrame frame) => 
-        arg(ref frame, 1);
+    static int arg1(in StackFrame frame) => 
+        arg(in frame, 1);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int arg2(ref StackFrame frame) => 
-        arg(ref frame, 2);
+    static int arg2(in StackFrame frame) => 
+        arg(in frame, 2);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg3(ref StackFrame frame) => 
-        arg(ref frame, 3);
+    static int arg3(in StackFrame frame) => 
+        arg(in frame, 3);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg4(ref StackFrame frame) => 
-        arg(ref frame, 4);
+    static int arg4(in StackFrame frame) => 
+        arg(in frame, 4);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int arg5(ref StackFrame frame) => 
-        arg(ref frame, 5);
+    static int arg5(in StackFrame frame) => 
+        arg(in frame, 5);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int arg6(ref StackFrame frame) => 
-        arg(ref frame, 6);
+    static int arg6(in StackFrame frame) => 
+        arg(in frame, 6);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg7(ref StackFrame frame) => 
-        arg(ref frame, 7);
+    static int arg7(in StackFrame frame) => 
+        arg(in frame, 7);
     
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg8(ref StackFrame frame) => 
-        arg(ref frame, 8);
+    static int arg8(in StackFrame frame) => 
+        arg(in frame, 8);
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg9(ref StackFrame frame) => 
-        arg(ref frame, 9);
+    static int arg9(in StackFrame frame) => 
+        arg(in frame, 9);
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg10(ref StackFrame frame) => 
-        arg(ref frame, 10);
+    static int arg10(in StackFrame frame) => 
+        arg(in frame, 10);
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg11(ref StackFrame frame) => 
-        arg(ref frame, 11);
+    static int arg11(in StackFrame frame) => 
+        arg(in frame, 11);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg12(ref StackFrame frame) => 
-        arg(ref frame, 12);
+    static int arg12(in StackFrame frame) => 
+        arg(in frame, 12);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg13(ref StackFrame frame) => 
-        arg(ref frame, 13);
+    static int arg13(in StackFrame frame) => 
+        arg(in frame, 13);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg14(ref StackFrame frame) => 
-        arg(ref frame, 14);
+    static int arg14(in StackFrame frame) => 
+        arg(in frame, 14);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg15(ref StackFrame frame) => 
-        arg(ref frame, 15);
+    static int arg15(in StackFrame frame) => 
+        arg(in frame, 15);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg16(ref StackFrame frame) => 
-        arg(ref frame, 16);
+    static int arg16(in StackFrame frame) => 
+        arg(in frame, 16);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg17(ref StackFrame frame) => 
-        arg(ref frame, 17);
+    static int arg17(in StackFrame frame) => 
+        arg(in frame, 17);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg18(ref StackFrame frame) => 
-        arg(ref frame, 18);
+    static int arg18(in StackFrame frame) => 
+        arg(in frame, 18);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg19(ref StackFrame frame) => 
-        arg(ref frame, 19);
+    static int arg19(in StackFrame frame) => 
+        arg(in frame, 19);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg20(ref StackFrame frame) => 
-        arg(ref frame, 20);
+    static int arg20(in StackFrame frame) => 
+        arg(in frame, 20);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg21(ref StackFrame frame) => 
-        arg(ref frame, 21);
+    static int arg21(in StackFrame frame) => 
+        arg(in frame, 21);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg22(ref StackFrame frame) => 
-        arg(ref frame, 22);
+    static int arg22(in StackFrame frame) => 
+        arg(in frame, 22);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg23(ref StackFrame frame) => 
-        arg(ref frame, 23);
+    static int arg23(in StackFrame frame) => 
+        arg(in frame, 23);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg24(ref StackFrame frame) => 
-        arg(ref frame, 24);
+    static int arg24(in StackFrame frame) => 
+        arg(in frame, 24);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg25(ref StackFrame frame) => 
-        arg(ref frame, 25);
+    static int arg25(in StackFrame frame) => 
+        arg(in frame, 25);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg26(ref StackFrame frame) => 
-        arg(ref frame, 26);
+    static int arg26(in StackFrame frame) => 
+        arg(in frame, 26);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg27(ref StackFrame frame) => 
-        arg(ref frame, 27);
+    static int arg27(in StackFrame frame) => 
+        arg(in frame, 27);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg28(ref StackFrame frame) => 
-        arg(ref frame, 28);
+    static int arg28(in StackFrame frame) => 
+        arg(in frame, 28);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg29(ref StackFrame frame) => 
-        arg(ref frame, 29);
+    static int arg29(in StackFrame frame) => 
+        arg(in frame, 29);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg30(ref StackFrame frame) => 
-        arg(ref frame, 30);
+    static int arg30(in StackFrame frame) => 
+        arg(in frame, 30);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg31(ref StackFrame frame) => 
-        arg(ref frame, 31);
+    static int arg31(in StackFrame frame) => 
+        arg(in frame, 31);
 }

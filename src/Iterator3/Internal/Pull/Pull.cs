@@ -8,102 +8,102 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int empty(ref StackFrame frame) =>
+    public static int empty(in StackFrame frame) =>
         PullState.Void;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int pure(ref StackFrame frame) =>
+    public static int pure(in StackFrame frame) =>
         PullState.Pure;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int pureV<A>(ref StackFrame frame) =>
-        arg1<A>(ref frame, out var x) &&
+    public static int pureV<A>(in StackFrame frame) =>
+        arg1<A>(in frame, out var x) &&
         frame.vars.Push(in x, false)
             ? PullState.Pure
             : PullState.Void;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int @continue(ref StackFrame frame) =>
+    public static int @continue(in StackFrame frame) =>
         PullState.Continue;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool coroutine1(ref StackFrame frame) =>
+    public static bool coroutine1(in StackFrame frame) =>
 
         frame.StartScope();
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int coroutine(ref StackFrame frame) =>
+    public static int coroutine(in StackFrame frame) =>
 
-        coroutine1(ref frame)
+        coroutine1(in frame)
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int tuple<A, B>(ref StackFrame frame) =>
+    public static int tuple<A, B>(in StackFrame frame) =>
 
         // Pop the second element
-        pop<B>(ref frame, out var b) &&
+        pop<B>(in frame, out var b) &&
 
         // Pop the first element
-        pop<A>(ref frame, out var a) &&
+        pop<A>(in frame, out var a) &&
 
         // Push the tuple
-        @return(ref frame, (a, b))
+        @return(in frame, (a, b))
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int tuple<A, B, C>(ref StackFrame frame) =>
+    public static int tuple<A, B, C>(in StackFrame frame) =>
 
         // Pop the second element
-        pop<C>(ref frame, out var c) &&
+        pop<C>(in frame, out var c) &&
 
         // Pop the second element
-        pop<B>(ref frame, out var b) &&
+        pop<B>(in frame, out var b) &&
 
         // Pop the first element
-        pop<A>(ref frame, out var a) &&
+        pop<A>(in frame, out var a) &&
 
         // Push the tuple
-        @return(ref frame, (a, b, c)) 
+        @return(in frame, (a, b, c)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int take(ref StackFrame frame) =>
+    public static int take(in StackFrame frame) =>
 
         // Pop the amount 
-        arg1<int>(ref frame, out var amount) && amount > 0
+        arg1<int>(in frame, out var amount) && amount > 0
 
             // Push the updated amount
-            ? update1(ref frame, amount - 1) 
-                  ? @continue(ref frame)
-                  : empty(ref frame)
+            ? update1(in frame, amount - 1) 
+                  ? @continue(in frame)
+                  : empty(in frame)
 
             // Exit!      
-            : empty(ref frame);
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int elements<A, B>(ref StackFrame frame) =>
+    public static int elements<A, B>(in StackFrame frame) =>
 
-        pop<(A, B)>(ref frame, out var tuple) &&
-        push(ref frame, in tuple.Item2)       &&
-        push(ref frame, in tuple.Item1)
+        pop<(A, B)>(in frame, out var tuple) &&
+        push(in frame, in tuple.Item2)       &&
+        push(in frame, in tuple.Item1)
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int elements<A, B, C>(ref StackFrame frame) =>
+    public static int elements<A, B, C>(in StackFrame frame) =>
 
-        pop<(A, B, C)>(ref frame, out var tuple) &&
-        push(ref frame, in tuple.Item3)          &&
-        push(ref frame, in tuple.Item2)          &&
-        push(ref frame, in tuple.Item1)
+        pop<(A, B, C)>(in frame, out var tuple) &&
+        push(in frame, in tuple.Item3)          &&
+        push(in frame, in tuple.Item2)          &&
+        push(in frame, in tuple.Item1)
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 }

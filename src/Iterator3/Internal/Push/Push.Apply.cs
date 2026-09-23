@@ -7,42 +7,42 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Push
 {
     [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C>(ref StackFrame frame, Func<A, B, C> f) =>
+    internal static bool apply<A, B, C>(in StackFrame frame, Func<A, B, C> f) =>
         
-        arg1(ref frame, f) &&
+        arg1(in frame, f) &&
         
         // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C>);
+        fun(in frame, &Pull.apply<A, B, C>);
     
     [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C, D>(ref StackFrame frame, Func<A, B, C, D> f) =>
+    internal static bool apply<A, B, C, D>(in StackFrame frame, Func<A, B, C, D> f) =>
         
-        arg1(ref frame, f) &&
+        arg1(in frame, f) &&
         
         // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C, D>);
+        fun(in frame, &Pull.apply<A, B, C, D>);
     
     [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C, D, E>(ref StackFrame frame, Func<A, B, C, D, E> f) =>
+    internal static bool apply<A, B, C, D, E>(in StackFrame frame, Func<A, B, C, D, E> f) =>
         
-        arg1(ref frame, f) &&
+        arg1(in frame, f) &&
         
         // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C, D, E>);
+        fun(in frame, &Pull.apply<A, B, C, D, E>);
     
     [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C, D, E, F>(ref StackFrame frame, Func<A, B, C, D, E, F> f) =>
+    internal static bool apply<A, B, C, D, E, F>(in StackFrame frame, Func<A, B, C, D, E, F> f) =>
         
-        arg1(ref frame, f) &&
+        arg1(in frame, f) &&
         
         // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C, D, E, F>);    
+        fun(in frame, &Pull.apply<A, B, C, D, E, F>);    
         
     [MethodImpl(Optimisations.Default)]
-    internal static bool apply<A, B, C, D, E, F, G>(ref StackFrame frame, Func<A, B, C, D, E, F, G> f) =>
+    internal static bool apply<A, B, C, D, E, F, G>(in StackFrame frame, Func<A, B, C, D, E, F, G> f) =>
         
-        arg1(ref frame, f) &&
+        arg1(in frame, f) &&
         
         // Push apply operation
-        fun(ref frame, &Pull.apply<A, B, C, D, E, F, G>);
+        fun(in frame, &Pull.apply<A, B, C, D, E, F, G>);
 }

@@ -20,7 +20,7 @@ readonly ref struct StackFrame
         globals = ref Unsafe.AsRef(in fields.globals);
         vars = ref Unsafe.AsRef(in fields.vars);
     }
-
+        
     [MethodImpl(Optimisations.Default)]
     public bool StartScope() =>
         
@@ -114,4 +114,39 @@ readonly ref struct StackFrame
         var yielded = tops.YieldsInFrame;
         return $"[pc:{pc}, objs:{objs}/{tops.ObjsCount}, vals:{vals}/{tops.ValuesCount}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
     }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public unsafe IterOp Op(int index) =>
+        ops[index];
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public unsafe IterOp Op(uint index) =>
+        ops[index];
+
+    public int OpsCount
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => ops.Count;
+    }
+
+    public int OpsRemaining
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => OpsCount - PC;
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void NextOp() =>
+        tops.NextOp();
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public unsafe IterOp CurrentOp()=>
+        Op(PC);
+
+    public int PC
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => tops.PC;
+    }
+
 }

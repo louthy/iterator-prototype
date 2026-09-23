@@ -55,8 +55,10 @@ abstract class GlobalsGen<A>
     public abstract ref A DeclaredAt(ref Globals list, ushort ix);
     public abstract bool ResetAt(ref Globals list, in ushort ix, out A value);
     public abstract bool ResetAt(ref Globals list, in ushort ix);
-    public abstract bool Add(ref Globals list, in A value);
-    public abstract bool Add(ref Globals list, in A value, out ushort index);
+    public abstract bool AddMutable(ref Globals list, in A value);
+    public abstract bool AddMutable(ref Globals list, in A value, out ushort index);
+    public abstract bool AddConst(ref Globals list, in A value);
+    public abstract bool AddConst(ref Globals list, in A value, out ushort index);
     public abstract bool AtEnd(ref Globals list, in ushort ix, out Global<A> global);
 
 }
@@ -104,12 +106,20 @@ class ManagedGlobals<A> : GlobalsGen<A>
         list.ResetAtManaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value) =>
-        list.AddManaged(in value);
+    public override bool AddMutable(ref Globals list, in A value) =>
+        list.AddMutableManaged(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value, out ushort index) =>
-        list.AddManaged(in value, out index);
+    public override bool AddMutable(ref Globals list, in A value, out ushort index) =>
+        list.AddMutableManaged(in value, out index);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value) =>
+        list.AddConstManaged(in value);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value, out ushort index) =>
+        list.AddConstManaged(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
@@ -159,12 +169,20 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
         list.ResetAtUnmanaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value) =>
-        list.AddUnmanaged(in value);
+    public override bool AddMutable(ref Globals list, in A value) =>
+        list.AddMutableUnmanaged(in value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value, out ushort index) =>
-        list.AddUnmanaged(in value, out index);
+    public override bool AddMutable(ref Globals list, in A value, out ushort index) =>
+        list.AddMutableUnmanaged(in value, out index);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value) =>
+        list.AddConstUnmanaged(in value);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value, out ushort index) =>
+        list.AddConstUnmanaged(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>
@@ -214,12 +232,20 @@ class StructGlobals<A> : GlobalsGen<A>
         list.ResetAtStruct<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value) =>
-        list.AddStruct(in value);
+    public override bool AddMutable(ref Globals list, in A value) =>
+        list.AddMutableStruct(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool Add(ref Globals list, in A value, out ushort index) =>
-        list.AddStruct(in value, out index);
+    public override bool AddMutable(ref Globals list, in A value, out ushort index) =>
+        list.AddMutableStruct(in value, out index);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value) =>
+        list.AddConstStruct(in value);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public override bool AddConst(ref Globals list, in A value, out ushort index) =>
+        list.AddConstStruct(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public override bool AtEnd(ref Globals list, in ushort ix, out Global<A> global) =>

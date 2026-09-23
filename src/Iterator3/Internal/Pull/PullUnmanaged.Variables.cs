@@ -11,65 +11,65 @@ static partial class PullUnmanaged
     /// Pushes the return value to the stack
     /// </summary>
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool @return<A>(ref StackFrame frame, in A value)
+    public static bool @return<A>(in StackFrame frame, in A value)
         where A : unmanaged
     {
         var r = frame.vars.PushUnmanaged(value, false);
-        //Log.terminator($"return {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.terminator($"return {value} : {Ty<A>.Pretty}", in frame);
         return r;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool pop<A>(ref StackFrame frame, out A value)
+    public static bool pop<A>(in StackFrame frame, out A value)
         where A : unmanaged
     {
         var r = frame.vars.PopUnmanaged(out value, false);
-        //Log.value($"pop {value} : {Ty<A>.Pretty}", ref frame);
+        //Log.value($"pop {value} : {Ty<A>.Pretty}", in frame);
         return r;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg1<A>(ref StackFrame frame, out A value)  
+    public static bool arg1<A>(in StackFrame frame, out A value)  
         where A : unmanaged =>
         frame.globals.AtUnmanaged(frame.args.GlobalIx1, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg2<A>(ref StackFrame frame, out A value)  
+    public static bool arg2<A>(in StackFrame frame, out A value)  
         where A : unmanaged =>
         frame.globals.AtUnmanaged(frame.args.GlobalIx2, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg3<A>(ref StackFrame frame, out A value)  
+    public static bool arg3<A>(in StackFrame frame, out A value)  
         where A : unmanaged =>
         frame.globals.AtUnmanaged(frame.args.GlobalIx3, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg4<A>(ref StackFrame frame, out A value)  
+    public static bool arg4<A>(in StackFrame frame, out A value)  
         where A : unmanaged =>
         frame.globals.AtUnmanaged(frame.args.GlobalIx4, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static ref A arg1<A>(ref StackFrame frame)  
+    public static ref A arg1<A>(in StackFrame frame)  
         where A : unmanaged =>
         ref frame.globals.AtUnmanaged<A>(frame.args.GlobalIx1);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static ref A arg2<A>(ref StackFrame frame)  
+    public static ref A arg2<A>(in StackFrame frame)  
         where A : unmanaged =>
         ref frame.globals.AtUnmanaged<A>(frame.args.GlobalIx2);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static ref A arg3<A>(ref StackFrame frame)  
+    public static ref A arg3<A>(in StackFrame frame)  
         where A : unmanaged =>
         ref frame.globals.AtUnmanaged<A>(frame.args.GlobalIx3);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static ref A arg4<A>(ref StackFrame frame)  
+    public static ref A arg4<A>(in StackFrame frame)  
         where A : unmanaged =>
         ref frame.globals.AtUnmanaged<A>(frame.args.GlobalIx4);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update1<A>(ref StackFrame frame, in A value) 
+    public static bool update1<A>(in StackFrame frame, in A value) 
         where A : unmanaged 
     {
         frame.globals.AtUnmanaged<A>(frame.args.GlobalIx1) = value;
@@ -77,7 +77,7 @@ static partial class PullUnmanaged
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update2<A>(ref StackFrame frame, in A value) 
+    public static bool update2<A>(in StackFrame frame, in A value) 
         where A : unmanaged 
     {
         frame.globals.AtUnmanaged<A>(frame.args.GlobalIx2) = value;
@@ -85,7 +85,7 @@ static partial class PullUnmanaged
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update3<A>(ref StackFrame frame, in A value) 
+    public static bool update3<A>(in StackFrame frame, in A value) 
         where A : unmanaged 
     {
         frame.globals.AtUnmanaged<A>(frame.args.GlobalIx3) = value;
@@ -93,7 +93,7 @@ static partial class PullUnmanaged
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update4<A>(ref StackFrame frame, in A value) 
+    public static bool update4<A>(in StackFrame frame, in A value) 
         where A : unmanaged 
     {
         frame.globals.AtUnmanaged<A>(frame.args.GlobalIx4) = value;

@@ -25,7 +25,7 @@ public readonly struct Iter<A>
         tail = this;
         var frame = tail.Frame();
         //Log.scope();
-        var r = tail.fields.ops.Run(ref frame, out head);
+        var r = OpsVM.Run(in frame, out head);// tail.fields.ops.Run(in frame, out head);
         //Log.descope();
         return r;
     }
@@ -35,7 +35,7 @@ public readonly struct Iter<A>
     {
         var frame = tail.Frame();
         //Log.scope();
-        var r     = tail.fields.ops.Run(ref frame, out head);
+        var r = OpsVM.Run(in frame, out head); //var r = tail.fields.ops.Run(in frame, out head);
         //Log.descope();
         return r;
     }
@@ -77,7 +77,7 @@ public readonly struct Iter<A>
         
         // We waste a bit of space for the first global, so that 0 is a valid index
         // for the input.  But awaiting it should be considered an error.
-        f.globals.Add(0xDeadBeef);
+        f.globals.AddMutable(0xDeadBeef);
         
         return f;
     }

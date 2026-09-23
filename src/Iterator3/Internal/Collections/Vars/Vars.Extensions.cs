@@ -5,11 +5,11 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 static class VarsExtensions
 {
-    extension(ref Vars vars)
+    extension(in Vars vars)
     {
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Pop<A>(out A value, bool force) =>
-            VarsGen<A>.Instance.PopImpl(ref vars, out value, force);
+            VarsGen<A>.Instance.PopImpl(ref Unsafe.AsRef(in vars), out value, force);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Pop<A, B>(out A value1, out B value2)
@@ -354,7 +354,7 @@ static class VarsExtensions
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Pop<A>(bool force) =>
-            VarsGen<A>.Instance.PopImpl(ref vars, force);
+            VarsGen<A>.Instance.PopImpl(ref Unsafe.AsRef(in vars), force);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Pop<A, B>(bool force) =>
@@ -363,11 +363,11 @@ static class VarsExtensions
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Push<A>(in A value, bool isCoRoutineArgument) =>
-            VarsGen<A>.Instance.PushImpl(ref vars, in value, isCoRoutineArgument);
+            VarsGen<A>.Instance.PushImpl(ref Unsafe.AsRef(in vars), in value, isCoRoutineArgument);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Peek<A>(out A value) =>
-            VarsGen<A>.Instance.PeekImpl(ref vars, out value);
+            VarsGen<A>.Instance.PeekImpl(ref Unsafe.AsRef(in vars), out value);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Peek<A, B>(out A value1, out B value2)
@@ -388,7 +388,7 @@ static class VarsExtensions
 
         [MethodImpl(Optimisations.InliningOnly)]
         public ref A PeekAt<A>() =>
-            ref VarsGen<A>.Instance.PeekAtImpl(ref vars);
+            ref VarsGen<A>.Instance.PeekAtImpl(ref Unsafe.AsRef(in vars));
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool PeekAt<A, B>()
@@ -408,7 +408,7 @@ static class VarsExtensions
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Dup<A>() =>
-            VarsGen<A>.Instance.DupImpl(ref vars);
+            VarsGen<A>.Instance.DupImpl(ref Unsafe.AsRef(in vars));
         
     }
 }

@@ -32,7 +32,7 @@ public static partial class Iter
     {
         var array = Arr.create(ta);
         var frame = Iter<A>.Default(out var iter);
-        return Push.iterable<Arr, ArrState, A>(ref frame, array)
+        return Push.iterable<Arr, ArrState, A>(in frame, array)
                    ? iter
                    : default;
     }
@@ -43,7 +43,7 @@ public static partial class Iter
         where IS : unmanaged
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.iterable<T, IS, A>(ref frame, in ta)
+        return Push.iterable<T, IS, A>(in frame, in ta)
                    ? iter
                    : default;
     }
@@ -52,7 +52,7 @@ public static partial class Iter
     public static Iter<A> forever<A>(in A head)
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.forever(ref frame, in head)
+        return Push.forever(in frame, in head)
                     ? iter
                     : default;
     }
@@ -61,7 +61,7 @@ public static partial class Iter
     public static Iter<A> singleton<A>(in A head)
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.singleton(ref frame, in head)
+        return Push.singleton(in frame, in head)
                    ? iter
                    : default;
     }
@@ -69,7 +69,7 @@ public static partial class Iter
     public static Iter<A> lift<A>(in Iter<A> ta)
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.iterator(ref frame, in ta)
+        return Push.iterator(in frame, in ta)
                    ? iter
                    : default;
     }
@@ -87,7 +87,7 @@ public static partial class Iter
     {
         var iters = from(ts);
         var frame = Iter<A>.Default(out var iter);
-        return Push.flatten(ref frame, in iters)
+        return Push.flatten(in frame, in iters)
                    ? iter
                    : default;
     }

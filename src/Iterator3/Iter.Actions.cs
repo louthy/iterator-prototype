@@ -123,7 +123,7 @@ static class IterAction
     public static Iter<A> take<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Insert.take(ref frame, amount)
+        return Insert.take(in frame, amount)
                    ? ta1
                    : default;
     }
@@ -132,7 +132,7 @@ static class IterAction
     public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> iterator)
     {
         var frame = iterator.Next<A, B>(out var tb);
-        return Push.map(ref frame, f)
+        return Push.map(in frame, f)
                    ? tb
                    : default;
     }
@@ -141,7 +141,7 @@ static class IterAction
     public static Iter<C> map<A, B, C>(Func<A, B, C> f, in Iter<(A, B)> iterator)
     {
         var frame = iterator.Next<(A, B), C>(out var tc);
-        return Push.bimap(ref frame, f)
+        return Push.bimap(in frame, f)
                    ? tc
                    : default;
     }
@@ -150,7 +150,7 @@ static class IterAction
     public static Iter<D> map<A, B, C, D>(Func<A, B, C, D> f, in Iter<(A, B, C)> iterator)
     {
         var frame = iterator.Next<(A, B, C), D>(out var td);
-        return Push.trimap(ref frame, f)
+        return Push.trimap(in frame, f)
                    ? td
                    : default;
     }
@@ -159,7 +159,7 @@ static class IterAction
     public static Iter<E> map<A, B, C, D, E>(Func<A, B, C, D, E> f, in Iter<(A, B, C, D)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D), E>(out var te);
-        return Push.quadmap(ref frame, f)
+        return Push.quadmap(in frame, f)
                    ? te
                    : default;
     }
@@ -168,7 +168,7 @@ static class IterAction
     public static Iter<F> map<A, B, C, D, E, F>(Func<A, B, C, D, E, F> f, in Iter<(A, B, C, D, E)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D, E), F>(out var tf);
-        return Push.pentamap(ref frame, f)
+        return Push.pentamap(in frame, f)
                    ? tf
                    : default;
     }
@@ -177,7 +177,7 @@ static class IterAction
     public static Iter<G> map<A, B, C, D, E, F, G>(Func<A, B, C, D, E, F, G> f, in Iter<(A, B, C, D, E, F)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D, E, F), G>(out var tg);
-        return Push.sextamap(ref frame, f)
+        return Push.sextamap(in frame, f)
                    ? tg
                    : default;
     }
@@ -186,7 +186,7 @@ static class IterAction
     public static Iter<H> map<A, B, C, D, E, F, G, H>(Func<A, B, C, D, E, F, G, H> f, in Iter<(A, B, C, D, E, F, G)> iterator)
     {
         var frame = iterator.Next<(A, B, C, D, E, F, G), H>(out var th);
-        return Push.septamap(ref frame, f)
+        return Push.septamap(in frame, f)
                    ? th
                    : default;
     }
@@ -195,7 +195,7 @@ static class IterAction
     public static Iter<B> bind<A, B>(in Iter<A> ta, in Func<A, Iter<B>> f)
     {
         var frame = Iter<B>.Default(out var tb);
-        return Push.bind(ref frame, ta, f)
+        return Push.bind(in frame, ta, f)
                    ? tb
                    : default;
     }
@@ -204,7 +204,7 @@ static class IterAction
     internal static Iter<A> scope<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Insert.scope(ref frame)
+        return Insert.scope(in frame)
                    ? ta1
                    : default;
     }
@@ -213,7 +213,7 @@ static class IterAction
     internal static Iter<A> pure<A>(in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
-        return Push.pure(ref frame)
+        return Push.pure(in frame)
                    ? ta1
                    : default;
     }

@@ -10,120 +10,120 @@ static partial class Pull
         PullGen<A, B, C>.bimap;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedManagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedManagedManaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : class
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedManagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedManagedManaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : class
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructManagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructManagedManaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : class
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedUnmanagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedUnmanagedManaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : unmanaged
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedUnmanagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedUnmanagedManaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : unmanaged
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructUnmanagedManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructUnmanagedManaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : unmanaged
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedStructManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedStructManaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : struct
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedStructManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedStructManaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : struct
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructStructManaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructStructManaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : struct
         where C : class
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullManaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullManaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
@@ -131,118 +131,118 @@ static partial class Pull
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedManagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedManagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : class
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedManagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedManagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : class
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructManagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructManagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : class
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedUnmanagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedUnmanagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : unmanaged
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedUnmanagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedUnmanagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : unmanaged
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructUnmanagedUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructUnmanagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : unmanaged
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedStructUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedStructUnmanaged<A, B, C>(in StackFrame frame)
         where A : class
         where B : struct
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedStructUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedStructUnmanaged<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : struct
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructStructUnmanaged<A, B, C>(ref StackFrame frame)
+    public static int bimapStructStructUnmanaged<A, B, C>(in StackFrame frame)
         where A : struct
         where B : struct
         where C : unmanaged
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullUnmanaged.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullUnmanaged.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
@@ -250,123 +250,123 @@ static partial class Pull
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedManagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedManagedStruct<A, B, C>(in StackFrame frame)
         where A : class
         where B : class
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedManagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedManagedStruct<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : class
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructManagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapStructManagedStruct<A, B, C>(in StackFrame frame)
         where A : struct
         where B : class
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedUnmanagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedUnmanagedStruct<A, B, C>(in StackFrame frame)
         where A : class
         where B : unmanaged
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedUnmanagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedUnmanagedStruct<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : unmanaged
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructUnmanagedStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapStructUnmanagedStruct<A, B, C>(in StackFrame frame)
         where A : struct
         where B : unmanaged
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return pop<A, B>(ref frame, out var a, out var b) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return pop<A, B>(in frame, out var a, out var b) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapManagedStructStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapManagedStructStruct<A, B, C>(in StackFrame frame)
         where A : class
         where B : struct
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)  &&
-               PullManaged.pop<A>(ref frame, out var a) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return PullStruct.pop<B>(in frame, out var b)  &&
+               PullManaged.pop<A>(in frame, out var a) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapUnmanagedStructStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapUnmanagedStructStruct<A, B, C>(in StackFrame frame)
         where A : unmanaged
         where B : struct
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b)    &&
-               PullUnmanaged.pop<A>(ref frame, out var a) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return PullStruct.pop<B>(in frame, out var b)    &&
+               PullUnmanaged.pop<A>(in frame, out var a) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static int bimapStructStructStruct<A, B, C>(ref StackFrame frame)
+    public static int bimapStructStructStruct<A, B, C>(in StackFrame frame)
         where A : struct
         where B : struct
         where C : struct
     {
-        var f = PullManaged.arg1<Func<A, B, C>>(ref frame);
-        return PullStruct.pop<B>(ref frame, out var b) &&
-               PullStruct.pop<A>(ref frame, out var a) &&
-               PullStruct.@return(ref frame, f(a, b))
+        var f = PullManaged.arg1<Func<A, B, C>>(in frame);
+        return PullStruct.pop<B>(in frame, out var b) &&
+               PullStruct.pop<A>(in frame, out var a) &&
+               PullStruct.@return(in frame, f(a, b))
                    ? PullState.Continue
                    : PullState.Void;
     }
@@ -376,36 +376,36 @@ static partial class Pull
 
      Unoptimised reference implementations
 
-    public static int bimap<A, B, C>(ref StackFrame frame) =>
+    public static int bimap<A, B, C>(in StackFrame frame) =>
 
         // Peek at the map function
-        arg1<Func<A, B, C>>(ref frame, out var f) &&
+        arg1<Func<A, B, C>>(in frame, out var f) &&
 
         // Take the value off the stack
-        pop<B>(ref frame, out var b) &&
+        pop<B>(in frame, out var b) &&
 
         // Take the value off the stack
-        pop<A>(ref frame, out var a) &&
+        pop<A>(in frame, out var a) &&
 
         // Push the mapped value on the stack
-        @return(ref frame, f(a, b))
+        @return(in frame, f(a, b))
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
-    public static int bimap1<A, B, C>(ref StackFrame frame) =>
+    public static int bimap1<A, B, C>(in StackFrame frame) =>
 
         // Peek at the map function
-        arg1<Func<A, B, C>>(ref frame, out var f) &&
+        arg1<Func<A, B, C>>(in frame, out var f) &&
 
         // Take the value off the stack
-        pop<(A, B)>(ref frame, out var ab) &&
+        pop<(A, B)>(in frame, out var ab) &&
 
         // Push the mapped value on the stack
-        @return(ref frame, f(ab.Item1, ab.Item2))
+        @return(in frame, f(ab.Item1, ab.Item2))
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
             */
 
 }

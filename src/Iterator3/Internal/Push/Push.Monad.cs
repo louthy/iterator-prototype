@@ -7,53 +7,53 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Push
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool flatten<A>(ref StackFrame frame, in Iter<Iter<A>> ts) =>
+    public static bool flatten<A>(in StackFrame frame, in Iter<Iter<A>> ts) =>
 
         // Create a slot for the current iterator to go
-        declare1(ref frame, default(Iter<A>)) &&
+        declare1(in frame, default(Iter<A>)) &&
         
         // Declare a slot for the iterators
-        declare2(ref frame, in ts) &&
+        declare2(in frame, in ts) &&
         
         // Start the co-routine
-        coroutine(ref frame) &&
+        coroutine(in frame) &&
         
         // Load the 'current' iterator 
-        ref1<Iter<A>>(ref frame) &&
+        ref1<Iter<A>>(in frame) &&
         
         // Load the sequence of iterators 
-        ref2<Iter<Iter<A>>>(ref frame) &&
+        ref2<Iter<Iter<A>>>(in frame) &&
 
         // Iterate over multiple iterators
-        fun(ref frame, &Pull.flatten<A>) &&
+        fun(in frame, &Pull.flatten<A>) &&
             
         // Fill the yield variable with the output of the iterator
-        yield<A>(ref frame);
+        yield<A>(in frame);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool bind<A, B>(ref StackFrame frame, in Iter<A> ta, in Func<A, Iter<B>> f) =>
+    public static bool bind<A, B>(in StackFrame frame, in Iter<A> ta, in Func<A, Iter<B>> f) =>
         
         // Create a slot for the input iterator to go
-        declare1(ref frame, ta) &&
+        declare1(in frame, ta) &&
         
         // Create a slot for the bind result iterator to go
-        declare2(ref frame, default(Iter<B>)) &&
+        declare2(in frame, default(Iter<B>)) &&
         
         // Start the co-routine
-        coroutine(ref frame) &&
+        coroutine(in frame) &&
         
         // Load the current iterator
-        ref1<Iter<A>>(ref frame) &&
+        ref1<Iter<A>>(in frame) &&
         
         // Load the current bind result iterator 
-        ref2<Iter<B>>(ref frame) &&
+        ref2<Iter<B>>(in frame) &&
         
         // Load the bind function
-        arg3(ref frame, in f) &&
+        arg3(in frame, in f) &&
         
         // Add the bind operation
-        fun(ref frame, &Pull.bind<A, B>) &&
+        fun(in frame, &Pull.bind<A, B>) &&
             
         // Fill the yield variable with the output of the iterator
-        yield<B>(ref frame);
+        yield<B>(in frame);
 }

@@ -8,92 +8,92 @@ namespace IteratorPrototype.Iterator3;
 static partial class Pull
 {
     [MethodImpl(Optimisations.Default)]
-    public static int apply1<A, B, C>(ref StackFrame frame) =>
+    public static int apply1<A, B, C>(in StackFrame frame) =>
 
         // Load the apply function
-        arg1<Func<A, B, C>>(ref frame,out var f) && 
+        arg1<Func<A, B, C>>(in frame,out var f) && 
 
         // Pop the next item to apply
-        pop<B>(ref frame, out var next) &&
+        pop<B>(in frame, out var next) &&
         
         // Peek at item 1
-        peek<A>(ref frame, out var tuple) &&
+        peek<A>(in frame, out var tuple) &&
 
         // Push the tuple
-        @return(ref frame, f(tuple, next)) 
+        @return(in frame, f(tuple, next)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int apply1<A, B, C, D>(ref StackFrame frame) =>
+    public static int apply1<A, B, C, D>(in StackFrame frame) =>
 
         // Load the apply function
-        arg1<Func<A, B, C, D>>(ref frame,out var f) && 
+        arg1<Func<A, B, C, D>>(in frame,out var f) && 
         
         // Pop the next item to apply
-        pop<C>(ref frame, out var next) &&
+        pop<C>(in frame, out var next) &&
 
         // Peek at the tuple
-        peek<(A, B)>(ref frame, out var tuple) &&
+        peek<(A, B)>(in frame, out var tuple) &&
 
         // Push the tuple
-        @return(ref frame, f(tuple.Item1, tuple.Item2, next)) 
+        @return(in frame, f(tuple.Item1, tuple.Item2, next)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int apply1<A, B, C, D, E>(ref StackFrame frame) =>
+    public static int apply1<A, B, C, D, E>(in StackFrame frame) =>
 
         // Load the apply function
-        arg1<Func<A, B, C, D, E>>(ref frame,out var f) && 
+        arg1<Func<A, B, C, D, E>>(in frame,out var f) && 
 
         // Pop the next item to apply
-        pop<D>(ref frame, out var next) &&
+        pop<D>(in frame, out var next) &&
         
         // Peek the tuple
-        peek<(A, B, C)>(ref frame, out var tuple) &&
+        peek<(A, B, C)>(in frame, out var tuple) &&
 
         // Push the tuple
-        @return(ref frame, f(tuple.Item1, tuple.Item2, tuple.Item3, next)) 
+        @return(in frame, f(tuple.Item1, tuple.Item2, tuple.Item3, next)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int apply1<A, B, C, D, E, F>(ref StackFrame frame) =>
+    public static int apply1<A, B, C, D, E, F>(in StackFrame frame) =>
 
         // Load the apply function
-        arg1<Func<A, B, C, D, E, F>>(ref frame,out var f) && 
+        arg1<Func<A, B, C, D, E, F>>(in frame,out var f) && 
 
         // Pop the next item to apply
-        pop<E>(ref frame, out var next) &&
+        pop<E>(in frame, out var next) &&
         
         // Peek the tuple
-        peek<(A, B, C, D)>(ref frame, out var tuple) &&
+        peek<(A, B, C, D)>(in frame, out var tuple) &&
 
         // Push the tuple
-        @return(ref frame, f(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, next)) 
+        @return(in frame, f(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, next)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);
+            ? @continue(in frame)
+            : empty(in frame);
 
     [MethodImpl(Optimisations.Default)]
-    public static int apply1<A, B, C, D, E, F, G>(ref StackFrame frame) =>
+    public static int apply1<A, B, C, D, E, F, G>(in StackFrame frame) =>
 
         // Load the apply function
-        arg1<Func<A, B, C, D, E, F, G>>(ref frame,out var f) && 
+        arg1<Func<A, B, C, D, E, F, G>>(in frame,out var f) && 
 
         // Pop the next item to apply
-        pop<F>(ref frame, out var next) &&
+        pop<F>(in frame, out var next) &&
         
         // Peek the tuple
-        peek<(A, B, C, D, E)>(ref frame, out var tuple) &&
+        peek<(A, B, C, D, E)>(in frame, out var tuple) &&
 
         // Push the tuple
-        @return(ref frame, f(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5, next)) 
+        @return(in frame, f(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5, next)) 
 
-            ? @continue(ref frame)
-            : empty(ref frame);    
+            ? @continue(in frame)
+            : empty(in frame);    
 }

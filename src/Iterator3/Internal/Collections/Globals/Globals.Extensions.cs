@@ -31,11 +31,19 @@ static class GlobalsExtensions
             GlobalsGen<A>.Instance.AtEnd(ref list, in ix, out global);
         
         [MethodImpl(Optimisations.InliningOnly)]
-        public bool Add<A>(in A value) =>
-            GlobalsGen<A>.Instance.Add(ref list, in value);
+        public bool AddMutable<A>(in A value) =>
+            GlobalsGen<A>.Instance.AddMutable(ref list, in value);
         
         [MethodImpl(Optimisations.InliningOnly)]
-        public bool Add<A>(in A value, out ushort index) =>
-            GlobalsGen<A>.Instance.Add(ref list, in value, out index);
+        public bool AddMutable<A>(in A value, out ushort index) =>
+            GlobalsGen<A>.Instance.AddMutable(ref list, in value, out index);
+        
+        [MethodImpl(Optimisations.InliningOnly)]
+        public bool AddConst<A>(in A value) =>
+            GlobalsGen<A>.Instance.AddConst(ref list, in value);
+        
+        [MethodImpl(Optimisations.InliningOnly)]
+        public bool AddConst<A>(in A value, out ushort index) =>
+            GlobalsGen<A>.Instance.AddConst(ref list, in value, out index);        
     }
 }

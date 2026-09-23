@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class G
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM<A>(ref StackFrame frame, in ushort ix)
+    static int pullM<A>(in StackFrame frame, in ushort ix)
     {
         var g = new Global<A>(in ix);
         return frame.vars.PushUnmanaged(in g, false) 
@@ -55,137 +55,137 @@ static unsafe partial class G
     
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM0<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 0);
+    static int pullM0<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 0);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int pullM1<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 1);
+    static int pullM1<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 1);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int pullM2<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 2);
+    static int pullM2<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 2);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM3<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 3);
+    static int pullM3<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 3);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM4<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 4);
+    static int pullM4<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 4);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int pullM5<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 5);
+    static int pullM5<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 5);
     
     [MethodImpl(Optimisations.InliningOnly)] 
-    static int pullM6<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 6);
+    static int pullM6<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 6);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM7<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 7);
+    static int pullM7<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 7);
     
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM8<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 8);
+    static int pullM8<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 8);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM9<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 9);
+    static int pullM9<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 9);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM10<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 10);
+    static int pullM10<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 10);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM11<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 11);
+    static int pullM11<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 11);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM12<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 12);
+    static int pullM12<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 12);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM13<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 13);
+    static int pullM13<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 13);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM14<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 14);
+    static int pullM14<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 14);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM15<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 15);
+    static int pullM15<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 15);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM16<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 16);
+    static int pullM16<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 16);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM17<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 17);
+    static int pullM17<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 17);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM18<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 18);
+    static int pullM18<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 18);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM19<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 19);
+    static int pullM19<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 19);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM20<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 20);
+    static int pullM20<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 20);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM21<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 21);
+    static int pullM21<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 21);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM22<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 22);
+    static int pullM22<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 22);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM23<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 23);
+    static int pullM23<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 23);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM24<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 24);
+    static int pullM24<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 24);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM25<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 25);
+    static int pullM25<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 25);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM26<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 26);
+    static int pullM26<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 26);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM27<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 27);
+    static int pullM27<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 27);
 
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM28<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 28);
+    static int pullM28<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 28);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM29<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 29);
+    static int pullM29<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 29);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM30<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 30);
+    static int pullM30<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 30);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM31<A>(ref StackFrame frame) => 
-        pullM<A>(ref frame, 31);
+    static int pullM31<A>(in StackFrame frame) => 
+        pullM<A>(in frame, 31);
 }

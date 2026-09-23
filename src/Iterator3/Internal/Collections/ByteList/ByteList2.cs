@@ -5,6 +5,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -95,12 +96,12 @@ public readonly struct ByteList2
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool Add<A>(in A value)
+    public bool AddMutable<A>(in A value)
         where A : unmanaged =>
-        Add(in value, out _);
+        AddMutable(in value, out _);
     
     [MethodImpl(Optimisations.Default)]
-    public bool Add<A>(in A value, out ushort ix)
+    public bool AddMutable<A>(in A value, out ushort ix)
         where A : unmanaged
     {
         unchecked
@@ -125,6 +126,41 @@ public readonly struct ByteList2
             i = (byte)top;
             d0 = value;
             d1 = value;
+            t = (ushort)newTop;
+
+            return true;
+        }
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public bool AddConst<A>(in A value)
+        where A : unmanaged =>
+        AddConst(in value, out _);
+    
+    [MethodImpl(Optimisations.Default)]
+    public bool AddConst<A>(in A value, out ushort ix)
+        where A : unmanaged
+    {
+        unchecked
+        {
+            var sizeOf  = Unsafe.SizeOf<A>();
+            var sizeOf2 = sizeOf << 1;
+            var newTop  = top + sizeOf2;
+            if (Count >= IndexCapacity || newTop > DataCapacity2)
+            {
+                ix = 0;
+                return false;
+            }
+            ix = Count;
+            ref var c = ref Unsafe.AsRef(in Count);
+            c++;
+
+            ref var d0 = ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in data), top));
+            ref var i  = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in index), ix);
+            ref var t  = ref Unsafe.AsRef(in top);
+
+            i = (byte)top;
+            d0 = value;
             t = (ushort)newTop;
 
             return true;
