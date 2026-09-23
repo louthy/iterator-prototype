@@ -9,7 +9,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 readonly struct Op(nint fun)
 {
     [FieldOffset(0)]
-    readonly nint Fun = fun;
+    internal readonly nint Fun = fun;
 
     [MethodImpl(Optimisations.Max)]
     public unsafe Op(IterOp fun) : this((nint)fun)

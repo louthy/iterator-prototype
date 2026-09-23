@@ -28,7 +28,7 @@ static unsafe partial class Push
         where IS : unmanaged =>
         
         // Push the iterable instance onto the globals-list
-        const1(in frame, in ta) &&
+        declare1(in frame, in ta) &&
         
         // Push a slot for the iterable state onto the globals-list
         declare2(in frame, T.SetupImmutable(in ta));
@@ -61,7 +61,7 @@ static unsafe partial class Push
     public static bool iterator<A>(in StackFrame frame, in Iter<A> ta) =>
         
         // Push the iterator
-        const1(in frame, ta) &&
+        declare1(in frame, ta) &&
         
         // Start the co-routine
         coroutine(in frame) &&

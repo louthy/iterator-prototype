@@ -9,6 +9,8 @@ public static class IterTests
     public static void Tests()
     {
         Log.enable();
+
+        Basic5();
         
         Basic1();
         Basic2();
