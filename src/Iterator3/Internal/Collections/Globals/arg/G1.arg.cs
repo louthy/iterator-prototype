@@ -7,13 +7,13 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class G1<A>
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int arg(in StackFrame frame, in ushort ix)
+    static int arg(in StackFrame frame, ushort ix)
     {
         Unsafe.AsRef(in frame.args.GlobalIx1) = ix;
         return PullState.Continue;
     }
     
-    public static IterOp arg(in ushort index) =>
+    public static IterOp arg(ushort index) =>
         index switch
         {
             0  => &arg0,

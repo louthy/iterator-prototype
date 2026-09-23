@@ -265,7 +265,7 @@ readonly partial struct Vars
         values.Peek(out value);
 
     [MethodImpl(Optimisations.Max)]
-    public bool SyncTo(ref Tops tops)
+    public bool SyncTo(in Tops tops)
     {
         var os      = (uint)(objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
         var vs      = (uint)(values.Count << Tops.ValuesShift) & Tops.ValuesMask;

@@ -8,12 +8,12 @@ static unsafe partial class GUnmanaged<A>
     where A : unmanaged
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int reset(in StackFrame frame, in ushort ix) =>
+    static int reset(in StackFrame frame, ushort ix) =>
         frame.globals.ResetAtUnmanaged<A>(ix)
             ? PullState.Continue
             : PullState.Void;
     
-    public static IterOp reset(in ushort index) =>
+    public static IterOp reset(ushort index) =>
         index switch
         {
             0  => &reset0,

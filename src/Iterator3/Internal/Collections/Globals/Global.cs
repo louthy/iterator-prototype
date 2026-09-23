@@ -6,7 +6,7 @@ namespace IteratorPrototype.Iterator3;
 
 [SkipLocalsInit]
 [method: MethodImpl(Optimisations.Default)]
-public readonly struct Global<A>(in ushort index)
+public readonly struct Global<A>(ushort index)
 {
     public readonly ushort Index = index;
 

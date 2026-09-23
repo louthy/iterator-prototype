@@ -7,15 +7,15 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class G
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pullM<A>(in StackFrame frame, in ushort ix)
+    static int pullM<A>(in StackFrame frame, ushort ix)
     {
-        var g = new Global<A>(in ix);
+        var g = new Global<A>(ix);
         return frame.vars.PushUnmanaged(in g, false) 
                    ? PullState.Continue 
                    : PullState.Void;
     }
         
-    public static IterOp pullM<A>(in ushort index) =>
+    public static IterOp pullM<A>(ushort index) =>
         index switch
         {
             0  => &pullM0<A>,

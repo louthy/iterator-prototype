@@ -8,7 +8,7 @@ static unsafe partial class GManaged<A>
     where A : class
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int push(in StackFrame frame, in ushort ix)
+    static int push(in StackFrame frame, ushort ix)
     {
         // Get a reference to the global
         ref var r = ref frame.globals.AtManaged<A>(ix);
@@ -26,7 +26,7 @@ static unsafe partial class GManaged<A>
         }
     }
 
-    public static IterOp push(in ushort index) =>
+    public static IterOp push(ushort index) =>
         index switch
         {
             0  => &push0,

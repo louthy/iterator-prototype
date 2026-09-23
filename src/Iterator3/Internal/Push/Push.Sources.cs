@@ -19,7 +19,7 @@ static unsafe partial class Push
         frame.globals.AddMutable(value, out var ix) &&
 
         // Pull the value from the global and push it onto the 'vars' stack
-        fun(in frame, GlobalsGen<A>.pull(in ix));
+        fun(in frame, GlobalsGen<A>.pull(ix));
         
     
     [MethodImpl(Optimisations.InliningOnly)]

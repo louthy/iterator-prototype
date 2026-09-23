@@ -8,7 +8,7 @@ static unsafe partial class GManaged<A>
     where A : class
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    static int pull(in StackFrame frame, in ushort ix)
+    static int pull(in StackFrame frame, ushort ix)
     {
         ref var r = ref frame.globals.AtManaged<A>(ix);
         return frame.vars.PushManaged(in r, false)
@@ -16,7 +16,7 @@ static unsafe partial class GManaged<A>
                    : PullState.Void;
     }
     
-    public static IterOp pull(in ushort index) =>
+    public static IterOp pull(ushort index) =>
         index switch
         {
             0  => &pull0,

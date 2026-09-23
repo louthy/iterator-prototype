@@ -14,7 +14,7 @@ readonly struct Globals
     readonly ByteList2 values;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool ResetAtUnmanaged<A>(in ushort ix, out A value)
+    public bool ResetAtUnmanaged<A>(ushort ix, out A value)
         where A : unmanaged =>
         values.RestoreAt(in ix, out value);
 
@@ -120,20 +120,20 @@ readonly struct Globals
         ref AtManaged<Box<A>>(ix).Ref;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AtUnmanaged<A>(in ushort ix, out A value)
+    public bool AtUnmanaged<A>(ushort ix, out A value)
         where A : unmanaged =>
-        values.At(in ix, out value);
+        values.At(ix, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool AtManaged<A>(in ushort ix, out A value)
+    public bool AtManaged<A>(ushort ix, out A value)
         where A : class =>
         objs.At(ix, out value);
 
     [MethodImpl(Optimisations.Default)]
-    public bool AtStruct<A>(in ushort ix, out A value)
+    public bool AtStruct<A>(ushort ix, out A value)
         where A : struct
     {
-        if (AtManaged<Box<A>>(in ix, out var box))
+        if (AtManaged<Box<A>>(ix, out var box))
         {
             value = box.Ref;
             return true;
@@ -213,7 +213,7 @@ readonly struct Globals
     
 
     [MethodImpl(Optimisations.Default)]
-    public bool AtEndStruct<A>(in ushort ix, out Global<A> global)
+    public bool AtEndStruct<A>(ushort ix, out Global<A> global)
         where A : struct
     {
         var count = objs.Count;
@@ -230,7 +230,7 @@ readonly struct Globals
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool AtEndManaged<A>(in ushort ix, out Global<A> global)
+    public bool AtEndManaged<A>(ushort ix, out Global<A> global)
         where A : class
     {
         var count = objs.Count;
@@ -247,7 +247,7 @@ readonly struct Globals
     }
     
     [MethodImpl(Optimisations.Default)]
-    public bool AtEndUnmanaged<A>(in ushort ix, out Global<A> global)
+    public bool AtEndUnmanaged<A>(ushort ix, out Global<A> global)
         where A : unmanaged
     {
         var count = values.Count;

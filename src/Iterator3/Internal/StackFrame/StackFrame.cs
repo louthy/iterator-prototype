@@ -6,19 +6,19 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    public readonly ref Tops tops;
-    public readonly ref Ops ops;
-    public readonly ref Globals globals;
-    public readonly ref Vars vars;
+    public readonly ref readonly Tops tops;
+    public readonly ref readonly Ops ops;
+    public readonly ref readonly Globals globals;
+    public readonly ref readonly Vars vars;
     public readonly Args args;
 
     [MethodImpl(Optimisations.Max)]
-    public StackFrame(ref Fields fields)
+    public StackFrame(in Fields fields)
     {
-        tops = ref Unsafe.AsRef(in fields.tops);
-        ops = ref Unsafe.AsRef(in fields.ops);
-        globals = ref Unsafe.AsRef(in fields.globals);
-        vars = ref Unsafe.AsRef(in fields.vars);
+        tops = ref fields.tops;
+        ops = ref fields.ops;
+        globals = ref fields.globals;
+        vars = ref fields.vars;
     }
         
     [MethodImpl(Optimisations.Default)]
@@ -32,7 +32,7 @@ readonly ref struct StackFrame
         
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops) &&
+        vars.SyncTo(in tops) &&
         
         // Push the current tops onto the stack
         tops.PushFrame(1);
@@ -66,7 +66,7 @@ readonly ref struct StackFrame
         
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops) &&
+        vars.SyncTo(in tops) &&
         
         // Push the current tops onto the stack
         tops.PushFrame(0);
