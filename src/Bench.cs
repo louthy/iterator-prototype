@@ -28,11 +28,9 @@ public abstract class Bench<A>
 
         var elapsed         = TimeSpan.Zero;
         var memoryAllocated = 0L;
-        var memoryRequired  = 0L;
         
         for (var i = 0; i < runs; i++)
         {
-            var total = GC.GetTotalMemory(true)         + 40 /* stopwatch size */;
             var alloc = GC.GetTotalAllocatedBytes(true) + 40 /* stopwatch size */;
             
             // Inner timer begin
@@ -42,14 +40,12 @@ public abstract class Bench<A>
             // Inner timer end
 
             memoryAllocated += Math.Max(0, GC.GetTotalAllocatedBytes(true) - alloc);
-            memoryRequired += Math.Max(0, GC.GetTotalMemory(true)             - total);
             
             elapsed += sw.Elapsed;
         }
     
         elapsed /= runs;
         memoryAllocated /= runs;
-        memoryRequired /= runs;
 
         var memAllocStr = memoryAllocated switch
                           {
@@ -57,17 +53,10 @@ public abstract class Bench<A>
                               < 1024 * 1024 => $"Mem (used): {memoryAllocated / 1024} kb",
                               _             => $"Mem (used): {memoryAllocated / 1024 / 1024} mb",
                           };
-
-        var memRequiredStr = memoryRequired switch
-                             {
-                                 < 10   * 1024 => $"Mem (req): {memoryRequired} bytes",
-                                 < 1024 * 1024 => $"Mem (req): {memoryRequired / 1024} kb",
-                                 _             => $"Mem (req): {memoryRequired / 1024 / 1024} mb",
-                             };
         
         var restore = Console.ForegroundColor;
         Console.ForegroundColor = Color;
-        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t {memAllocStr} \t {memRequiredStr} \t{Explain}");
+        Console.WriteLine($"Elapsed: {elapsed.TotalMicroseconds:F0} µs \tEach: {elapsed.TotalNanoseconds / Count:F3} ns \t {memAllocStr} \t{Explain}");
         Console.ForegroundColor = restore;
         return elapsed;
     }
