@@ -91,12 +91,6 @@ readonly ref struct StackFrame
         [MethodImpl(Optimisations.InliningOnly)]
         get => tops.IsEmpty;
     }
-
-    public bool IsReturn
-    {
-        [MethodImpl(Optimisations.Default)]
-        get => tops.PC == ops.Count;
-    }
         
     [MethodImpl(Optimisations.Default)]
     public unsafe bool Add(IterOp f) =>
@@ -115,38 +109,33 @@ readonly ref struct StackFrame
         return $"[pc:{pc}, objs:{objs}/{tops.ObjsCount}, vals:{vals}/{tops.ValuesCount}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
     }
     
-    [MethodImpl(Optimisations.InliningOnly)]
-    public unsafe IterOp Op(int index) =>
-        ops[index];
+    [MethodImpl(Optimisations.Max)]
+    public ref readonly Op Op(int index) =>
+        ref ops[index];
 
-    [MethodImpl(Optimisations.InliningOnly)]
-    public unsafe IterOp Op(uint index) =>
-        ops[index];
-
-    public int OpsCount
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => ops.Count;
-    }
+    [MethodImpl(Optimisations.Max)]
+    public ref readonly Op Op(uint index) =>
+        ref ops[index];
 
     public int OpsRemaining
     {
         [MethodImpl(Optimisations.InliningOnly)]
-        get => OpsCount - PC;
+        get => ops.Count - tops.PC;
     }
 
-    [MethodImpl(Optimisations.InliningOnly)]
+    [MethodImpl(Optimisations.Max)]
     public void NextOp() =>
         tops.NextOp();
 
-    [MethodImpl(Optimisations.InliningOnly)]
-    public unsafe IterOp CurrentOp()=>
-        Op(PC);
+    public ref readonly Op CurrentOp
+    {
+        [MethodImpl(Optimisations.Max)]
+        get => ref Op(PC);
+    }
 
     public int PC
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => tops.PC;
     }
-
 }

@@ -22,47 +22,44 @@ static class OpsVM
 
         //Log.msg("run entry", in frame);
 
-        unsafe
+        for (var count = frame.OpsRemaining; count != 0; count--)
         {
-            for (var count = frame.OpsRemaining; count != 0; count--)
+            // Read the current instruction
+            var op = frame.CurrentOp;
+
+            // Move the program-counter *before* executing the instruction, this allows
+            // tests like frame.IsReturn to work properly.
+            frame.NextOp();
+
+            // Run the instruction
+            var result = op.Invoke(in frame);
+
+            switch (result)
             {
-                // Read the current instruction
-                var op = frame.CurrentOp();
-
-                // Move the program-counter *before* executing the instruction, this allows
-                // tests like frame.IsReturn to work properly.
-                frame.NextOp();
-
-                // Run the instruction
-                var result = op(in frame);
-
-                switch (result)
-                {
-                    // Void
-                    case 0:
-                        if (!VoidResetToContinuationPoint(in frame))
-                        {
-                            head = default!;
-                            return false;
-                        }
-                        else
-                        {
-                            count = frame.OpsRemaining;
-                            continue;
-                        }
-
-                    // Continue 
-                    case 1:
+                // Void
+                case 0:
+                    if (!VoidResetToContinuationPoint(in frame))
+                    {
+                        head = default!;
+                        return false;
+                    }
+                    else
+                    {
+                        count = frame.OpsRemaining;
                         continue;
+                    }
 
-                    // Pure 
-                    case 2:
-                        PureResetToContinuationPoint(in frame, out head);
-                        return true;
+                // Continue 
+                case 1:
+                    continue;
 
-                    default:
-                        throw new InvalidOperationException();
-                }
+                // Pure 
+                case 2:
+                    PureResetToContinuationPoint(in frame, out head);
+                    return true;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 

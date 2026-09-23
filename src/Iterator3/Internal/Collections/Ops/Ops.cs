@@ -1,10 +1,10 @@
+// ReSharper disable UnassignedReadonlyField
+// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CS8618 
 #pragma warning disable CS0169
 #pragma warning disable CS0649
-// ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -46,23 +46,17 @@ readonly unsafe struct Ops
     readonly Op Fun1E;
     readonly Op Fun1F;
 
-    public IterOp this[int index]
+    public ref readonly Op this[int index]
     {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (IterOp)Unsafe.Add(ref Reference, index).Fun;
+        [MethodImpl(Optimisations.Max)]
+        get => ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), index);
     }
 
-    public IterOp this[uint index]
+    public ref readonly Op this[uint index]
     {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (IterOp)Unsafe.Add(ref Reference, index).Fun;
+        [MethodImpl(Optimisations.Max)]
+        get => ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), index);
     }
-
-    public ref Op Reference
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => ref Unsafe.AsRef(in Fun00);
-    } 
     
     [MethodImpl(Optimisations.Default)]
     public bool Add(in IterOp f)
