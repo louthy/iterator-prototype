@@ -69,56 +69,6 @@ static class OpsVM
                     throw new InvalidOperationException();
             }
         }        
-        
-        /*// If there are no tops, then this is an empty stack, i.e. empty iterator
-        if (frame.IsVoid)
-        {
-            head = default!;
-            return false;
-        }
-
-        //Log.msg("run entry", in frame);
-
-        for (var count = frame.OpsRemaining; count != 0; count--)
-        {
-            // Read the current instruction
-            var op = frame.CurrentOp;
-
-            // Move the program-counter *before* executing the instruction, this allows
-            // tests like frame.IsReturn to work properly.
-            frame.NextOp();
-
-            // Run the instruction
-            var result = op.Invoke(in frame);
-
-            switch (result)
-            {
-                // Void
-                case 0:
-                    if (!VoidResetToContinuationPoint(in frame))
-                    {
-                        head = default!;
-                        return false;
-                    }
-                    else
-                    {
-                        count = frame.OpsRemaining;
-                        continue;
-                    }
-
-                // Continue 
-                case 1:
-                    continue;
-
-                // Pure 
-                case 2:
-                    PureResetToContinuationPoint(in frame, out head);
-                    return true;
-
-                default:
-                    throw new InvalidOperationException();
-            }
-        }*/
 
         // This is where we end up if we haven't been composed with `Iter.pure`. 
         // So, this is an implicit `Iter.pure`.  It yields what's on the stack
@@ -166,7 +116,7 @@ static class OpsVM
         // to say that this generator has no more values to yield.
         if (frame.tops.HasYielded)
         {
-            frame.tops.DecrementYields();
+            frame.tops.ClearYields();
         }
 
         //Log.warn("end-void (more to go)", in frame);
@@ -215,7 +165,7 @@ static class OpsVM
         if(tops.HasYielded)
         {
             // Unmark this frame as yielding
-            tops.DecrementYields();
+            tops.ClearYields();
         }
 
         //Log.terminator("end-pure", in frame);
