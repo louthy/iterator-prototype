@@ -13,7 +13,7 @@ static partial class Pull
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
         return Iter<A>.TryRef(ref ta, out var x) &&
                PullManaged.@return(in frame, in x)
-                   ? PullState.Continue
+                   ? incYield(in frame)
                    : PullState.Void;
     }
     
@@ -24,7 +24,7 @@ static partial class Pull
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
         return Iter<A>.TryRef(ref ta, out var x) &&
                PullUnmanaged.@return(in frame, in x)
-                   ? PullState.Continue
+                   ? incYield(in frame)
                    : PullState.Void;
     }
     
@@ -35,7 +35,7 @@ static partial class Pull
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
         return Iter<A>.TryRef(ref ta, out var x) &&
                PullStruct.@return(in frame, in x)
-                   ? PullState.Continue
+                   ? incYield(in frame)
                    : PullState.Void;
     }
     

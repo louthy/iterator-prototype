@@ -39,6 +39,8 @@ static unsafe partial class Push
         // Start a new co-routine with what's at the top of the stack as an input argument
         fun(in frame, VarsGen<A>.yield);
 
+    public static bool incYield(in StackFrame frame) =>
+        fun(in frame, &Pull.incYield);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(in StackFrame frame, in IterOp f) =>

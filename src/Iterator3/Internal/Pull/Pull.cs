@@ -23,6 +23,13 @@ static partial class Pull
             : PullState.Void;
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static int incYield(in StackFrame frame)
+    {
+        frame.tops.IncrementYields(); 
+        return PullState.Continue;
+    }
+        
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int @continue(in StackFrame frame) =>
         PullState.Continue;
 

@@ -18,6 +18,7 @@ static partial class Pull
         ref var ts = ref PullUnmanaged.arg2<IS>(in frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushUnmanaged(in x, false);
+        frame.tops.IncrementYields();
         //Log.value($"return: {x} : {Ty<A>.Pretty}", in frame);
         return PullState.Continue;
     }
@@ -32,6 +33,7 @@ static partial class Pull
         ref var ts = ref PullUnmanaged.arg2<IS>(in frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushManaged(in x, false);
+        frame.tops.IncrementYields();
         //Log.value($"return: {x} : {Ty<A>.Pretty}", in frame);
         return PullState.Continue;
     }
@@ -46,6 +48,7 @@ static partial class Pull
         ref var ts = ref PullUnmanaged.arg2<IS>(in frame);
         if(!T.Next(in ta, ref ts, out var x)) return PullState.Void;
         frame.vars.PushStruct(in x, false);
+        frame.tops.IncrementYields();
         //Log.value($"return: {x} : {Ty<A>.Pretty}", in frame);
         return PullState.Continue;
     }

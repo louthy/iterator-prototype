@@ -26,16 +26,10 @@ public static partial class Iter
     /// </summary>
     public static IterTake take(int amount) => 
         new (amount);
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> from<A>(params ReadOnlySpan<A> ta)
-    {
-        var array = Arr.create(ta);
-        var frame = Iter<A>.Default(out var iter);
-        return Push.iterable<Arr, ArrState, A>(in frame, array)
-                   ? iter
-                   : default;
-    }
+    public static Iter<A> from<A>(params ReadOnlySpan<A> ta) =>
+        from<Arr, ArrState, A>(Arr.create(ta));
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> from<T, IS, A>(in K<T, A> ta)

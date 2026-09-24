@@ -52,10 +52,10 @@ static unsafe partial class Push
         ref2<IS>(in frame) &&
         
         // Push iterable operation
-        fun(in frame, PullGen<A>.iterable<T, IS>()) &&
+        fun(in frame, PullGen<A>.iterable<T, IS>());/* &&
         
         // Fill the yield variable with the output of the iterable
-        yield<A>(in frame);
+        yield<A>(in frame);*/
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterator<A>(in StackFrame frame, in Iter<A> ta) =>
@@ -70,9 +70,9 @@ static unsafe partial class Push
         ref1<Iter<A>>(in frame) &&
 
         // Push iterator operation
-        fun(in frame, PullGen<A>.iterator) &&
+        fun(in frame, PullGen<A>.iterator)/* &&
         
         // Fill the yield variable with the output of the iterator
-        yield<A>(in frame);
+        yield<A>(in frame)*/;
 
 }
