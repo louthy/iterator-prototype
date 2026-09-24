@@ -35,16 +35,13 @@ static partial class Pull
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool coroutine1(in StackFrame frame) =>
-
         frame.StartScope();
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int coroutine(in StackFrame frame) =>
-
         coroutine1(in frame)
-
-            ? @continue(in frame)
-            : empty(in frame);
+            ? PullState.Continue
+            : PullState.Void;
 
     [MethodImpl(Optimisations.Default)]
     public static int tuple<A, B>(in StackFrame frame) =>

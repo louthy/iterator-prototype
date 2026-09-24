@@ -25,8 +25,8 @@ readonly partial struct Vars
     readonly byte flag18, flag19, flag1A, flag1B, flag1C, flag1D, flag1E /*, flag1F -- we're using this byte for `top` */;
     readonly byte top;
 
-    void PushFlagManaged<A>(bool isCoRoutineArgument)
-        where A : class
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    void PushFlagManaged(bool isCoRoutineArgument)
     {
         // Set the flag for whether this is a coroutine argument
         ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in flag0), top);
@@ -37,8 +37,8 @@ readonly partial struct Vars
         t++;
     }
 
-    void PushFlagUnmanaged<A>(bool isCoRoutineArgument)
-        where A : unmanaged
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    void PushFlagUnmanaged(bool isCoRoutineArgument)
     {
         // Set the flag for whether this is a coroutine argument
         ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in flag0), top);
@@ -49,6 +49,7 @@ readonly partial struct Vars
         t++;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void PopFlag()
     {
         // Decrease top
@@ -101,7 +102,7 @@ readonly partial struct Vars
         if (objs.Push(in value))
         {
             // Set the flag for whether this is a coroutine argument
-            PushFlagManaged<A>(isCoRoutineArgument);
+            PushFlagManaged(isCoRoutineArgument);
             return true;
         }
         else
@@ -117,7 +118,7 @@ readonly partial struct Vars
         if (values.Push(in value))
         {
             // Set the flag for whether this is a coroutine argument
-            PushFlagUnmanaged<A>(isCoRoutineArgument);
+            PushFlagUnmanaged(isCoRoutineArgument);
             return true;
         }
         else

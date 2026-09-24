@@ -33,7 +33,7 @@ readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool PopToTop(int top)
     {
         ref var t = ref Unsafe.AsRef(in Count);
@@ -41,28 +41,26 @@ readonly struct ByteStack
         return true;
     }
         
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Pop<A>()
     {
         var     sizeOf = Unsafe.SizeOf<A>();
         ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
-        
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Pop<A>(out A value)
     {
         var     sizeOf = Unsafe.SizeOf<A>();
         ref var top    = ref Unsafe.AsRef(in Count);
         top -= sizeOf;
         value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), top));
-        
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Dup<A>()
     {
         var     sizeOf = Unsafe.SizeOf<A>();
@@ -80,7 +78,7 @@ readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Peek<A>(out A value)
         where A : unmanaged
     {
@@ -90,12 +88,12 @@ readonly struct ByteStack
         return true;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref A PeekAt<A>()
         where A : unmanaged =>
         ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count - Unsafe.SizeOf<A>()));
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Push<A>(in A value)
         where A : unmanaged
     {
@@ -109,7 +107,7 @@ readonly struct ByteStack
         return true;
     }
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Prepend<A>(in A value)
         where A : unmanaged
     {

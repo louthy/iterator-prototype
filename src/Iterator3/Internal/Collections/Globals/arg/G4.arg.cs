@@ -4,7 +4,7 @@ using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 
 namespace IteratorPrototype.Iterator3;
 
-static unsafe partial class G4<A>
+static unsafe partial class G4
 {
     [MethodImpl(Optimisations.InliningOnly)]
     static int arg(in StackFrame frame, ushort ix)

@@ -9,7 +9,7 @@ static unsafe partial class Push
 {
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool forever<A>(in StackFrame frame, in A value) =>
-
+        
         yield(in frame, in value);
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -20,19 +20,6 @@ static unsafe partial class Push
 
         // Pull the value from the global and push it onto the 'vars' stack
         fun(in frame, GlobalsGen<A>.pull(ix));
-        
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static bool iterableSetup<T, IS, A>(in StackFrame frame, in K<T, A> ta)
-        where T : Tr.IterableImmutable<T, IS>
-        where IS : unmanaged =>
-        
-        // Push the iterable instance onto the globals-list
-        declare1(in frame, in ta) &&
-        
-        // Push a slot for the iterable state onto the globals-list
-        declare2(in frame, T.SetupImmutable(in ta));
-
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterable<T, IS, A>(in StackFrame frame, in K<T, A> ta)
@@ -40,7 +27,7 @@ static unsafe partial class Push
         where IS : unmanaged  =>
         
         // Initialise the iterable state
-        iterableSetup<T, IS, A>(in frame, in ta) &&
+        declare(in frame, in ta, T.SetupImmutable(in ta)) &&
         
         // Start the co-routine
         coroutine(in frame) &&
@@ -52,27 +39,21 @@ static unsafe partial class Push
         ref2<IS>(in frame) &&
         
         // Push iterable operation
-        fun(in frame, PullGen<A>.iterable<T, IS>());/* &&
-        
-        // Fill the yield variable with the output of the iterable
-        yield<A>(in frame);*/
+        fun(in frame, PullGen<A>.iterable<T, IS>());
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterator<A>(in StackFrame frame, in Iter<A> ta) =>
-        
+
         // Push the iterator
         declare1(in frame, ta) &&
-        
+
         // Start the co-routine
         coroutine(in frame) &&
-        
+
         // Push the iterator to the stack
         ref1<Iter<A>>(in frame) &&
 
         // Push iterator operation
-        fun(in frame, PullGen<A>.iterator)/* &&
-        
-        // Fill the yield variable with the output of the iterator
-        yield<A>(in frame)*/;
+        fun(in frame, PullGen<A>.iterator);
 
 }
