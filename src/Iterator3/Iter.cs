@@ -25,7 +25,7 @@ public readonly struct Iter<A>
         tail = this;
         var frame = tail.Frame();
         //Log.scope();
-        var r = OpsVM.Run(in frame, out head);// tail.fields.ops.Run(in frame, out head);
+        var r = OpsVM<A>.Run(in frame, out head);// tail.fields.ops.Run(in frame, out head);
         //Log.descope();
         return r;
     }
@@ -35,7 +35,7 @@ public readonly struct Iter<A>
     {
         var frame = tail.Frame();
         //Log.scope();
-        var r = OpsVM.Run(in frame, out head); //var r = tail.fields.ops.Run(in frame, out head);
+        var r = OpsVM<A>.Run(in frame, out head); //var r = tail.fields.ops.Run(in frame, out head);
         //Log.descope();
         return r;
     }

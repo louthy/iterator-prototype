@@ -55,6 +55,36 @@ readonly ref struct StackFrame
         // Pop the current tops
         tops.ResetFrame();
 
+    [MethodImpl(Optimisations.Default)]
+    public bool ResetFrameManaged<A>(out A result) 
+        where A : class =>
+        
+        // Get the return value
+        vars.PopManaged(out result, true) &&
+
+        // Pop the current tops
+        tops.ResetFrame();
+
+    [MethodImpl(Optimisations.Default)]
+    public bool ResetFrameUnmanaged<A>(out A result) 
+        where A : unmanaged =>
+        
+        // Get the return value
+        vars.PopUnmanaged(out result, true) &&
+
+        // Pop the current tops
+        tops.ResetFrame();
+
+    [MethodImpl(Optimisations.Default)]
+    public bool ResetFrameStruct<A>(out A result) 
+        where A : struct =>
+        
+        // Get the return value
+        vars.PopStruct(out result, true) &&
+
+        // Pop the current tops
+        tops.ResetFrame();
+
     [MethodImpl(Optimisations.InliningOnly)]
     public bool VoidScope() =>
         
