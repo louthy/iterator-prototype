@@ -45,15 +45,15 @@ static class OpsVM
             {
                 // Void
                 case 0:
-                    if(!VoidResetToContinuationPoint(in frame))
-                    {
-                        head = default!;
-                        return false;
-                    }
-                    else
+                    if (VoidResetToContinuationPoint(in frame))
                     {
                         count = frame.OpsRemaining;
                         continue;
+                    }
+                    else
+                    {
+                        head = default!;
+                        return false;
                     }
 
                 // Continue 
