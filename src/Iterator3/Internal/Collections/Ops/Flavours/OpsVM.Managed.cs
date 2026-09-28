@@ -25,6 +25,11 @@ static class OpsVMManaged<A>
         // If there are no tops, then this is an empty stack, i.e. empty iterator
         if (frame.IsVoid)
         {
+            if (!frame.ops.IsRunnable)
+            {
+                // TODO: Fall back to a slower backup implementation
+                throw new NotImplementedException("The iterator expression is too large to run in the VM");
+            }
             head = null!;
             return false;
         }

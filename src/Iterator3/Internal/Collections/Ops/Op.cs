@@ -3,25 +3,30 @@ using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
-[SkipLocalsInit]
-[StructLayout(LayoutKind.Explicit)]
-[method: MethodImpl(Optimisations.Max)]
-readonly struct Op(nint fun)
+enum OpReturn : byte
 {
-    [FieldOffset(0)]
-    internal readonly nint Fun = fun;
+    Default = 0,
+    CanVoid = 1,
+    CoRoutine = 2
+    
+    // Can't use a number bigger than 7 here because we're using the
+    // lower bits of the function address for storage
+}
 
-    [MethodImpl(Optimisations.Max)]
-    public unsafe Op(IterOp fun) : this((nint)fun)
-    {
-    }
+[SkipLocalsInit]
+[StructLayout(LayoutKind.Sequential)]
+[method: MethodImpl(Optimisations.Max)]
+readonly struct Op(nint fun, OpReturn @return)
+{
+    readonly nint Fun = fun | (byte)@return;
+    readonly OpReturn @return;
 
     [MethodImpl(Optimisations.Max)]
     public int Invoke(in StackFrame frame)
     {
         unsafe
         {
-            return ((IterOp)Fun)(in frame);
+            return ((IterOp)(Fun & ~7))(in frame);
         }
     }
 }

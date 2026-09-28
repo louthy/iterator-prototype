@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Types;
 
@@ -16,6 +17,7 @@ public static class Ty<A>
     public static readonly bool IsUnmanaged;
     public static readonly bool IsValue;
     public static readonly string Pretty;
+    public static readonly (short VarBytes, short VarObjs) VarSizes;
 
     static Ty()
     {
@@ -30,6 +32,21 @@ public static class Ty<A>
                       : IsValue 
                           ? TyFlavour.Struct 
                           : TyFlavour.Managed;
+
+        switch (Flavour)
+        {
+            case TyFlavour.Managed:
+                VarSizes = (0, 1);
+                break;
+            
+            case TyFlavour.Struct:
+                VarSizes = (0, 1);
+                break;
+            
+            case TyFlavour.Unmanaged:
+                VarSizes = ((short)Unsafe.SizeOf<A>(), 0);
+                break;
+        }
     }
 
     static bool IsTypeUnmanaged(Type type)

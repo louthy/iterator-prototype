@@ -10,7 +10,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 [SkipLocalsInit]
 readonly struct Tops
 {
-    const int Capacity = 16;
+    public const int Capacity = 16;
     
     // Program counter: Bits 0 to 7  (8 bits)
     // Values top:      Bits 8 to 15 (8 bits)

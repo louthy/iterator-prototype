@@ -33,6 +33,32 @@ static partial class Pull
     }    
     
     [MethodImpl(Optimisations.Default)]
+    public static int bind2<A, B>(in StackFrame frame)
+    {
+        PullStruct.pop<Iter<A>>(in frame, out var ta);
+        ref var tb = ref PullStruct.arg1<Iter<B>>(in frame);
+        ref var f  = ref PullManaged.arg2<Func<A, Iter<B>>>(in frame);
+        
+        while (true)
+        {
+            if (tb.TryGetValue(out var b))
+            {
+                return @return(in frame, b)
+                           ? PullState.Continue
+                           : PullState.Void;
+            }
+
+            if (ta.TryGetValue(out var a))
+            {
+                tb = f(a);
+                continue;
+            }
+
+            return PullState.Void;
+        }
+    }    
+    
+    [MethodImpl(Optimisations.Default)]
     public static int flatten<A>(in StackFrame frame) =>
 
         iterator<A>(in frame) switch

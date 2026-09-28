@@ -13,7 +13,7 @@ static unsafe partial class Insert
         frame.globals.AddMutable(in value, out var ix) &&
 
         // Each time this runs, we reset the global to its declared value
-        fun(in frame, GlobalsGen<A>.reset(ix));
+        fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg<A>(in StackFrame frame, ushort fromEnd) =>
@@ -24,10 +24,10 @@ static unsafe partial class Insert
         // The operation to load the global has the index built-in
         fromEnd switch
         {
-            1 => fun(in frame, G1.arg(g.Index)),   
-            2 => fun(in frame, G2.arg(g.Index)),   
-            3 => fun(in frame, G3.arg(g.Index)),   
-            4 => fun(in frame, G4.arg(g.Index)),
+            1 => fun(in frame, G1.arg(g.Index), OpReturn.Default),   
+            2 => fun(in frame, G2.arg(g.Index), OpReturn.Default),   
+            3 => fun(in frame, G3.arg(g.Index), OpReturn.Default),   
+            4 => fun(in frame, G4.arg(g.Index), OpReturn.Default),
             _ => throw new InvalidOperationException("argument indexes can only be 1, 2, 3 or 4")
         };
 
@@ -38,7 +38,7 @@ static unsafe partial class Insert
         frame.globals.AddMutable(in value, out var ix) &&
 
         // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G1.arg(ix));
+        fun(in frame, G1.arg(ix), OpReturn.Default);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg2<A>(in StackFrame frame, in A value) =>
@@ -47,7 +47,7 @@ static unsafe partial class Insert
         frame.globals.AddMutable(in value, out var ix) &&
 
         // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G2.arg(ix));    
+        fun(in frame, G2.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg3<A>(in StackFrame frame, in A value) =>
@@ -56,7 +56,7 @@ static unsafe partial class Insert
         frame.globals.AddMutable(in value, out var ix) &&
 
         // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G3.arg(ix));    
+        fun(in frame, G3.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg4<A>(in StackFrame frame, in A value) =>
@@ -65,5 +65,5 @@ static unsafe partial class Insert
         frame.globals.AddMutable(in value, out var ix) &&
 
         // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G4.arg(ix));    
+        fun(in frame, G4.arg(ix), OpReturn.Default);    
 }

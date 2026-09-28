@@ -119,16 +119,16 @@ readonly ref struct StackFrame
     public bool IsVoid
     {
         [MethodImpl(Optimisations.InliningOnly)]
-        get => tops.IsEmpty;
+        get => ops.IsRunnable && tops.IsEmpty;
     }
         
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Add(IterOp f) =>
-        ops.Add(f);
-        
+    public unsafe bool Add(IterOp f, int varsBytes, int varsObjs, OpReturn @return) =>
+        ops.Add(f, varsBytes, varsObjs, @return);
+
     [MethodImpl(Optimisations.Default)]
-    public unsafe bool Prepend(IterOp f) =>
-        ops.Prepend(f);
+    public unsafe bool Prepend(IterOp f, int varsBytes, int varsObjs, OpReturn @return) =>
+        ops.Prepend(f, varsBytes, varsObjs, @return);
 
     public override string ToString()
     {

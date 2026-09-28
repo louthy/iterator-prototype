@@ -25,7 +25,7 @@ public readonly struct Iter<A>
         tail = this;
         var frame = tail.Frame();
         //Log.scope();
-        var r = OpsVM<A>.Run(in frame, out head);// tail.fields.ops.Run(in frame, out head);
+        var r = OpsVM<A>.Run(in frame, out head);
         //Log.descope();
         return r;
     }
@@ -35,7 +35,7 @@ public readonly struct Iter<A>
     {
         var frame = tail.Frame();
         //Log.scope();
-        return OpsVM<A>.Run(in frame, out head); //var r = tail.fields.ops.Run(in frame, out head);
+        return OpsVM<A>.Run(in frame, out head); 
         //Log.descope();
     }
 
@@ -69,7 +69,7 @@ public readonly struct Iter<A>
     internal static StackFrame Default(out Iter<A> self)
     {
         self = default;
-        var f = new StackFrame(ref self.fieldsRef);
+        var f = new StackFrame(in self.fieldsRef);
         
         // We need an initial scope
         f.Push();
@@ -85,19 +85,19 @@ public readonly struct Iter<A>
     internal static StackFrame Next(in Iter<A> current, out Iter<A> next)
     {
         next = current; // Copy
-        return new StackFrame(ref next.fieldsRef);
+        return new StackFrame(in next.fieldsRef);
     }
 
     [MethodImpl(Optimisations.Default)]
     internal static StackFrame Next<B>(in Iter<A> current, out Iter<B> next)
     {
         current.CopyCast(out next); // Copy
-        return new StackFrame(ref next.fieldsRef);
+        return new StackFrame(in next.fieldsRef);
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
     internal StackFrame Frame() =>
-        new(ref fieldsRef);
+        new(in fieldsRef);
 
     [MethodImpl(Optimisations.Default)]
     internal ref Iter<B> Cast<B>() =>

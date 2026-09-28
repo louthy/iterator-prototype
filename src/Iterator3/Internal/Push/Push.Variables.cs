@@ -14,7 +14,7 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx1) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix));
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -25,7 +25,7 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx2) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix));
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -36,7 +36,7 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix));
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -47,7 +47,7 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix));
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
     }
     
     public static bool declare<A, B>(in StackFrame frame, in A value1, in B value2)
@@ -60,8 +60,8 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx2) = ix2;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix1)) && 
-               fun(in frame, GlobalsGen<B>.reset(ix2));
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default);
     }
     
     public static bool declare<A, B, C>(in StackFrame frame, in A value1, in B value2, in C value3)
@@ -76,9 +76,9 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx3) = ix3;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix1)) && 
-               fun(in frame, GlobalsGen<B>.reset(ix2)) && 
-               fun(in frame, GlobalsGen<C>.reset(ix3));
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<C>.reset(ix3), OpReturn.Default);
     }
     
     public static bool declare<A, B, C, D>(in StackFrame frame, in A value1, in B value2, in C value3, in D value4)
@@ -95,10 +95,10 @@ static unsafe partial class Push
         Unsafe.AsRef(in frame.args.GlobalIx4) = ix4;
 
         // Each time this runs, we reset the global to its declared value
-        return fun(in frame, GlobalsGen<A>.reset(ix1)) && 
-               fun(in frame, GlobalsGen<B>.reset(ix2)) && 
-               fun(in frame, GlobalsGen<C>.reset(ix3)) && 
-               fun(in frame, GlobalsGen<D>.reset(ix4));
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<C>.reset(ix3), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<D>.reset(ix4), OpReturn.Default);
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -149,25 +149,25 @@ static unsafe partial class Push
     public static bool ref1<A>(in StackFrame frame) =>
         
         // Each time this runs we make the global available as an argument 
-        fun(in frame, G1.arg(frame.args.GlobalIx1));    
+        fun(in frame, G1.arg(frame.args.GlobalIx1), OpReturn.Default);    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool ref2<A>(in StackFrame frame) =>
         
         // Each time this runs we make the global available as an argument 
-        fun(in frame, G2.arg(frame.args.GlobalIx2));    
+        fun(in frame, G2.arg(frame.args.GlobalIx2), OpReturn.Default);    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool ref3<A>(in StackFrame frame) =>
         
         // Each time this runs we make the global available as an argument 
-        fun(in frame, G3.arg(frame.args.GlobalIx3));    
+        fun(in frame, G3.arg(frame.args.GlobalIx3), OpReturn.Default);    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool ref4<A>(in StackFrame frame) =>
         
         // Each time this runs we make the global available as an argument 
-        fun(in frame, G4.arg(frame.args.GlobalIx4));    
+        fun(in frame, G4.arg(frame.args.GlobalIx4), OpReturn.Default);    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg1<A>(in StackFrame frame, in A value) =>
@@ -176,7 +176,7 @@ static unsafe partial class Push
         frame.globals.AddConst(in value, out var ix) &&
         
         // Make sure it gets loaded from the globals each time we run
-        fun(in frame, G1.arg(ix));    
+        fun(in frame, G1.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg2<A>(in StackFrame frame, in A value) =>
@@ -185,7 +185,7 @@ static unsafe partial class Push
         frame.globals.AddConst(in value, out var ix) &&
         
         // Make sure it gets loaded from the globals each time we run
-        fun(in frame, G2.arg(ix));    
+        fun(in frame, G2.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg3<A>(in StackFrame frame, in A value) =>
@@ -194,7 +194,7 @@ static unsafe partial class Push
         frame.globals.AddConst(in value, out var ix) &&
         
         // Make sure it gets loaded from the globals each time we run
-        fun(in frame, G3.arg(ix));    
+        fun(in frame, G3.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg4<A>(in StackFrame frame, in A value) =>
@@ -203,5 +203,5 @@ static unsafe partial class Push
         frame.globals.AddConst(in value, out var ix) &&
         
         // Make sure it gets loaded from the globals each time we run
-        fun(in frame, G4.arg(ix));    
+        fun(in frame, G4.arg(ix), OpReturn.Default);    
 }

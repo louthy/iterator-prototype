@@ -25,10 +25,7 @@ static unsafe partial class Push
         ref2<Iter<Iter<A>>>(in frame) &&
 
         // Iterate over multiple iterators
-        fun(in frame, &Pull.flatten<A>) &&
-            
-        // Fill the yield variable with the output of the iterator
-        yield<A>(in frame);
+        fun<A>(in frame, &Pull.flatten<A>, OpReturn.CanVoid);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool bind<A, B>(in StackFrame frame, in Iter<A> ta, in Func<A, Iter<B>> f) =>
@@ -52,8 +49,23 @@ static unsafe partial class Push
         arg3(in frame, in f) &&
         
         // Add the bind operation
-        fun(in frame, &Pull.bind<A, B>) &&
-            
-        // Fill the yield variable with the output of the iterator
-        yield<B>(in frame);
+        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoid);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool bind<A, B>(in StackFrame frame, in Func<A, Iter<B>> f) =>
+        
+        // Create a slot for the bind result iterator to go
+        declare2(in frame, default(Iter<B>)) &&
+        
+        // Start the co-routine
+        coroutine(in frame) &&
+        
+        // Load the current bind result iterator 
+        ref1<Iter<B>>(in frame) &&
+        
+        // Load the bind function
+        arg2(in frame, in f) &&
+        
+        // Add the bind operation
+        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoid);    
 }

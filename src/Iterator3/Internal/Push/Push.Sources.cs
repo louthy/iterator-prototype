@@ -19,7 +19,7 @@ static unsafe partial class Push
         frame.globals.AddMutable(value, out var ix) &&
 
         // Pull the value from the global and push it onto the 'vars' stack
-        fun(in frame, GlobalsGen<A>.pull(ix));
+        fun<A>(in frame, GlobalsGen<A>.pull(ix), OpReturn.Default);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterable<T, IS, A>(in StackFrame frame, in K<T, A> ta)
@@ -39,7 +39,7 @@ static unsafe partial class Push
         ref2<IS>(in frame) &&
         
         // Push iterable operation
-        fun(in frame, PullGen<A>.iterable<T, IS>());
+        fun<A>(in frame, PullGen<A>.iterable<T, IS>(), OpReturn.CanVoid);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterator<A>(in StackFrame frame, in Iter<A> ta) =>
@@ -54,6 +54,6 @@ static unsafe partial class Push
         ref1<Iter<A>>(in frame) &&
 
         // Push iterator operation
-        fun(in frame, PullGen<A>.iterator);
+        fun<A>(in frame, PullGen<A>.iterator, OpReturn.CanVoid);
 
 }
