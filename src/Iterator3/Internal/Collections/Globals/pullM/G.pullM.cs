@@ -10,9 +10,8 @@ static unsafe partial class G
     static int pullM<A>(in StackFrame frame, ushort ix)
     {
         var g = new Global<A>(ix);
-        return frame.vars.PushUnmanaged(in g, false) 
-                   ? PullState.Continue 
-                   : PullState.Void;
+        frame.vars.PushUnmanaged(in g, false);
+        return PullState.Continue;
     }
         
     public static IterOp pullM<A>(ushort index) =>

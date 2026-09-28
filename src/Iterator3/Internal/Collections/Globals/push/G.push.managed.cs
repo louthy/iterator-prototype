@@ -14,16 +14,11 @@ static unsafe partial class GManaged<A>
         ref var r = ref frame.globals.AtManaged<A>(ix);
         
         // Pop the value from the stack
-        if (frame.vars.PopManaged<A>(out var x, false))
-        {
-            // Set the global to be what was on the top of the stack
-            r = x;
-            return PullState.Continue;
-        }
-        else
-        {
-            return PullState.Void;
-        }
+        frame.vars.PopManaged<A>(out var x, false);
+        
+        // Set the global to be what was on the top of the stack
+        r = x;
+        return PullState.Continue;
     }
 
     public static IterOp push(ushort index) =>

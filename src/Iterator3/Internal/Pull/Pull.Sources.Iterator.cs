@@ -11,10 +11,15 @@ static partial class Pull
         where A : class
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
-        return Iter<A>.TryRef(ref ta, out var x) &&
-               PullManaged.@return(in frame, in x)
-                   ? incYield(in frame)
-                   : PullState.Void;
+        if (Iter<A>.TryRef(ref ta, out var x))
+        {
+            PullManaged.@return(in frame, in x);
+            return incYield(in frame);
+        }
+        else
+        {
+            return PullState.Void;
+        }
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -22,10 +27,15 @@ static partial class Pull
         where A : unmanaged
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
-        return Iter<A>.TryRef(ref ta, out var x) &&
-               PullUnmanaged.@return(in frame, in x)
-                   ? incYield(in frame)
-                   : PullState.Void;
+        if (Iter<A>.TryRef(ref ta, out var x))
+        {
+            PullUnmanaged.@return(in frame, in x);
+            return incYield(in frame);
+        }
+        else
+        {
+            return PullState.Void;
+        }
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -33,10 +43,15 @@ static partial class Pull
         where A : struct
     {
         ref var ta = ref PullStruct.arg1<Iter<A>>(in frame);
-        return Iter<A>.TryRef(ref ta, out var x) &&
-               PullStruct.@return(in frame, in x)
-                   ? incYield(in frame)
-                   : PullState.Void;
+        if (Iter<A>.TryRef(ref ta, out var x))
+        {
+            PullStruct.@return(in frame, in x);
+            return incYield(in frame);
+        }
+        else
+        {
+            return PullState.Void;
+        }
     }
     
 

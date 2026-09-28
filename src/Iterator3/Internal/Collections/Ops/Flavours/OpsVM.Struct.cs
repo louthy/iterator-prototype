@@ -111,11 +111,7 @@ static class OpsVMStruct<A>
             return;
         }
 
-        if (!vars.PopStruct(out head, false))
-        {
-            // Something has gone wrong
-            throw new InvalidOperationException("PureResetToContinuationPoint: StackFrame.vars.Pop() failed");
-        }
+        vars.PopStruct(out head, false);
 
         //Log.value($"yielded: {head}", in frame);
             

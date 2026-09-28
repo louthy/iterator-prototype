@@ -38,11 +38,11 @@ abstract class VarsGen<A>
         Instance.Yield;
 
     public abstract unsafe IterOp Yield { get; }
-    public abstract bool DupImpl(ref Vars vars);    
-    public abstract bool PopImpl(ref Vars vars, out A value, bool force);
-    public abstract bool PopImpl(ref Vars vars, bool force);
-    public abstract bool PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument);
-    public abstract bool PeekImpl(ref Vars vars, out A value);    
+    public abstract void DupImpl(ref Vars vars);    
+    public abstract void PopImpl(ref Vars vars, out A value, bool force);
+    public abstract void PopImpl(ref Vars vars, bool force);
+    public abstract void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument);
+    public abstract void PeekImpl(ref Vars vars, out A value);    
     public abstract ref A PeekAtImpl(ref Vars vars);    
 }
 
@@ -56,23 +56,23 @@ class ManagedVars<A> : VarsGen<A>
         &Vars.yieldManaged<A>;
     
     [MethodImpl(Optimisations.Default)]
-    public override bool DupImpl(ref Vars vars) =>
+    public override void DupImpl(ref Vars vars) =>
         vars.DupManaged<A>();
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, out A value, bool force) =>
+    public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopManaged(out value, force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, bool force) =>
+    public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopManaged(force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
+    public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushManaged(value, isCoRoutineArgument);
 
     [MethodImpl(Optimisations.Default)]
-    public override bool PeekImpl(ref Vars vars, out A value) =>
+    public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekManaged(out value);
 
     [MethodImpl(Optimisations.Default)]
@@ -90,23 +90,23 @@ class StructVars<A> : VarsGen<A>
         &Vars.yieldStruct<A>;
     
     [MethodImpl(Optimisations.Default)]
-    public override bool DupImpl(ref Vars vars) =>
+    public override void DupImpl(ref Vars vars) =>
         vars.DupStruct<A>();
 
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, out A value, bool force) =>
+    public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopStruct(out value, force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, bool force) =>
+    public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopStruct<A>(force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
+    public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushStruct(value, isCoRoutineArgument);
 
     [MethodImpl(Optimisations.Default)]
-    public override bool PeekImpl(ref Vars vars, out A value) =>
+    public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekStruct(out value);
 
     [MethodImpl(Optimisations.Default)]
@@ -124,23 +124,23 @@ class UnmanagedVars<A> : VarsGen<A>
         &Vars.yieldUnmanaged<A>;
 
     [MethodImpl(Optimisations.Default)]
-    public override bool DupImpl(ref Vars vars) =>
+    public override void DupImpl(ref Vars vars) =>
         vars.DupUnmanaged<A>();
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, out A value, bool force) =>
+    public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopUnmanaged(out value, force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PopImpl(ref Vars vars, bool force) =>
+    public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopUnmanaged<A>(force);
     
     [MethodImpl(Optimisations.Default)]
-    public override bool PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
+    public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushUnmanaged(value, isCoRoutineArgument);
 
     [MethodImpl(Optimisations.Default)]
-    public override bool PeekImpl(ref Vars vars, out A value) =>
+    public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekUnmanaged(out value);
 
     [MethodImpl(Optimisations.Default)]

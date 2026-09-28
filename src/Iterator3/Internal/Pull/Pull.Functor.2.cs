@@ -16,10 +16,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -29,10 +28,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -42,12 +40,10 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedUnmanagedManaged<A, B, C>(in StackFrame frame)
@@ -56,10 +52,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -69,10 +64,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -82,12 +76,10 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedStructManaged<A, B, C>(in StackFrame frame)
@@ -96,10 +88,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -109,10 +100,9 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -122,14 +112,11 @@ static partial class Pull
         where C : class
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullManaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullManaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
-
-
+    
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedManagedUnmanaged<A, B, C>(in StackFrame frame)
         where A : class
@@ -137,10 +124,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -150,10 +136,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -163,10 +148,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -176,10 +160,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -189,10 +172,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -202,10 +184,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -215,10 +196,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -228,10 +208,9 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -241,13 +220,10 @@ static partial class Pull
         where C : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullUnmanaged.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullUnmanaged.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
-
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedManagedStruct<A, B, C>(in StackFrame frame)
@@ -256,10 +232,9 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -269,10 +244,9 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -282,12 +256,10 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedUnmanagedStruct<A, B, C>(in StackFrame frame)
@@ -296,10 +268,9 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -309,10 +280,9 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -322,12 +292,10 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return pop<A, B>(in frame, out var a, out var b) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        pop<A, B>(in frame, out var a, out var b);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
-
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static int bimapManagedStructStruct<A, B, C>(in StackFrame frame)
@@ -336,11 +304,10 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return PullStruct.pop<B>(in frame, out var b)  &&
-               PullManaged.pop<A>(in frame, out var a) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<B>(in frame, out var b);
+        PullManaged.pop<A>(in frame, out var a);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -350,11 +317,10 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return PullStruct.pop<B>(in frame, out var b)    &&
-               PullUnmanaged.pop<A>(in frame, out var a) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<B>(in frame, out var b);
+        PullUnmanaged.pop<A>(in frame, out var a);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -364,11 +330,10 @@ static partial class Pull
         where C : struct
     {
         var f = PullManaged.arg1<Func<A, B, C>>(in frame);
-        return PullStruct.pop<B>(in frame, out var b) &&
-               PullStruct.pop<A>(in frame, out var a) &&
-               PullStruct.@return(in frame, f(a, b))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<B>(in frame, out var b);
+        PullStruct.pop<A>(in frame, out var a);
+        PullStruct.@return(in frame, f(a, b));
+        return PullState.Continue;
     }
 
 

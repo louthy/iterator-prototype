@@ -73,8 +73,8 @@ readonly unsafe struct Ops
         ref var isRunnable = ref Unsafe.AsRef(in IsRunnable);
         ref var entry      = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
 
-        varBytesR = (short)(varBytesR + Math.Max(0, varsBytes));
-        varObjsR = (short)(varObjsR   + Math.Max(0, varsObjs));
+        varBytesR = (short)(varBytesR + varsBytes);
+        varObjsR = (short)(varObjsR   + varsObjs);
         framesR = (short)(framesR     + (@return == OpReturn.CoRoutine ? 1 : 0));
         
         isRunnable = varBytesR < ByteStack.Capacity &&
@@ -103,8 +103,8 @@ readonly unsafe struct Ops
             ref Unsafe.As<Op, byte>(ref start), 
             (uint)(Unsafe.SizeOf<Op>() * count));
 
-        varBytesR = (short)(varBytesR + Math.Max(0, varsBytes));
-        varObjsR = (short)(varObjsR   + Math.Max(0, varsObjs));
+        varBytesR = (short)(varBytesR + varsBytes);
+        varObjsR = (short)(varObjsR   + varsObjs);
         framesR = (short)(framesR     + (@return == OpReturn.CoRoutine ? 1 : 0));
 
         isRunnable = varBytesR < ByteStack.Capacity &&

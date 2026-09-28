@@ -111,11 +111,7 @@ static class OpsVMUnmanaged<A>
             return;
         }
 
-        if (!vars.PopUnmanaged(out head, false))
-        {
-            // Something has gone wrong
-            throw new InvalidOperationException("PureResetToContinuationPoint: StackFrame.vars.Pop() failed");
-        }
+        vars.PopUnmanaged(out head, false);
 
         //Log.value($"yielded: {head}", in frame);
             

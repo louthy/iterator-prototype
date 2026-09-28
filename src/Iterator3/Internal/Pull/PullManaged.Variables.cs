@@ -11,40 +11,38 @@ static partial class PullManaged
     /// Pushes the return value to the stack
     /// </summary>
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool @return<A>(in StackFrame frame, in A value)
+    public static void @return<A>(in StackFrame frame, in A value)
         where A : class
     {
-        var r = frame.vars.PushManaged(value, false);
+        frame.vars.PushManaged(value, false);
         //Log.terminator($"return {value} : {Ty<A>.Pretty}", in frame);
-        return r;        
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool pop<A>(in StackFrame frame, out A value)
+    public static void pop<A>(in StackFrame frame, out A value)
         where A : class
     {
-        var r = frame.vars.PopManaged(out value, false);
+        frame.vars.PopManaged(out value, false);
         //Log.value($"pop {value} : {Ty<A>.Pretty}", in frame);
-        return r;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg1<A>(in StackFrame frame, out A value)  
+    public static void arg1<A>(in StackFrame frame, out A value)  
         where A : class =>
         frame.globals.AtManaged(frame.args.GlobalIx1, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg2<A>(in StackFrame frame, out A value)  
+    public static void arg2<A>(in StackFrame frame, out A value)  
         where A : class =>
         frame.globals.AtManaged(frame.args.GlobalIx2, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg3<A>(in StackFrame frame, out A value)  
+    public static void arg3<A>(in StackFrame frame, out A value)  
         where A : class =>
         frame.globals.AtManaged(frame.args.GlobalIx3, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg4<A>(in StackFrame frame, out A value)  
+    public static void arg4<A>(in StackFrame frame, out A value)  
         where A : class =>
         frame.globals.AtManaged(frame.args.GlobalIx4, out value);
 
@@ -69,34 +67,30 @@ static partial class PullManaged
         ref frame.globals.AtManaged<A>(frame.args.GlobalIx4);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update1<A>(in StackFrame frame, in A value) 
+    public static void update1<A>(in StackFrame frame, in A value) 
         where A : class 
     {
         frame.globals.AtManaged<A>(frame.args.GlobalIx1) = value;
-        return true;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update2<A>(in StackFrame frame, in A value) 
+    public static void update2<A>(in StackFrame frame, in A value) 
         where A : class 
     {
         frame.globals.AtManaged<A>(frame.args.GlobalIx2) = value;
-        return true;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update3<A>(in StackFrame frame, in A value) 
+    public static void update3<A>(in StackFrame frame, in A value) 
         where A : class 
     {
         frame.globals.AtManaged<A>(frame.args.GlobalIx3) = value;
-        return true;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool update4<A>(in StackFrame frame, in A value) 
+    public static void update4<A>(in StackFrame frame, in A value) 
         where A : class 
     {
         frame.globals.AtManaged<A>(frame.args.GlobalIx4) = value;
-        return true;
     }
 }

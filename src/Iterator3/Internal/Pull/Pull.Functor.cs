@@ -9,17 +9,16 @@ static partial class Pull
     [MethodImpl(Optimisations.InliningOnly)]
     public static unsafe int map<A, B>(in StackFrame frame) =>
         PullGen<A, B>.map(in frame);
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static int mapManagedManaged<A, B>(in StackFrame frame)
         where A : class
         where B : class
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullManaged.pop<A>(in frame, out var x) &&
-               PullManaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullManaged.pop<A>(in frame, out var x);
+        PullManaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -28,10 +27,9 @@ static partial class Pull
         where B : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullManaged.pop<A>(in frame, out var x) &&
-               PullUnmanaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullManaged.pop<A>(in frame, out var x);
+        PullUnmanaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -40,12 +38,10 @@ static partial class Pull
         where B : struct
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullManaged.pop<A>(in frame, out var x) &&
-               PullStruct.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullManaged.pop<A>(in frame, out var x);
+        PullStruct.@return(in frame, f(x));
+        return PullState.Continue;
     }
-
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static int mapUnmanagedManaged<A, B>(in StackFrame frame)
@@ -53,10 +49,9 @@ static partial class Pull
         where B : class
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullUnmanaged.pop<A>(in frame, out var x) &&
-               PullManaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullUnmanaged.pop<A>(in frame, out var x);
+        PullManaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -65,10 +60,9 @@ static partial class Pull
         where B : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullUnmanaged.pop<A>(in frame, out var x) &&
-               PullUnmanaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullUnmanaged.pop<A>(in frame, out var x);
+        PullUnmanaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -77,10 +71,9 @@ static partial class Pull
         where B : struct
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullUnmanaged.pop<A>(in frame, out var x) &&
-               PullStruct.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullUnmanaged.pop<A>(in frame, out var x);
+        PullStruct.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     
@@ -90,10 +83,9 @@ static partial class Pull
         where B : class
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullStruct.pop<A>(in frame, out var x) &&
-               PullManaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<A>(in frame, out var x);
+        PullManaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -102,10 +94,9 @@ static partial class Pull
         where B : unmanaged
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullStruct.pop<A>(in frame, out var x) &&
-               PullUnmanaged.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<A>(in frame, out var x);
+        PullUnmanaged.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -114,17 +105,16 @@ static partial class Pull
         where B : struct
     {
         var f = PullManaged.arg1<Func<A, B>>(in frame);
-        return PullStruct.pop<A>(in frame, out var x) &&
-               PullStruct.@return(in frame, f(x))
-                   ? PullState.Continue
-                   : PullState.Void;
+        PullStruct.pop<A>(in frame, out var x);
+        PullStruct.@return(in frame, f(x));
+        return PullState.Continue;
     }
 
 
-       
+
     /*
      Unoptimised reference
-     
+
     public static int map<A, B>(in StackFrame frame) =>
 
         // Peek at the map function
@@ -134,7 +124,7 @@ static partial class Pull
         pop<A>(in frame, out var a) &&
 
         // Push the mapped value on the stack
-        @return(in frame, f(a)) 
+        @return(in frame, f(a))
 
             ? @continue(in frame)
             : empty(in frame);

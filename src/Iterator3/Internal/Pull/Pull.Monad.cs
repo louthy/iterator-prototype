@@ -17,9 +17,8 @@ static partial class Pull
         {
             if (tb.TryGetValue(out var b))
             {
-                return @return(in frame, b)
-                           ? PullState.Continue
-                           : PullState.Void;
+                @return(in frame, b);
+                return PullState.Continue;
             }
 
             if (ta.TryGetValue(out var a))
@@ -43,9 +42,8 @@ static partial class Pull
         {
             if (tb.TryGetValue(out var b))
             {
-                return @return(in frame, b)
-                           ? PullState.Continue
-                           : PullState.Void;
+                @return(in frame, b);
+                return PullState.Continue;
             }
 
             if (ta.TryGetValue(out var a))
@@ -56,34 +54,37 @@ static partial class Pull
 
             return PullState.Void;
         }
-    }    
-    
-    [MethodImpl(Optimisations.Default)]
-    public static int flatten<A>(in StackFrame frame) =>
+    }
 
-        iterator<A>(in frame) switch
+    [MethodImpl(Optimisations.Default)]
+    public static int flatten<A>(in StackFrame frame)
+    {
+        switch (iterator<A>(in frame))
         {
-            PullState.Void =>
+            case PullState.Void:
 
                 // Pop the iterators
-                PullStruct.arg2<Iter<Iter<A>>>(in frame, out var tta) &&
+                PullStruct.arg2<Iter<Iter<A>>>(in frame, out var tta);
 
                 // Read the next value
-                tta.TryGetValue(out var ta) &&
+                if (tta.TryGetValue(out var ta))
+                {
+                    // Push the updated iterator
+                    PullStruct.update1(in frame, in ta);
 
-                // Push the updated iterator
-                PullStruct.update1(in frame, in ta) &&
-
-                // Push the updated iterators
-                PullStruct.update2(in frame, in tta)
+                    // Push the updated iterators
+                    PullStruct.update2(in frame, in tta);
 
                     // Run the iterator
-                    ? iterator<A>(in frame)
+                    return iterator<A>(in frame);
+                }
+                else
+                {
+                    return PullState.Void;
+                }
 
-                    // Done
-                    : empty(in frame),
-
-            var result =>
-                result
-        };
+            case var result:
+                return result;
+        }
+    }
 }

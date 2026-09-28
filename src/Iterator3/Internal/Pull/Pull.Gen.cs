@@ -1,7 +1,6 @@
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Iterator3.Internal;
 using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3;

@@ -20,86 +20,93 @@ readonly ref struct StackFrame
         globals = ref fields.globals;
         vars = ref fields.vars;
     }
-        
+
     [MethodImpl(Optimisations.Default)]
-    public bool StartScope() =>
-        
+    public void StartScope() =>
+
         // Create a new scope
         Push();
 
     [MethodImpl(Optimisations.Default)]
-    public bool StartYieldScope() =>
-        
+    public void StartYieldScope()
+    {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(in tops) &&
-        
+        vars.SyncTo(in tops);
+
         // Push the current tops onto the stack
         tops.PushFrame(1);
+    }
 
     [MethodImpl(Optimisations.Default)]
-    public bool EndScope<A>(out A head) =>
-        
+    public void EndScope<A>(out A head)
+    {
         // Get the return value
-        vars.Pop(out head, false) &&
+        vars.Pop(out head, false);
 
         // Pop the current scope
         Pop();
+    }
 
     [MethodImpl(Optimisations.Default)]
-    public bool ResetFrame<A>(out A result) =>
-        
+    public void ResetFrame<A>(out A result)
+    {
         // Get the return value
-        vars.Pop(out result, true) &&
+        vars.Pop(out result, true);
 
         // Pop the current tops
         tops.ResetFrame();
+    }
 
     [MethodImpl(Optimisations.Default)]
-    public bool ResetFrameManaged<A>(out A result) 
-        where A : class =>
-        
+    public void ResetFrameManaged<A>(out A result)
+        where A : class
+    {
         // Get the return value
-        vars.PopManaged(out result, true) &&
+        vars.PopManaged(out result, true);
 
         // Pop the current tops
         tops.ResetFrame();
+    }
 
     [MethodImpl(Optimisations.Default)]
-    public bool ResetFrameUnmanaged<A>(out A result) 
-        where A : unmanaged =>
-        
+    public void ResetFrameUnmanaged<A>(out A result)
+        where A : unmanaged
+    {
         // Get the return value
-        vars.PopUnmanaged(out result, true) &&
+        vars.PopUnmanaged(out result, true);
 
         // Pop the current tops
         tops.ResetFrame();
+    }
 
     [MethodImpl(Optimisations.Default)]
-    public bool ResetFrameStruct<A>(out A result) 
-        where A : struct =>
-        
+    public void ResetFrameStruct<A>(out A result)
+        where A : struct
+    {
         // Get the return value
-        vars.PopStruct(out result, true) &&
+        vars.PopStruct(out result, true);
 
         // Pop the current tops
         tops.ResetFrame();
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool VoidScope() =>
         
         // Pop the current scope
         Pop();
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool Push() =>
-        
+    public void Push()
+    {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(in tops) &&
-        
+        vars.SyncTo(in tops);
+
         // Push the current tops onto the stack
         tops.PushFrame(0);
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool Pop()

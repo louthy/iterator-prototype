@@ -188,11 +188,10 @@ readonly struct Tops
     }
  
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool ResetFrame()
+    public void ResetFrame()
     {
         CurrentRef = begin;
         TopRef = begin;
-        return true;
     }
   
     [MethodImpl(Optimisations.Agro)]
@@ -245,10 +244,8 @@ readonly struct Tops
     }
     
     [MethodImpl(Optimisations.Agro)]
-    public bool PushFrame(uint yieldAdd)
+    public void PushFrame(uint yieldAdd)
     {
-        if (count >= Capacity) return false;
-
         // The new top state will be the current state with the yields reset
         var newState = current & NotYieldCounterMask;
         
@@ -273,8 +270,6 @@ readonly struct Tops
         
         // Remember where this frame starts
         BeginRef = newState;
-        
-        return true;
     }
 
     uint Top

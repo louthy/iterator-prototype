@@ -75,7 +75,7 @@ readonly struct ObjStack
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Pop()
+    public void Pop()
     {
         ref var top = ref Unsafe.AsRef(in Count);
         top--;
@@ -85,11 +85,10 @@ readonly struct ObjStack
             b.VirtualFree();
         }
         entry = null!;
-        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Pop<A>(out A value)
+    public void Pop<A>(out A value)
         where A : class
     {
         ref var top = ref Unsafe.AsRef(in Count);
@@ -97,30 +96,25 @@ readonly struct ObjStack
         ref var entry = ref Unsafe.As<object, A>(ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top));
         value = entry;
         entry = null!;
-        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Dup()
+    public void Dup()
     {
-        if (Count == Capacity) return false;
         ref var last = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), Count - 1);
         ref var next = ref Unsafe.Add(ref last, 1);
         last = next;
         
         ref var top  = ref Unsafe.AsRef(in Count);
         top++;
-        
-        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Peek<A>(out A value)
+    public void Peek<A>(out A value)
         where A : class
     {
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), Count - 1);
         value = Unsafe.As<object, A>(ref entry);
-        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
@@ -132,22 +126,19 @@ readonly struct ObjStack
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Push<A>(in A value)
+    public void Push<A>(in A value)
         where A : class
     {
-        if (Count == Capacity) return false;
         ref var top   = ref Unsafe.AsRef(in Count);
         ref var entry = ref Unsafe.Add(ref Unsafe.AsRef(in Object00), top);
         entry = value;
         top++;
-        return true;
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Prepend<A>(in A value)
+    public void Prepend<A>(in A value)
         where A : class
     {
-        if (Count == Capacity) return false;
         ref var top  = ref Unsafe.AsRef(in Count);
         ref var src  = ref Unsafe.AsRef(in Object00);
         ref var dest = ref Unsafe.AsRef(in Object01);
@@ -160,6 +151,5 @@ readonly struct ObjStack
 
         src = value;
         top++;
-        return true;
     }
 }
