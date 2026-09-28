@@ -9,7 +9,7 @@ static unsafe partial class GManaged<A>
 {
     [MethodImpl(Optimisations.InliningOnly)]
     static int reset(in StackFrame frame, ushort ix) =>
-        frame.globals.ResetAtManaged<A>(ix)
+        frame.globals.ResetAtManaged(ix)
             ? PullState.Continue
             : PullState.Void;
     

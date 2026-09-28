@@ -103,7 +103,7 @@ class ManagedGlobals<A> : GlobalsGen<A>
 
     [MethodImpl(Optimisations.InliningOnly)]
     public override bool ResetAt(in Globals list, ushort ix) =>
-        list.ResetAtManaged<A>(ix);
+        list.ResetAtManaged(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public override bool AddMutable(in Globals list, in A value) =>

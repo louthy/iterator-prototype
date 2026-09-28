@@ -43,6 +43,7 @@ static class OpsVM<A>
     
     internal static unsafe delegate*<in StackFrame, out A, bool> run;
     
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool Run(in StackFrame frame, out A head)
     {
         unsafe

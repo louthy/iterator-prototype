@@ -4,7 +4,6 @@
 
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal.Memory;
-using IteratorPrototype.Types;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 

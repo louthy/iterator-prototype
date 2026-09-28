@@ -1,3 +1,4 @@
+#pragma warning disable CS0649
 #pragma warning disable CS8618 
 #pragma warning disable CS0169
 // ReSharper disable UnassignedReadonlyField
@@ -48,8 +49,7 @@ readonly struct Globals
         values.RestoreAt<A>(ix, out _);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public bool ResetAtManaged<A>(ushort ix)
-        where A : class =>
+    public bool ResetAtManaged(ushort ix) =>
         objs.RestoreAt(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
