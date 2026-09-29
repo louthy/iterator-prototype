@@ -1,5 +1,6 @@
 ﻿// ReSharper disable VirtualMemberCallInConstructor
 
+using System.Runtime.CompilerServices;
 using IteratorPrototype;
 using IteratorPrototype.Iterator3;
 using IteratorPrototype.Iterator4;
@@ -9,13 +10,10 @@ using IteratorPrototype.Types;
 using static LanguageExt.Prelude;
 using static IteratorPrototype.Iterator3.Iter;
 
-Console.WriteLine(Ty<ConsoleColor>.Pretty);
-    
-
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-//IterTests.Tests();
+IterTests.Tests();
 //IterTests4.Tests();
 
 /*
