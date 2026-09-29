@@ -126,7 +126,13 @@ readonly ref struct StackFrame
     public bool IsVoid
     {
         [MethodImpl(Optimisations.InliningOnly)]
-        get => ops.IsRunnable && tops.IsEmpty;
+        get => tops.IsEmpty;
+    }
+    
+    public bool IsRunnable
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => ops.IsRunnable;
     }
         
     [MethodImpl(Optimisations.InliningOnly)]

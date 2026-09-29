@@ -55,36 +55,39 @@ static partial class Pull
             return PullState.Void;
         }
     }
-
+    
     [MethodImpl(Optimisations.Default)]
     public static int flatten<A>(in StackFrame frame)
     {
-        switch (iterator<A>(in frame))
+        unsafe
         {
-            case PullState.Void:
+            switch (PullGen<A>.iterator(in frame))
+            {
+                case PullState.Void:
 
-                // Pop the iterators
-                PullStruct.arg2<Iter<Iter<A>>>(in frame, out var tta);
+                    // Pop the iterators
+                    PullStruct.arg2<Iter<Iter<A>>>(in frame, out var tta);
 
-                // Read the next value
-                if (tta.TryGetValue(out var ta))
-                {
-                    // Push the updated iterator
-                    PullStruct.update1(in frame, in ta);
+                    // Read the next value
+                    if (tta.TryGetValue(out var ta))
+                    {
+                        // Push the updated iterator
+                        PullStruct.update1(in frame, in ta);
 
-                    // Push the updated iterators
-                    PullStruct.update2(in frame, in tta);
+                        // Push the updated iterators
+                        PullStruct.update2(in frame, in tta);
 
-                    // Run the iterator
-                    return iterator<A>(in frame);
-                }
-                else
-                {
-                    return PullState.Void;
-                }
+                        // Run the iterator
+                        return iterator<A>(in frame);
+                    }
+                    else
+                    {
+                        return PullState.Void;
+                    }
 
-            case var result:
-                return result;
+                case var result:
+                    return result;
+            }
         }
     }
 }
