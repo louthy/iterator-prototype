@@ -18,7 +18,7 @@ static class OpsVMManaged<A>
             OpsVM<A>.run = &Run;
         }
     }
-    
+
     [MethodImpl(Optimisations.Max)]
     public static bool Run(in StackFrame frame, out A head)
     {
@@ -30,7 +30,7 @@ static class OpsVMManaged<A>
         }
 
         // If it's not runnable, then that means trying to run it will overflow our stacks
-        if (!frame.ops.IsRunnable)
+        if (!frame.IsRunnable)
         {
             // TODO: Fall back to a slower backup implementation
             throw new NotImplementedException("The iterator expression is too large to run in the VM");
@@ -38,19 +38,7 @@ static class OpsVMManaged<A>
 
         start:
 
-        var pc     = frame.PC;
-        var block  = frame.ops.Block(pc);
-        if (block.IsEmpty) goto pure;
-        
-        var result = PullState.Void;
-        
-        foreach (var op in block)
-        {
-            result = op.Invoke(in frame);
-            frame.tops.IncrementPC();
-        }
-
-        switch (result)
+        switch (OpsVM.RunOps(in frame))
         {
             // Void
             case 0:
@@ -71,17 +59,17 @@ static class OpsVMManaged<A>
             // Pure 
             case 2:
                 goto pure;
-            
+
             default:
                 throw new InvalidOperationException();
         }
-        
+
         pure:
 
         PureResetToContinuationPoint(in frame, out head);
         return true;
-        
-        
+
+
         /*
         // Set initial state
         var count = frame.OpsRemaining;
@@ -143,7 +131,8 @@ static class OpsVMManaged<A>
         */
 
     }
-    
+
+
     [MethodImpl(Optimisations.Max)]
     static void PureResetToContinuationPoint(in StackFrame frame, out A head)
     {

@@ -30,27 +30,15 @@ static class OpsVMUnmanaged<A>
         }
 
         // If it's not runnable, then that means trying to run it will overflow our stacks
-        if (!frame.ops.IsRunnable)
+        if (!frame.IsRunnable)
         {
             // TODO: Fall back to a slower backup implementation
             throw new NotImplementedException("The iterator expression is too large to run in the VM");
         }
 
         start:
-
-        var pc    = frame.PC;
-        var block = frame.ops.Block(pc);
-        if (block.IsEmpty) goto pure;
         
-        var result = PullState.Void;
-        
-        foreach (var op in block)
-        {
-            result = op.Invoke(in frame);
-            frame.tops.IncrementPC();
-        }
-
-        switch (result)
+        switch (OpsVM.RunOps(in frame))
         {
             // Void
             case 0:

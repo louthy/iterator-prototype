@@ -53,22 +53,29 @@ readonly unsafe struct Ops
     readonly Op Fun1E;
     readonly Op Fun1F;
 
-    public ReadOnlySpan<Op> Block(int from)
+    public ref Op Block(int from, out int count)
     {
-        if(from >= Count) return default;
+        if (from >= Count)
+        {
+            count = 0;
+            return ref Unsafe.NullRef<Op>();
+        }
 
-        ref readonly var start   = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from);
-        ref readonly var current = ref start;
-            
+        ref var start   = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from);
+        ref var current = ref start;
+
         for (var i = from; i < Count; i++)
         {
             if (current.Return is OpReturn.CanVoid)
             {
-                return MemoryMarshal.CreateReadOnlySpan(in start, i - from + 1);
+                count = i - from + 1;
+                return ref start;
             }
+
             current = ref Unsafe.Add(ref Unsafe.AsRef(in current), 1);
         }
-        return MemoryMarshal.CreateReadOnlySpan(in start, Count - from);
+        count = Count - from;
+        return ref start;
     }
     
     public ref readonly Op this[int index]

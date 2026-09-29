@@ -15,7 +15,7 @@ Console.WriteLine(Ty<ConsoleColor>.Pretty);
 //IteratorTestSuite.Run();
 //IteratorTest2.Run();
 //IteratorPrototype.Iterator3.Iterator.Tests();
-IterTests.Tests();
+//IterTests.Tests();
 //IterTests4.Tests();
 
 /*
