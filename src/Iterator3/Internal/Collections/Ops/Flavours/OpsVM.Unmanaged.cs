@@ -19,7 +19,7 @@ static class OpsVMUnmanaged<A>
         }
     }
     
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static bool Run(in StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator
@@ -68,67 +68,9 @@ static class OpsVMUnmanaged<A>
 
         PureResetToContinuationPoint(in frame, out head);
         return true;        
-
-        /*// Set initial state  
-        var count = frame.OpsRemaining;
-
-        // Read the current instruction
-        ref var op = ref Unsafe.AsRef(in frame.CurrentOp);
-
-        //Log.msg("run entry", ref frame);
-        
-        while(count != 0)
-        {
-            // Move the program-counter *before* executing the instruction, this allows
-            // tests like frame.IsReturn to work properly.
-            frame.NextOp();
-
-            // Run the instruction
-            var result = op.Invoke(in frame);
-            
-            op = ref Unsafe.AddByteOffset(ref op, Unsafe.SizeOf<Op>());
-            count--;
-            
-            switch (result)
-            {
-                // Void
-                case 0:
-                    if (OpsVM.VoidResetToContinuationPoint(in frame))
-                    {
-                        count = frame.OpsRemaining;
-                        op = ref Unsafe.AsRef(in frame.CurrentOp);
-                        continue;
-                    }
-                    else
-                    {
-                        head = default!;
-                        return false;
-                    }
-
-                // Continue 
-                case 1: 
-                    continue;
-                
-                // Pure 
-                case 2:
-                    goto pure;
-                
-                default:
-                    throw new InvalidOperationException();
-            }
-        }        
-        
-        pure:
-
-        // This is where we end up if we haven't been composed with `Iter.pure`. 
-        // So, this is an implicit `Iter.pure`.  It yields what's on the stack
-        // and resets the state of the co-routine so it can run again until it
-        // stops yielding values.
-        PureResetToContinuationPoint(in frame, out head);
-        return true;*/
     }
 
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static void PureResetToContinuationPoint(in StackFrame frame, out A head)
     {
         ref readonly var tops = ref frame.tops;

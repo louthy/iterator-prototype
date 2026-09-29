@@ -12,7 +12,7 @@ static class OpsVM
 {
     const int batchSize = 15;
     
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool VoidResetToContinuationPoint(in StackFrame frame)
     {
         //Log.function("start-void", in frame);
@@ -59,7 +59,7 @@ static class OpsVM
         return frame.tops.Count > 0;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static int RunOps(in StackFrame frame)
     {
         ref var op       = ref frame.ops.Block(frame.PC, out var opCount);

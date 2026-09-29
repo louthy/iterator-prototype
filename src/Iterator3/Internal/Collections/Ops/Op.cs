@@ -19,13 +19,13 @@ readonly struct Op
 {
     readonly nint Fun;
 
-    [method: MethodImpl(Optimisations.Max)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Op(nint fun, OpReturn @return)
     {
         Fun = fun | (byte)@return;
     }
 
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Invoke(in StackFrame frame)
     {
         unsafe
@@ -36,7 +36,7 @@ readonly struct Op
 
     public OpReturn Return
     {
-        [MethodImpl(Optimisations.Max)] 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => (OpReturn)(Fun & 7);
     }
 }

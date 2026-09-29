@@ -19,7 +19,7 @@ public readonly struct Iter<A>
     internal Iter(in Fields fields) =>
         this.fields = fields;
 
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public bool TryGetValue(out A head, out Iter<A> tail)
     {
         tail = this;
@@ -30,7 +30,7 @@ public readonly struct Iter<A>
         return r;
     }
 
-    [MethodImpl(Optimisations.Max)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static bool TryRef(ref Iter<A> tail, out A head)
     {
         var frame = tail.Frame();
