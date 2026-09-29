@@ -5,6 +5,7 @@
 #pragma warning disable CS0649
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -52,6 +53,24 @@ readonly unsafe struct Ops
     readonly Op Fun1E;
     readonly Op Fun1F;
 
+    public ReadOnlySpan<Op> Block(int from)
+    {
+        if(from >= Count) return default;
+
+        ref readonly var start   = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from);
+        ref readonly var current = ref start;
+            
+        for (var i = from; i < Count; i++)
+        {
+            if (current.Return is OpReturn.CanVoid)
+            {
+                return MemoryMarshal.CreateReadOnlySpan(in start, i - from + 1);
+            }
+            current = ref Unsafe.Add(ref Unsafe.AsRef(in current), 1);
+        }
+        return MemoryMarshal.CreateReadOnlySpan(in start, Count - from);
+    }
+    
     public ref readonly Op this[int index]
     {
         [MethodImpl(Optimisations.Max)]

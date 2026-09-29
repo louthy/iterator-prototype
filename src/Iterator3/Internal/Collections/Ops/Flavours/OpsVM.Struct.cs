@@ -33,7 +33,53 @@ static class OpsVMStruct<A>
             head = default!;
             return false;
         }
+        
+        start:
 
+        var pc    = frame.PC;
+        var block = frame.ops.Block(pc);
+        if (block.IsEmpty) goto pure;
+        
+        var result = PullState.Void;
+        
+        foreach (var op in block)
+        {
+            result = op.Invoke(in frame);
+            frame.tops.IncrementPC();
+        }
+
+        switch (result)
+        {
+            // Void
+            case 0:
+                if (OpsVM.VoidResetToContinuationPoint(in frame))
+                {
+                    goto start;
+                }
+                else
+                {
+                    head = default;
+                    return false;
+                }
+
+            // Continue 
+            case 1:
+                goto start;
+
+            // Pure 
+            case 2:
+                goto pure;
+            
+            default:
+                throw new InvalidOperationException();
+        }
+        
+        pure:
+
+        PureResetToContinuationPoint(in frame, out head);
+        return true;      
+
+        /*
         // Set initial state  
         var count = frame.OpsRemaining;
 
@@ -90,7 +136,7 @@ static class OpsVMStruct<A>
         // and resets the state of the co-routine so it can run again until it
         // stops yielding values.
         PureResetToContinuationPoint(in frame, out head);
-        return true;
+        return true;*/
     }
 
     [MethodImpl(Optimisations.Max)]

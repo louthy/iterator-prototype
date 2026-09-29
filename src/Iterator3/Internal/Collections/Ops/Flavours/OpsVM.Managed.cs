@@ -34,14 +34,61 @@ static class OpsVMManaged<A>
             return false;
         }
 
-        // Set initial state  
+        start:
+
+        var pc     = frame.PC;
+        var block  = frame.ops.Block(pc);
+        if (block.IsEmpty) goto pure;
+        
+        var result = PullState.Void;
+        
+        foreach (var op in block)
+        {
+            result = op.Invoke(in frame);
+            frame.tops.IncrementPC();
+        }
+
+        switch (result)
+        {
+            // Void
+            case 0:
+                if (OpsVM.VoidResetToContinuationPoint(in frame))
+                {
+                    goto start;
+                }
+                else
+                {
+                    head = null!;
+                    return false;
+                }
+
+            // Continue 
+            case 1:
+                goto start;
+
+            // Pure 
+            case 2:
+                goto pure;
+            
+            default:
+                throw new InvalidOperationException();
+        }
+        
+        pure:
+
+        PureResetToContinuationPoint(in frame, out head);
+        return true;
+        
+        
+        /*
+        // Set initial state
         var count = frame.OpsRemaining;
 
         // Read the current instruction
         ref var op = ref Unsafe.AsRef(in frame.CurrentOp);
 
         //Log.msg("run entry", ref frame);
-        
+
         while(count != 0)
         {
             // Move the program-counter *before* executing the instruction, this allows
@@ -50,10 +97,10 @@ static class OpsVMManaged<A>
 
             // Run the instruction
             var result = op.Invoke(in frame);
-            
+
             op = ref Unsafe.AddByteOffset(ref op, 8);
             count--;
-            
+
             switch (result)
             {
                 // Void
@@ -70,27 +117,28 @@ static class OpsVMManaged<A>
                         return false;
                     }
 
-                // Continue 
-                case 1: 
+                // Continue
+                case 1:
                     continue;
-                
-                // Pure 
+
+                // Pure
                 case 2:
                     goto pure;
-                
+
                 default:
                     throw new InvalidOperationException();
             }
-        }        
-        
+        }
+
         pure:
 
-        // This is where we end up if we haven't been composed with `Iter.pure`. 
+        // This is where we end up if we haven't been composed with `Iter.pure`.
         // So, this is an implicit `Iter.pure`.  It yields what's on the stack
         // and resets the state of the co-routine so it can run again until it
         // stops yielding values.
         PureResetToContinuationPoint(in frame, out head);
         return true;
+        */
 
     }
     

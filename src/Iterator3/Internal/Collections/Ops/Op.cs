@@ -15,11 +15,15 @@ enum OpReturn : byte
 
 [SkipLocalsInit]
 [StructLayout(LayoutKind.Sequential)]
-[method: MethodImpl(Optimisations.Max)]
-readonly struct Op(nint fun, OpReturn @return)
+readonly struct Op
 {
-    readonly nint Fun = fun | (byte)@return;
-    readonly OpReturn @return;
+    readonly nint Fun;
+
+    [method: MethodImpl(Optimisations.Max)]
+    public Op(nint fun, OpReturn @return)
+    {
+        Fun = fun | (byte)@return;
+    }
 
     [MethodImpl(Optimisations.Max)]
     public int Invoke(in StackFrame frame)
@@ -28,5 +32,11 @@ readonly struct Op(nint fun, OpReturn @return)
         {
             return ((IterOp)(Fun & ~7))(in frame);
         }
+    }
+
+    public OpReturn Return
+    {
+        [MethodImpl(Optimisations.Max)] 
+        get => (OpReturn)(Fun & 7);
     }
 }

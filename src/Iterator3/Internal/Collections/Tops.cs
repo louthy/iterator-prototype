@@ -161,6 +161,13 @@ readonly struct Tops
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public void SetPC(int pc)
+    {
+        var c = (current & NotProgramCounterMask) | ((uint)pc & ProgramCounterMask);
+        CurrentRef = c;
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public void IncrementYields()
     {
         unchecked

@@ -187,4 +187,8 @@ readonly ref struct StackFrame
         [MethodImpl(Optimisations.InliningOnly)]
         get => tops.PC;
     }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void SetPC(int pc) =>
+        tops.SetPC(pc);
 }
