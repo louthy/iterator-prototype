@@ -13,8 +13,10 @@ readonly unsafe struct Ops
 {
     public const int Capacity = 32;
     public readonly short VarBytes;
-    public readonly short VarObjs;
-    public readonly short Frames;
+    public readonly short MaxVarBytes;
+    public readonly byte VarObjs;
+    public readonly byte MaxVarObjs;
+    public readonly byte Frames;
     public readonly bool IsRunnable;
     public readonly int Count;
     readonly Op Fun00;
@@ -63,23 +65,35 @@ readonly unsafe struct Ops
     }
     
     [MethodImpl(Optimisations.Default)]
-    public bool Add(in IterOp f, int varsBytes, int varsObjs, OpReturn @return)
+    public bool Add(
+        IterOp f, 
+        int varBytesIn, 
+        int varBytesOut, 
+        int varObjsIn, 
+        int varObjsOut, 
+        OpReturn @return)
     {
         if (Count + 1 > Capacity) return false;
-        ref var count      = ref Unsafe.AsRef(in Count);
-        ref var varBytesR  = ref Unsafe.AsRef(in VarBytes);
-        ref var varObjsR   = ref Unsafe.AsRef(in VarObjs);
-        ref var framesR    = ref Unsafe.AsRef(in Frames);
-        ref var isRunnable = ref Unsafe.AsRef(in IsRunnable);
-        ref var entry      = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
+        ref var count       = ref Unsafe.AsRef(in Count);
+        ref var varBytes    = ref Unsafe.AsRef(in VarBytes);
+        ref var maxVarBytes = ref Unsafe.AsRef(in MaxVarBytes);
+        ref var varObjs     = ref Unsafe.AsRef(in VarObjs);
+        ref var maxVarObjs  = ref Unsafe.AsRef(in MaxVarObjs);
+        ref var framesR     = ref Unsafe.AsRef(in Frames);
+        ref var isRunnable  = ref Unsafe.AsRef(in IsRunnable);
+        ref var entry       = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
 
-        varBytesR = (short)(varBytesR + varsBytes);
-        varObjsR = (short)(varObjsR   + varsObjs);
-        framesR = (short)(framesR     + (@return == OpReturn.CoRoutine ? 1 : 0));
+        varBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
+        maxVarBytes = Math.Max(VarBytes, MaxVarBytes);
+
+        varObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
+        maxVarObjs = Math.Max(VarObjs, MaxVarObjs);
+
+        framesR = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
         
-        isRunnable = varBytesR < ByteStack.Capacity &&
-                     varObjsR  < ObjStack.Capacity  &&
-                     framesR   < Tops.Capacity;
+        isRunnable = maxVarBytes < ByteStack.Capacity &&
+                     maxVarObjs  < ObjStack.Capacity  &&
+                     framesR     < Tops.Capacity;
         
         entry = new Op((nint)f, @return);
         count++;
@@ -87,29 +101,41 @@ readonly unsafe struct Ops
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool Prepend(in IterOp f, int varsBytes, int varsObjs, OpReturn @return)
+    public bool Prepend(
+        IterOp f, 
+        int varBytesIn, 
+        int varBytesOut, 
+        int varObjsIn, 
+        int varObjsOut, 
+        OpReturn @return)
     {
         if (Count + 1 > Capacity) return false;
-        ref var count      = ref Unsafe.AsRef(in Count);
-        ref var varBytesR  = ref Unsafe.AsRef(in VarBytes);
-        ref var varObjsR   = ref Unsafe.AsRef(in VarObjs);
-        ref var framesR    = ref Unsafe.AsRef(in Frames);
-        ref var isRunnable = ref Unsafe.AsRef(in IsRunnable);
-        ref var start      = ref Unsafe.AsRef(in Fun00);
-        ref var next       = ref Unsafe.Add(ref start, 1);
+        ref var count       = ref Unsafe.AsRef(in Count);
+        ref var varBytes    = ref Unsafe.AsRef(in VarBytes);
+        ref var maxVarBytes = ref Unsafe.AsRef(in MaxVarBytes);
+        ref var varObjs     = ref Unsafe.AsRef(in VarObjs);
+        ref var maxVarObjs  = ref Unsafe.AsRef(in MaxVarObjs);
+        ref var framesR     = ref Unsafe.AsRef(in Frames);
+        ref var isRunnable  = ref Unsafe.AsRef(in IsRunnable);
+        ref var start       = ref Unsafe.AsRef(in Fun00);
+        ref var next        = ref Unsafe.Add(ref start, 1);
         
         Unsafe.CopyBlock(
             ref Unsafe.As<Op, byte>(ref next), 
             ref Unsafe.As<Op, byte>(ref start), 
             (uint)(Unsafe.SizeOf<Op>() * count));
 
-        varBytesR = (short)(varBytesR + varsBytes);
-        varObjsR = (short)(varObjsR   + varsObjs);
-        framesR = (short)(framesR     + (@return == OpReturn.CoRoutine ? 1 : 0));
+        varBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
+        maxVarBytes = Math.Max(VarBytes, MaxVarBytes);
 
-        isRunnable = varBytesR < ByteStack.Capacity &&
-                     varObjsR  < ObjStack.Capacity  &&
-                     framesR   < Tops.Capacity;
+        varObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
+        maxVarObjs = Math.Max(VarObjs, MaxVarObjs);
+
+        framesR = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
+        
+        isRunnable = maxVarBytes < ByteStack.Capacity &&
+                     maxVarObjs  < ObjStack.Capacity  &&
+                     framesR     < Tops.Capacity;
         
         start = new Op((nint)f, @return);
         count++;

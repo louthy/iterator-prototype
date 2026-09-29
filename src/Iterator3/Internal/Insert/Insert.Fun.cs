@@ -9,12 +9,19 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Insert
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool fun(in StackFrame frame, in IterOp f, int varBytes, int varObjs, OpReturn @return) =>
-        frame.Prepend(f, varBytes, varObjs, @return);
+    public static bool fun(
+        in StackFrame frame, 
+        IterOp f, 
+        int varBytesIn, 
+        int varBytesOut, 
+        int varObjsIn, 
+        int varObjsOut, 
+        OpReturn @return) =>
+        frame.Prepend(f, varBytesIn, varBytesOut, varObjsIn, varObjsOut, @return);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun(in StackFrame frame, in IterOp f, OpReturn @return) =>
-        frame.Prepend(f, 0, 0, @return);
+        frame.Prepend(f, 0, 0, 0, 0, @return);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool fun<A>(in StackFrame frame, in IterOp f, OpReturn @return) =>
@@ -23,7 +30,9 @@ static unsafe partial class Insert
             var (aBytes, aObjs) => 
                 fun(in frame, 
                     f, 
-                    aBytes, 
+                    0,
+                    aBytes,
+                    0,
                     aObjs, 
                     @return)
         };
@@ -35,8 +44,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs)) =>
                 fun(in frame, 
                     f, 
-                    bBytes - aBytes, 
-                    bObjs - aObjs, 
+                    aBytes, bBytes, 
+                    aObjs, bObjs, 
                     @return)
         };
 
@@ -47,8 +56,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs)) =>
                 fun(in frame, 
                     f, 
-                    cBytes - (aBytes + bBytes), 
-                    cObjs - (aObjs + bObjs),
+                    aBytes + bBytes, cBytes, 
+                    aObjs  + bObjs, cObjs,
                     @return)
         };
 
@@ -59,8 +68,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs)) =>
                 fun(in frame, 
                     f, 
-                    dBytes - (aBytes + bBytes + cBytes), 
-                    dObjs - (aObjs + bObjs + cObjs),
+                    aBytes + bBytes + cBytes, dBytes, 
+                    aObjs  + bObjs  + cObjs, dObjs,
                     @return)
         };
 
@@ -71,8 +80,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs)) =>
                 fun(in frame, 
                     f,
-                    eBytes - (aBytes + bBytes + cBytes + dBytes), 
-                    eObjs - (aObjs + bObjs + cObjs + dObjs),
+                    aBytes + bBytes + cBytes + dBytes, eBytes, 
+                    aObjs  + bObjs  + cObjs  + dObjs, eObjs,
                     @return)
         };
 
@@ -83,8 +92,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs), (fBytes, fObjs)) =>
                 fun(in frame, 
                     f,
-                    fBytes - (aBytes + bBytes + cBytes + dBytes + eBytes), 
-                    fObjs  - (aObjs  + bObjs  + cObjs  + dObjs + eObjs),
+                    aBytes + bBytes + cBytes + dBytes + eBytes, fBytes, 
+                    aObjs  + bObjs  + cObjs  + dObjs  + eObjs, fObjs,
                     @return)
         };
 
@@ -95,8 +104,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs), (fBytes, fObjs), (gBytes, gObjs)) =>
                 fun(in frame, 
                     f,
-                    gBytes - (aBytes + bBytes + cBytes + dBytes + eBytes + fBytes), 
-                    gObjs  - (aObjs  + bObjs  + cObjs  + dObjs  + eObjs + fObjs),
+                    aBytes + bBytes + cBytes + dBytes + eBytes + fBytes, gBytes, 
+                    aObjs  + bObjs  + cObjs  + dObjs  + eObjs  + fObjs, gObjs,
                     @return)
         };
 
@@ -108,8 +117,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs), (fBytes, fObjs), (gBytes, gObjs), (hBytes, hObjs)) =>
                 fun(in frame,
                     f,
-                    hBytes - (aBytes + bBytes + cBytes + dBytes + eBytes + fBytes + gBytes),
-                    hObjs  - (aObjs  + bObjs  + cObjs  + dObjs  + eObjs  + fObjs  + gObjs),
+                    aBytes + bBytes + cBytes + dBytes + eBytes + fBytes + gBytes, hBytes,
+                    aObjs  + bObjs  + cObjs  + dObjs  + eObjs  + fObjs  + gObjs, hObjs,
                     @return)
         };
 
@@ -120,8 +129,11 @@ static unsafe partial class Insert
         {
             var ((aBytes, aObjs), (bBytes, bObjs)) =>
                 fun(in frame, 
-                    f, 
-                    aBytes + bBytes, aObjs + bObjs, 
+                    f,
+                    0,
+                    aBytes + bBytes,
+                    0,
+                    aObjs + bObjs, 
                     @return)
         };
 
@@ -133,8 +145,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs)) =>
                 fun(in frame,
                     f,
-                    bBytes + cBytes - aBytes,
-                    bObjs  + cObjs  - aObjs,
+                    aBytes, bBytes + cBytes,
+                    aObjs, bObjs   + cObjs,
                     @return)
         };
 
@@ -146,8 +158,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs)) =>
                 fun(in frame,
                     f,
-                    cBytes + dBytes - (aBytes + bBytes),
-                    cObjs  + dObjs  - (aObjs  + bObjs),
+                    aBytes + bBytes, cBytes + dBytes,
+                    aObjs  + bObjs, cObjs  + dObjs,
                     @return)
         };
 
@@ -159,8 +171,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs)) =>
                 fun(in frame,
                     f,
-                    dBytes + eBytes - (aBytes + bBytes + cBytes),
-                    dObjs  + eObjs  - (aObjs  + bObjs  + cObjs),
+                    aBytes + bBytes + cBytes, dBytes + eBytes,
+                    aObjs  + bObjs  + cObjs, dObjs   + eObjs,
                     @return)
         };
 
@@ -173,8 +185,8 @@ static unsafe partial class Insert
                 =>
                 fun(in frame,
                     f,
-                    eBytes + fBytes - (aBytes + bBytes + cBytes + dBytes),
-                    eObjs  + fObjs  - (aObjs  + bObjs  + cObjs  + dObjs),
+                    aBytes + bBytes + cBytes + dBytes, eBytes + fBytes,
+                    aObjs  + bObjs  + cObjs  + dObjs, eObjs   + fObjs,
                     @return)
         };
 
@@ -186,7 +198,9 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs)) =>
                 fun(in frame,
                     f,
+                    0,
                     aBytes + bBytes + cBytes,
+                    0,
                     aObjs  + bObjs  + cObjs,
                     @return)
         };
@@ -199,8 +213,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs)) =>
                 fun(in frame,
                     f,
-                    bBytes + cBytes + dBytes - aBytes,
-                    bObjs  + cObjs  + dObjs  - aObjs,
+                    aBytes, bBytes + cBytes + dBytes,
+                    aObjs, bObjs   + cObjs  + dObjs,
                     @return)
         };
 
@@ -212,8 +226,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs)) =>
                 fun(in frame,
                     f,
-                    cBytes + dBytes + eBytes - (aBytes + bBytes),
-                    cObjs  + dObjs  + eObjs  - (aObjs  + bObjs),
+                    aBytes + bBytes, cBytes + dBytes + eBytes,
+                    aObjs  + bObjs, cObjs   + dObjs  + eObjs,
                     @return)
         };
 
@@ -226,8 +240,8 @@ static unsafe partial class Insert
                 =>
                 fun(in frame,
                     f,
-                    dBytes + eBytes + fBytes - (aBytes + bBytes + cBytes),
-                    dObjs  + eObjs  + fObjs  - (aObjs  + bObjs  + cObjs),
+                    aBytes + bBytes + cBytes, dBytes + eBytes + fBytes,
+                    aObjs  + bObjs  + cObjs, dObjs   + eObjs  + fObjs,
                     @return)
         };
 
@@ -240,8 +254,8 @@ static unsafe partial class Insert
             var ((aBytes, aObjs), (bBytes, bObjs), (cBytes, cObjs), (dBytes, dObjs), (eBytes, eObjs), (fBytes, fObjs), (gBytes, gObjs)) =>
                 fun(in frame,
                     f,
-                    eBytes + fBytes + gBytes - (aBytes + bBytes + cBytes + dBytes),
-                    eObjs  + fObjs  + gObjs  - (aObjs  + bObjs  + cObjs  + dObjs),
+                    aBytes + bBytes + cBytes + dBytes, eBytes + fBytes + gBytes,
+                    aObjs  + bObjs  + cObjs  + dObjs, eObjs   + fObjs  + gObjs,
                     @return)
         };
 }

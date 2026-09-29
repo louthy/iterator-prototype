@@ -129,13 +129,25 @@ readonly ref struct StackFrame
         get => ops.IsRunnable && tops.IsEmpty;
     }
         
-    [MethodImpl(Optimisations.Default)]
-    public unsafe bool Add(IterOp f, int varsBytes, int varsObjs, OpReturn @return) =>
-        ops.Add(f, varsBytes, varsObjs, @return);
+    [MethodImpl(Optimisations.InliningOnly)]
+    public unsafe bool Add(
+        IterOp f, 
+        int varBytesIn, 
+        int varBytesOut, 
+        int varObjsIn, 
+        int varObjsOut, 
+        OpReturn @return) =>
+        ops.Add(f, varBytesIn, varBytesOut, varObjsIn, varObjsOut, @return);
 
-    [MethodImpl(Optimisations.Default)]
-    public unsafe bool Prepend(IterOp f, int varsBytes, int varsObjs, OpReturn @return) =>
-        ops.Prepend(f, varsBytes, varsObjs, @return);
+    [MethodImpl(Optimisations.InliningOnly)]
+    public unsafe bool Prepend(
+        IterOp f, 
+        int varBytesIn, 
+        int varBytesOut, 
+        int varObjsIn, 
+        int varObjsOut, 
+        OpReturn @return) =>
+        ops.Prepend(f, varBytesIn, varBytesOut, varObjsIn, varObjsOut, @return);
 
     public override string ToString()
     {
