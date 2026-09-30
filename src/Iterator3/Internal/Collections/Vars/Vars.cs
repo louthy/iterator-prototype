@@ -84,22 +84,15 @@ readonly partial struct Vars
             return s.Length > 0 && (s[^1] & 2) == 2;
         }
     }
-
-    [MethodImpl(Optimisations.Max)]
-    public void SyncFrom(in Tops tops)
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void SyncTo(ref TopsMutable tops)
     {
-        var snapshot = tops.Current & (Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
-        var os       = (int)((snapshot & Tops.ObjsMask)   >> Tops.ObjsShift);
-        var vs       = (int)((snapshot & Tops.ValuesMask) >> Tops.ValuesShift);
-        var nt       = (int)((snapshot & Tops.VarsMask)   >> Tops.VarsShift);
-
-        // Set the flags top to reflect how many objs and vals we're losing:
-        ref var t = ref Unsafe.AsRef(in top);
-        t = (byte)nt;
-        
-        // Reset the tops
-        objs.PopToTop(os);
-        values.PopToTop(vs);
+        var os      = (uint)(objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
+        var vs      = (uint)(values.Count << Tops.ValuesShift) & Tops.ValuesMask;
+        var t       = (uint)(top          << Tops.VarsShift)   & Tops.VarsMask;
+        var current = tops.Current                             & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+        tops.Current = current | os | vs | t;
     }
 
     /*

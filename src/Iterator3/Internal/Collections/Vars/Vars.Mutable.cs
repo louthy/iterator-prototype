@@ -260,13 +260,13 @@ struct VarsMutable
         values.Peek(out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public void SyncTo(ref TopsMutable tops1)
+    public void SyncTo(ref TopsMutable tops)
     {
         var os      = (uint)(objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
         var vs      = (uint)(values.Count << Tops.ValuesShift) & Tops.ValuesMask;
         var t       = (uint)(top          << Tops.VarsShift)   & Tops.VarsMask;
-        var current = tops1.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
-        tops1.Current = current | os | vs | t;
+        var current = tops.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+        tops.Current = current | os | vs | t;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
