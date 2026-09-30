@@ -33,13 +33,14 @@ readonly unsafe struct Ops
                   Blk18, Blk19, Blk1A, Blk1B, Blk1C, Blk1D, Blk1E, Blk1F;
     
     // This is because the writing of the block-sizes can write 8 bytes
-    // at a time. So, we put this buffer here in case of any overflow.
-    readonly ulong blkBuffer;
+    // at a time, with up to 3 padded overflow bytes. So, we put this
+    // buffer here in case of any overflow.
+    readonly uint blkBuffer;
     
     [MethodImpl(Optimisations.InliningOnly)]
     public ref Op Block(int from, out int count)
     {
-        count = Unsafe.Add(ref Unsafe.AsRef(in Blk00), from);
+        count = Unsafe.AddByteOffset(ref Unsafe.AsRef(in Blk00), from);
         return ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from);
         
         /*
@@ -57,38 +58,24 @@ readonly unsafe struct Ops
             if (current.Return is OpReturn.CanVoid)
             {
                 count = i - from + 1;
-
-                var ocount = Unsafe.Add(ref Unsafe.AsRef(in Blk00), from);
-                if (count != ocount)
-                {
-                    throw new InvalidOperationException($"Block size mismatch {ocount} should be {count}");
-                }
-                
                 return ref start;
             }
 
             current = ref Unsafe.Add(ref Unsafe.AsRef(in current), 1);
         }
         count = Count - from;
-        
-        var pcount = Unsafe.Add(ref Unsafe.AsRef(in Blk00), from);
-        if (count != pcount)
-        {
-            throw new InvalidOperationException($"Block size mismatch {pcount} should be {count}");
-        }
-        
         return ref start;*/
     }
     
     public ref readonly Op this[int index]
     {
-        [MethodImpl(Optimisations.Max)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), index);
     }
 
     public ref readonly Op this[uint index]
     {
-        [MethodImpl(Optimisations.Max)]
+        [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), index);
     }
     
@@ -126,7 +113,6 @@ readonly unsafe struct Ops
                      frames      < Tops.Capacity;
 
         blockSize++;
-        //block = BlockSize;
         BlockSizeWriter(ref block, BlockSize);
         if (@return == OpReturn.CanVoid)
         {
