@@ -11,7 +11,20 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 static class OpsVM
 {
-    const int batchSize = 15;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static int RunOps(in StackFrame frame)
+    {
+        var ops    = frame.ops.BlockSpan(frame.PC);
+        var result = PullState.Pure;
+        //var current = ref frame.tops.Current;
+
+        foreach(var op in ops)
+        {
+            frame.tops.IncrementPC();
+            result = op.Invoke(in frame);
+        }
+        return result;
+    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool VoidResetToContinuationPoint(in StackFrame frame)
@@ -58,20 +71,5 @@ static class OpsVM
             
         // If there are scopes remaining, then there are more values to yield...
         return frame.tops.Count > 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int RunOps(in StackFrame frame)
-    {
-        var ops     = frame.ops.BlockSpan(frame.PC);
-        var result  = PullState.Pure;
-        //var current = ref frame.tops.Current;
-
-        foreach(var op in ops)
-        {
-            frame.tops.IncrementPC();
-            result = op.Invoke(in frame);
-        }
-        return result;
     }
 }
