@@ -6,44 +6,50 @@ static class TopsExtensions
 {
     extension(ref Tops tops)
     {
+        public ref TopsMutable Ref
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => ref Unsafe.As<Tops, TopsMutable>(ref tops);
+        }
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void NextOp() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).NextOp();
+            tops.Ref.NextOp();
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void SetCurrent(uint current) =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).Current = current;
+            tops.Ref.Current = current;
 
         [MethodImpl(Optimisations.InliningOnly)]
         public int IncrementPC() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).IncrementPC();
+            tops.Ref.IncrementPC();
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void SetPC(int pc) =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).SetPC(pc);
+            tops.Ref.SetPC(pc);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void IncrementYields() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).IncrementYields();
+            tops.Ref.IncrementYields();
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void DecrementYields() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).DecrementYields();
+            tops.Ref.DecrementYields();
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void ClearYields() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).ClearYields();
+            tops.Ref.ClearYields();
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void ResetFrame() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).ResetFrame();
+            tops.Ref.ResetFrame();
 
         [MethodImpl(Optimisations.Agro)]
         public bool PopFrame() =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).PopFrame();
+            tops.Ref.PopFrame();
 
         [MethodImpl(Optimisations.Agro)]
         public void PushFrame(uint yieldAdd) =>
-            Unsafe.As<Tops, TopsMutable>(ref tops).PushFrame(yieldAdd);
+            tops.Ref.PushFrame(yieldAdd);
     }
 }

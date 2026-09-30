@@ -14,13 +14,13 @@ static class OpsVM
     [MethodImpl(Optimisations.InliningOnly)]
     internal static int RunOps(in StackFrame frame)
     {
-        var ops    = frame.ops.BlockSpan(frame.PC);
-        var result = PullState.Pure;
-        //var current = ref frame.tops.Current;
+        var     ops    = frame.ops.BlockSpan(frame.PC);
+        var     result = PullState.Pure;
+        ref var tops   = ref frame.tops.Ref;
 
         foreach(var op in ops)
         {
-            frame.tops.IncrementPC();
+            tops.Current++;
             result = op.Invoke(in frame);
         }
         return result;
