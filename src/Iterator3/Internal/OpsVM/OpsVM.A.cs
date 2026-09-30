@@ -6,7 +6,7 @@
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Types;
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal;
 
 [SkipLocalsInit]
 static class OpsVM<A>

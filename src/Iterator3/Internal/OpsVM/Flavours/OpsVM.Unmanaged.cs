@@ -5,27 +5,27 @@
 
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal;
 
 [SkipLocalsInit]
-static class OpsVMManaged<A>
-    where A : class
+static class OpsVMUnmanaged<A>
+    where A : unmanaged
 {
-    static OpsVMManaged()
+    static OpsVMUnmanaged()
     {
         unsafe
         {
             OpsVM<A>.run = &Run;
         }
     }
-
+    
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool Run(in StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator
         if (frame.IsVoid)
         {
-            head = null!;
+            head = default;
             return false;
         }
 
@@ -37,7 +37,7 @@ static class OpsVMManaged<A>
         }
 
         start:
-
+        
         switch (OpsVM.RunOps(in frame))
         {
             // Void
@@ -48,7 +48,7 @@ static class OpsVMManaged<A>
                 }
                 else
                 {
-                    head = null!;
+                    head = default;
                     return false;
                 }
 
@@ -59,15 +59,15 @@ static class OpsVMManaged<A>
             // Pure 
             case 2:
                 goto pure;
-
+            
             default:
                 throw new InvalidOperationException();
         }
-
+        
         pure:
 
         PureResetToContinuationPoint(in frame, out head);
-        return true;
+        return true;        
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -83,12 +83,12 @@ static class OpsVMManaged<A>
         // some later operations.
         if(tops.HasYielded)
         {
-            frame.ResetFrameManaged(out head);
+            frame.ResetFrameUnmanaged(out head);
             //Log.function("frame-reset", in frame);
             return;
         }
 
-        vars.PopManaged(out head, false);
+        vars.PopUnmanaged(out head, false);
 
         //Log.value($"yielded: {head}", in frame);
             

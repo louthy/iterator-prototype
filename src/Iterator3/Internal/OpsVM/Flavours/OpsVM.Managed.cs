@@ -5,27 +5,27 @@
 
 using System.Runtime.CompilerServices;
 
-namespace IteratorPrototype.Iterator3.Internal.Collections;
+namespace IteratorPrototype.Iterator3.Internal;
 
 [SkipLocalsInit]
-static class OpsVMUnmanaged<A>
-    where A : unmanaged
+static class OpsVMManaged<A>
+    where A : class
 {
-    static OpsVMUnmanaged()
+    static OpsVMManaged()
     {
         unsafe
         {
             OpsVM<A>.run = &Run;
         }
     }
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool Run(in StackFrame frame, out A head)
     {
         // If there are no tops, then this is an empty stack, i.e. empty iterator
         if (frame.IsVoid)
         {
-            head = default;
+            head = null!;
             return false;
         }
 
@@ -37,7 +37,7 @@ static class OpsVMUnmanaged<A>
         }
 
         start:
-        
+
         switch (OpsVM.RunOps(in frame))
         {
             // Void
@@ -48,7 +48,7 @@ static class OpsVMUnmanaged<A>
                 }
                 else
                 {
-                    head = default;
+                    head = null!;
                     return false;
                 }
 
@@ -59,15 +59,15 @@ static class OpsVMUnmanaged<A>
             // Pure 
             case 2:
                 goto pure;
-            
+
             default:
                 throw new InvalidOperationException();
         }
-        
+
         pure:
 
         PureResetToContinuationPoint(in frame, out head);
-        return true;        
+        return true;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -83,12 +83,12 @@ static class OpsVMUnmanaged<A>
         // some later operations.
         if(tops.HasYielded)
         {
-            frame.ResetFrameUnmanaged(out head);
+            frame.ResetFrameManaged(out head);
             //Log.function("frame-reset", in frame);
             return;
         }
 
-        vars.PopUnmanaged(out head, false);
+        vars.PopManaged(out head, false);
 
         //Log.value($"yielded: {head}", in frame);
             
