@@ -53,29 +53,29 @@ class ManagedVars<A> : VarsGen<A>
         Instance = new ManagedVars<A>();
 
     public override unsafe IterOp Yield =>
-        &Vars.yieldManaged<A>;
+        &VarsMutable.yieldManaged<A>;
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void DupImpl(ref Vars vars) =>
         vars.DupManaged<A>();
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopManaged(out value, force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopManaged(force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushManaged(value, isCoRoutineArgument);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekManaged(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtManaged<A>();
 }
@@ -87,29 +87,29 @@ class StructVars<A> : VarsGen<A>
         Instance = new StructVars<A>();
 
     public override unsafe IterOp Yield =>
-        &Vars.yieldStruct<A>;
+        &VarsMutable.yieldStruct<A>;
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void DupImpl(ref Vars vars) =>
         vars.DupStruct<A>();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopStruct(out value, force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopStruct<A>(force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushStruct(value, isCoRoutineArgument);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekStruct(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtStruct<A>();
 }
@@ -121,29 +121,29 @@ class UnmanagedVars<A> : VarsGen<A>
         Instance = new UnmanagedVars<A>();
 
     public override unsafe IterOp Yield =>
-        &Vars.yieldUnmanaged<A>;
+        &VarsMutable.yieldUnmanaged<A>;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void DupImpl(ref Vars vars) =>
         vars.DupUnmanaged<A>();
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, out A value, bool force) =>
         vars.PopUnmanaged(out value, force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PopImpl(ref Vars vars, bool force) =>
         vars.PopUnmanaged<A>(force);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PushImpl(ref Vars vars, in A value, bool isCoRoutineArgument) =>
         vars.PushUnmanaged(value, isCoRoutineArgument);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override void PeekImpl(ref Vars vars, out A value) =>
         vars.PeekUnmanaged(out value);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public override ref A PeekAtImpl(ref Vars vars) =>
         ref vars.PeekAtUnmanaged<A>();
 }

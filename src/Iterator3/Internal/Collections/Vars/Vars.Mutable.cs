@@ -9,41 +9,41 @@ using IteratorPrototype.Iterator3.Internal.Memory;
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-readonly partial struct Vars
+struct VarsMutable
 {
     const int Capacity = 31;
     
-    readonly ObjStack objs;
-    readonly ByteStack values;
+    ObjStack objs;
+    ByteStack values;
     
     // These flags remember if a value is a co-routine argument, or not, and if so, stops it
     // being popped off the stack (when the `force` flag is `false). That means subsequent 
     // loops through an 'iterable' can use the full stack of co-routine arguments.
-    readonly byte flag0, flag1, flag2, flag3, flag4, flag5, flag6, flag7;
-    readonly byte flag8, flag9, flagA, flagB, flagC, flagD, flagE, flagF;
-    readonly byte flag10, flag11, flag12, flag13, flag14, flag15, flag16, flag17;
-    readonly byte flag18, flag19, flag1A, flag1B, flag1C, flag1D, flag1E /*, flag1F -- we're using this byte for `top` */;
-    readonly byte top;
-
-    public ReadOnlySpan<bool> Flags
+    byte flag0, flag1, flag2, flag3, flag4, flag5, flag6, flag7;
+    byte flag8, flag9, flagA, flagB, flagC, flagD, flagE, flagF;
+    byte flag10, flag11, flag12, flag13, flag14, flag15, flag16, flag17;
+    byte flag18, flag19, flag1A, flag1B, flag1C, flag1D, flag1E /*, flag1F -- we're using this byte for `top` */;
+    byte top;
+    
+    public Span<bool> Flags
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => MemoryMarshal.CreateSpan(ref Unsafe.As<byte, bool>(ref Unsafe.AsRef(in flag0)), top);
     }
     
-    ReadOnlySpan<byte> FlagBytes
+    public Span<byte> FlagBytes
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in flag0), top);
     }
 
-    ReadOnlySpan<bool> AllFlags
+    public Span<bool> AllFlags
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => MemoryMarshal.CreateSpan(ref Unsafe.As<byte, bool>(ref Unsafe.AsRef(in flag0)), Capacity);
     }    
     
-    ReadOnlySpan<byte> AllFlagBytes
+    public Span<byte> AllFlagBytes
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in flag0), Capacity);
@@ -65,7 +65,7 @@ readonly partial struct Vars
         }
     }
 
-    bool PeekIsManaged
+    public bool PeekIsManaged
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get
@@ -75,7 +75,7 @@ readonly partial struct Vars
         }
     }
 
-    bool PeekIsUnmanaged
+    public bool PeekIsUnmanaged
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get
@@ -85,54 +85,27 @@ readonly partial struct Vars
         }
     }
 
-    [MethodImpl(Optimisations.Max)]
-    public void SyncFrom(in Tops tops)
-    {
-        var snapshot = tops.Current & (Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
-        var os       = (int)((snapshot & Tops.ObjsMask)   >> Tops.ObjsShift);
-        var vs       = (int)((snapshot & Tops.ValuesMask) >> Tops.ValuesShift);
-        var nt       = (int)((snapshot & Tops.VarsMask)   >> Tops.VarsShift);
-
-        // Set the flags top to reflect how many objs and vals we're losing:
-        ref var t = ref Unsafe.AsRef(in top);
-        t = (byte)nt;
-        
-        // Reset the tops
-        objs.PopToTop(os);
-        values.PopToTop(vs);
-    }
-
-    /*
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void PushFlagManaged(bool isCoRoutineArgument)
+    public void PushFlagManaged(bool isCoRoutineArgument)
     {
         // Set the flag for whether this is a coroutine argument
-        ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in flag0), top);
-        f = Unsafe.As<bool, byte>(ref isCoRoutineArgument);
-        
-        // Increase top
-        ref var t = ref Unsafe.AsRef(in top);
-        t++;
+        top++;
+        if(top == 0) throw new InvalidOperationException("HOW?");
+        Flags[^1] = isCoRoutineArgument;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void PushFlagUnmanaged(bool isCoRoutineArgument)
+    public void PushFlagUnmanaged(bool isCoRoutineArgument)
     {
         // Set the flag for whether this is a coroutine argument
-        ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in flag0), top);
-        f = (byte)(2 | Unsafe.As<bool, byte>(ref isCoRoutineArgument));
-        
-        // Increase top
-        ref var t = ref Unsafe.AsRef(in top);
-        t++;
+        top++;
+        FlagBytes[^1] = (byte)(2 | Unsafe.As<bool, byte>(ref isCoRoutineArgument)); 
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void PopFlag()
+    public void PopFlag()
     {
-        // Decrease top
-        ref var t = ref Unsafe.AsRef(in top);
-        t--;
+        top--;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -184,7 +157,6 @@ readonly partial struct Vars
             PopManaged<Box<A>>(out var box, force);
             value = box.Value;
             box.Free();
-            PopFlag();
         }
     }
 
@@ -227,7 +199,6 @@ readonly partial struct Vars
 
         PopManaged<Box<A>>(out var box, force);
         box.Free();
-        PopFlag();
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -288,25 +259,41 @@ readonly partial struct Vars
         where A : unmanaged =>
         values.Peek(out value);
 
-    [MethodImpl(Optimisations.Max)]
-    public void SyncTo(ref Tops tops)
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void SyncTo(ref TopsMutable tops1)
     {
         var os      = (uint)(objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
         var vs      = (uint)(values.Count << Tops.ValuesShift) & Tops.ValuesMask;
         var t       = (uint)(top          << Tops.VarsShift)   & Tops.VarsMask;
-        var current = tops.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
-        tops.SetCurrent(current | os | vs | t);
+        var current = tops1.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+        tops1.Current = current | os | vs | t;
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void SyncFrom(in Tops tops)
+    {
+        var snapshot = tops.Current & (Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+        var os       = (int)((snapshot & Tops.ObjsMask)   >> Tops.ObjsShift);
+        var vs       = (int)((snapshot & Tops.ValuesMask) >> Tops.ValuesShift);
+        var nt       = (int)((snapshot & Tops.VarsMask)   >> Tops.VarsShift);
+
+        // Set the flags top to reflect how many objs and vals we're losing:
+        top = (byte)nt;
+        
+        // Reset the tops
+        objs.PopToTop(os);
+        values.PopToTop(vs);
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool Zero()
     {
         // Set the flags top to zero.
-        ref var t = ref Unsafe.AsRef(in top);
-        t = 0;
+        top = 0;
         
         return objs.PopToTop(0) && values.PopToTop(0);
     }
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static int yieldManaged<A>(in StackFrame frame)
         where A : class
@@ -314,11 +301,11 @@ readonly partial struct Vars
         //Log.coroutine($"start-yield [managed : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
         
         // Set the flag for stating this is a coroutine argument
-        ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in frame.vars.flag0), frame.vars.top - 1);
-        f = 1;
+        ref var vars = ref frame.vars.Ref;
+        vars.FlagBytes[^1] = 1;
         
         // Save the current top values for the stack
-        ref var topRef   = ref Unsafe.AsRef(in frame.vars.objs.Count);
+        ref var topRef   = ref Unsafe.AsRef(in vars.objs.Count);
         var     topValue = topRef;
         
         // Virtually pop off the top value (which is the result of the current co-routine)
@@ -342,11 +329,11 @@ readonly partial struct Vars
         //Log.coroutine($"start-yield [unmanaged : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
         
         // Set the flag for stating this is a coroutine argument
-        ref var f = ref Unsafe.Add(ref Unsafe.AsRef(in frame.vars.flag0), frame.vars.top - 1);
-        f = 1;
+        ref var vars = ref frame.vars.Ref;
+        vars.FlagBytes[^1] = 1;
         
         // Save the current top values for the stack
-        ref var topRef   = ref Unsafe.AsRef(in frame.vars.values.Count);
+        ref var topRef   = ref Unsafe.AsRef(in vars.values.Count);
         var     topValue = topRef;
         var     sizeOfA  = Unsafe.SizeOf<A>();
         
@@ -367,5 +354,5 @@ readonly partial struct Vars
     [MethodImpl(Optimisations.InliningOnly)]
     public static int yieldStruct<A>(in StackFrame frame)
         where A : struct =>
-        yieldManaged<Box<A>>(in frame);*/
+        yieldManaged<Box<A>>(in frame);
 }

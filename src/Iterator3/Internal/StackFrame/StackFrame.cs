@@ -6,7 +6,7 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    public readonly ref Tops tops;
+    public readonly ref readonly Tops tops;
     public readonly ref readonly Ops ops;
     public readonly ref readonly Globals globals;
     public readonly ref readonly Vars vars;
@@ -32,7 +32,7 @@ readonly ref struct StackFrame
     {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops);
+        vars.SyncTo(ref tops.Ref);
 
         // Push the current tops onto the stack
         tops.PushFrame(1);
@@ -102,7 +102,7 @@ readonly ref struct StackFrame
     {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops);
+        vars.SyncTo(ref tops.Ref);
 
         // Push the current tops onto the stack
         tops.PushFrame(0);

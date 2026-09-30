@@ -4,12 +4,12 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 static class TopsExtensions
 {
-    extension(ref Tops tops)
+    extension(in Tops tops)
     {
         public ref TopsMutable Ref
         {
             [MethodImpl(Optimisations.InliningOnly)]
-            get => ref Unsafe.As<Tops, TopsMutable>(ref tops);
+            get => ref Unsafe.As<Tops, TopsMutable>(ref Unsafe.AsRef(in tops));
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
