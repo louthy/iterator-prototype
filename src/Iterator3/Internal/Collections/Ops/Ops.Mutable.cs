@@ -10,28 +10,28 @@ using System.Runtime.InteropServices;
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-readonly struct Ops
+unsafe struct OpsMutable
 {
     public const int Capacity = 32;
     
-    public readonly short VarBytes;
-    public readonly short MaxVarBytes;
-    public readonly byte VarObjs;
-    public readonly byte MaxVarObjs;
-    public readonly byte Frames;
-    public readonly byte BlockSize;
-    public readonly bool IsRunnable;
-    public readonly int Count;
+    public short VarBytes;
+    public short MaxVarBytes;
+    public byte VarObjs;
+    public byte MaxVarObjs;
+    public byte Frames;
+    public byte BlockSize;
+    public bool IsRunnable;
+    public int Count;
     
-    readonly Op Fun00, Fun01, Fun02, Fun03, Fun04, Fun05, Fun06, Fun07,
-                Fun08, Fun09, Fun0A, Fun0B, Fun0C, Fun0D, Fun0E, Fun0F,
-                Fun10, Fun11, Fun12, Fun13, Fun14, Fun15, Fun16, Fun17,
-                Fun18, Fun19, Fun1A, Fun1B, Fun1C, Fun1D, Fun1E, Fun1F; 
+    Op Fun00, Fun01, Fun02, Fun03, Fun04, Fun05, Fun06, Fun07,
+       Fun08, Fun09, Fun0A, Fun0B, Fun0C, Fun0D, Fun0E, Fun0F,
+       Fun10, Fun11, Fun12, Fun13, Fun14, Fun15, Fun16, Fun17,
+       Fun18, Fun19, Fun1A, Fun1B, Fun1C, Fun1D, Fun1E, Fun1F; 
     
-    readonly byte Blk00, Blk01, Blk02, Blk03, Blk04, Blk05, Blk06, Blk07, 
-                  Blk08, Blk09, Blk0A, Blk0B, Blk0C, Blk0D, Blk0E, Blk0F,
-                  Blk10, Blk11, Blk12, Blk13, Blk14, Blk15, Blk16, Blk17, 
-                  Blk18, Blk19, Blk1A, Blk1B, Blk1C, Blk1D, Blk1E, Blk1F;
+    byte Blk00, Blk01, Blk02, Blk03, Blk04, Blk05, Blk06, Blk07, 
+         Blk08, Blk09, Blk0A, Blk0B, Blk0C, Blk0D, Blk0E, Blk0F,
+         Blk10, Blk11, Blk12, Blk13, Blk14, Blk15, Blk16, Blk17, 
+         Blk18, Blk19, Blk1A, Blk1B, Blk1C, Blk1D, Blk1E, Blk1F;
     
     // This is because the writing of the block-sizes can write 8 bytes
     // at a time, with up to 3 padded overflow bytes. So, we put this
@@ -39,10 +39,17 @@ readonly struct Ops
     readonly uint blkBuffer;
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public ReadOnlySpan<Op> BlockSpan(int from)
+    public Span<Op> BlockSpan(int from)
     {
         var count = Unsafe.AddByteOffset(ref Unsafe.AsRef(in Blk00), from);
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from), count);
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public ref Op Block(int from, out int count)
+    {
+        count = Unsafe.AddByteOffset(ref Unsafe.AsRef(in Blk00), from);
+        return ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from);
     }
     
     public ref readonly Op this[int index]
@@ -56,8 +63,8 @@ readonly struct Ops
         [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), index);
     }
+
     
-    /*
     [MethodImpl(Optimisations.Default)]
     public bool Add(
         IterOp f, 
@@ -68,6 +75,7 @@ readonly struct Ops
         OpReturn @return)
     {
         if (Count + 1 > Capacity) return false;
+        /*
         ref var count       = ref Unsafe.AsRef(in Count);
         ref var varBytes    = ref Unsafe.AsRef(in VarBytes);
         ref var maxVarBytes = ref Unsafe.AsRef(in MaxVarBytes);
@@ -78,33 +86,42 @@ readonly struct Ops
         ref var block       = ref Unsafe.Add(ref Unsafe.AsRef(in Blk00), count - BlockSize);
         ref var isRunnable  = ref Unsafe.AsRef(in IsRunnable);
         ref var entry       = ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), count);
+        */
+        var blockSpan  = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Blk00), 0), Capacity);
+        var entrySpan  = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), 0), Capacity);
+        var blockStart = Count - BlockSize;
 
-        varBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
-        maxVarBytes = Math.Max(VarBytes, MaxVarBytes);
+        VarBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
+        MaxVarBytes = Math.Max(VarBytes, MaxVarBytes);
 
-        varObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
-        maxVarObjs = Math.Max(VarObjs, MaxVarObjs);
+        VarObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
+        MaxVarObjs = Math.Max(VarObjs, MaxVarObjs);
 
-        frames = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
+        Frames = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
         
-        isRunnable = maxVarBytes < ByteStack.Capacity &&
-                     maxVarObjs  < ObjStack.Capacity  &&
-                     frames      < Tops.Capacity;
+        IsRunnable = MaxVarBytes < ByteStack.Capacity &&
+                     MaxVarObjs  < ObjStack.Capacity  &&
+                     Frames      < Tops.Capacity;
 
-        blockSize++;
-        BlockSizeWriter(ref block, BlockSize);
+        BlockSize++;
+        
+        //ref var block = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Blk00), Count - BlockSize);
+        //BlockSizeWriter(ref block, BlockSize);
+
+        ReadOnlySpan<byte> sizes = OpsBlocks.BS[BlockSize];
+        sizes.CopyTo(blockSpan[blockStart..]);
+        
         if (@return == OpReturn.CanVoid)
         {
-            blockSize = 0;
+            BlockSize = 0;
         }
         else if (@return == OpReturn.CoRoutine)
         {
-            ref var coRoutineBlock = ref Unsafe.Add(ref Unsafe.AsRef(in Blk00), count);
-            coRoutineBlock = blockSize;
+            blockSpan[Count] = BlockSize;
         }
         
-        entry = new Op((nint)f, @return);
-        count++;
+        entrySpan[Count] = new Op((nint)f, @return);
+        Count++;
         return true;
     }
 
@@ -118,6 +135,7 @@ readonly struct Ops
         OpReturn @return)
     {
         if (Count + 1 > Capacity) return false;
+        /*
         ref var count       = ref Unsafe.AsRef(in Count);
         ref var varBytes    = ref Unsafe.AsRef(in VarBytes);
         ref var maxVarBytes = ref Unsafe.AsRef(in MaxVarBytes);
@@ -130,37 +148,38 @@ readonly struct Ops
         ref var isRunnable  = ref Unsafe.AsRef(in IsRunnable);
         ref var start       = ref Unsafe.AsRef(in Fun00);
         ref var next        = ref Unsafe.Add(ref start, 1);
-        
-        Unsafe.CopyBlock(ref Unsafe.As<Op, byte>(ref next),
-                         ref Unsafe.As<Op, byte>(ref start), 
-                         (uint)(Unsafe.SizeOf<Op>() * count));
-        
-        Unsafe.CopyBlock(ref nextBlock, ref startBlock, (uint)count);
+        */
 
-        varBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
-        maxVarBytes = Math.Max(VarBytes, MaxVarBytes);
-
-        varObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
-        maxVarObjs = Math.Max(VarObjs, MaxVarObjs);
-
-        frames = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
+        var blockSpan     = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Blk00), 0), Capacity - 1);
+        var entrySpan     = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), 0), Capacity - 1);
         
-        isRunnable = maxVarBytes < ByteStack.Capacity &&
-                     maxVarObjs  < ObjStack.Capacity  &&
-                     frames      < Tops.Capacity;
+        blockSpan[..Count].CopyTo(blockSpan[1..]);
+        entrySpan[..Count].CopyTo(entrySpan[1..]);
+
+        VarBytes    = (short)Math.Clamp(VarBytes + varBytesOut - varBytesIn, 0, short.MaxValue);
+        MaxVarBytes = Math.Max(VarBytes, MaxVarBytes);
+
+        VarObjs    = (byte)Math.Clamp(VarObjs + varObjsOut - varObjsIn, 0, 255);
+        MaxVarObjs = Math.Max(VarObjs, MaxVarObjs);
+
+        Frames = (byte)Math.Clamp(Frames + (@return == OpReturn.CoRoutine ? 1 : 0x0), 0, 255);
+        
+        IsRunnable = MaxVarBytes < ByteStack.Capacity &&
+                     MaxVarObjs  < ObjStack.Capacity  &&
+                     Frames      < Tops.Capacity;
 
         if (@return == OpReturn.CanVoid)
         {
-            blockSize = 0;
-            startBlock = 1;
+            BlockSize = 0;
+            blockSpan[0] = 1;
         }
         else
         {
-            startBlock++;
+            blockSpan[0] = (byte)(blockSpan[0] + 1);
         }
         
-        start = new Op((nint)f, @return);
-        count++;
+        entrySpan[0] = new Op((nint)f, @return);
+        Count++;
         return true;
     }
         
@@ -222,5 +241,5 @@ readonly struct Ops
                 return;
 
         }
-    }*/
+    }
 }
