@@ -74,7 +74,7 @@ static class OpsVMManaged<A>
     [MethodImpl(Optimisations.InliningOnly)]
     static void PureResetToContinuationPoint(in StackFrame frame, out A head)
     {
-        ref var          tops = ref frame.tops;
+        ref var          tops = ref frame.tops.Ref;
         ref readonly var vars = ref frame.vars;
             
         //Log.function("start-pure", in frame);
