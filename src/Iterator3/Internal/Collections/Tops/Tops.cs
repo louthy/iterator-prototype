@@ -4,6 +4,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -63,6 +64,18 @@ readonly struct Tops
         begin = 0;
         current = 0;
     }
+    
+    Span<uint> Items
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in item0), count);
+    }
+
+    Span<uint> AllItems
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in item0), Capacity);
+    }    
 
     public int Count
     {
@@ -74,28 +87,6 @@ readonly struct Tops
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => count == 0;
-    }
-
-    /// <summary>
-    /// This is the state when this frame started
-    /// </summary>
-    ref uint BeginRef
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => ref Unsafe.AsRef(in begin);
-    }
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public void NextOp() =>
-        Unsafe.AsRef(in current) = current + 1;
-
-    /// <summary>
-    /// This is the current state of the frame
-    /// </summary>
-    public ref uint CurrentRef
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => ref Unsafe.AsRef(in current);
     }
 
     /// <summary>
@@ -121,33 +112,56 @@ readonly struct Tops
 
     public bool HasYielded
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
+        [MethodImpl(Optimisations.InliningOnly)]
         get => YieldsInFrame > 0;
-    } 
+    }
 
     public int YieldsInFrame
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
+        [MethodImpl(Optimisations.InliningOnly)]
         get => (int)((current & YieldCounterMask) >> YieldCounterShift);
-    } 
+    }
 
     public int ValuesCount
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
+        [MethodImpl(Optimisations.InliningOnly)]
         get => (int)((current & ValuesMask) >> ValuesShift);
-    } 
+    }
 
     public int ObjsCount
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
+        [MethodImpl(Optimisations.InliningOnly)]
         get => (int)((current & ObjsMask) >> ObjsShift);
-    } 
+    }
 
     public int VarsCount
     {
-        [MethodImpl(Optimisations.InliningOnly)] 
+        [MethodImpl(Optimisations.InliningOnly)]
         get => (int)((current & VarsMask) >> VarsShift);
-    } 
+    }
+
+    /*
+    /// <summary>
+    /// This is the state when this frame started
+    /// </summary>
+    ref uint BeginRef
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => ref Unsafe.AsRef(in begin);
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void NextOp() =>
+        Unsafe.AsRef(in current) = current + 1;
+
+    /// <summary>
+    /// This is the current state of the frame
+    /// </summary>
+    public ref uint CurrentRef
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => ref Unsafe.AsRef(in current);
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
     public int IncrementPC()
@@ -193,14 +207,14 @@ readonly struct Tops
         var     c = current & NotYieldCounterMask;
         CurrentRef = c;
     }
- 
+
     [MethodImpl(Optimisations.InliningOnly)]
     public void ResetFrame()
     {
         CurrentRef = begin;
         TopRef = begin;
     }
-  
+
     [MethodImpl(Optimisations.Agro)]
     public bool PopFrame()
     {
@@ -213,17 +227,17 @@ readonly struct Tops
             {
                 // Clear the top entry
                 TopRef = 0;
-        
+
                 // Make the stack 1 quieter
                 ref var c = ref Unsafe.AsRef(in count);
                 c = 0;
 
                 // Reload the current state cache
                 CurrentRef = 0;
-        
+
                 // Make sure we remember the start of this frame
                 BeginRef = 0;
-        
+
                 return true;
             }
 
@@ -249,32 +263,32 @@ readonly struct Tops
             }
         }
     }
-    
+
     [MethodImpl(Optimisations.Agro)]
     public void PushFrame(uint yieldAdd)
     {
         // The new top state will be the current state with the yields reset
         var newState = current & NotYieldCounterMask;
-        
+
         // The state we're about to save (before pushing a new one) will have its program-counter reset back to the
         // start of this frame, so when it's popped, we'll be back at the start (loops).
         var newCurrent = ((current & NotProgramCounterMask) | (begin & ProgramCounterMask)) +
                          (yieldAdd << YieldCounterShift);
-        
+
         // This takes the current state (with the program-counter reset back to the start of this frame) and
         // copies it to the current top entry at the top of the stack (before we push).
         TopRef = newCurrent;
-        
+
         // Make the top of the stack 1 louder
         ref var c = ref Unsafe.AsRef(in count);
         c++;
-        
+
         // Set the new state
         CurrentRef = newState;
-        
+
         // Now write the current state to the new entry at the top of the stack
         TopRef = newState;
-        
+
         // Remember where this frame starts
         BeginRef = newState;
     }
@@ -283,11 +297,11 @@ readonly struct Tops
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
-    }    
+    }
 
     ref uint TopRef
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => ref Unsafe.Add(ref Unsafe.AsRef(in item0), count - 1);
-    }    
+    }*/    
 }

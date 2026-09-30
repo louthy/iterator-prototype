@@ -4,6 +4,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3.Internal;
 
@@ -62,13 +63,13 @@ static class OpsVM
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static int RunOps(in StackFrame frame)
     {
-        var     ops      = frame.ops.BlockSpan(frame.PC);
-        var     result   = PullState.Pure;
-        ref var current  = ref frame.tops.CurrentRef;
+        var ops     = frame.ops.BlockSpan(frame.PC);
+        var result  = PullState.Pure;
+        //var current = ref frame.tops.Current;
 
         foreach(var op in ops)
         {
-            current++;
+            frame.tops.IncrementPC();
             result = op.Invoke(in frame);
         }
         return result;

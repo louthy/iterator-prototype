@@ -228,13 +228,13 @@ readonly partial struct Vars
         values.Peek(out value);
 
     [MethodImpl(Optimisations.Max)]
-    public void SyncTo(in Tops tops)
+    public void SyncTo(ref Tops tops)
     {
         var os      = (uint)(objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
         var vs      = (uint)(values.Count << Tops.ValuesShift) & Tops.ValuesMask;
         var t       = (uint)(top          << Tops.VarsShift)   & Tops.VarsMask;
         var current = tops.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
-        tops.CurrentRef = current | os | vs | t;
+        tops.SetCurrent(current | os | vs | t);
     }
 
     [MethodImpl(Optimisations.Max)]

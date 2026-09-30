@@ -4,6 +4,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Collections;
 
 namespace IteratorPrototype.Iterator3.Internal;
 
@@ -73,7 +74,7 @@ static class OpsVMStruct<A>
     [MethodImpl(Optimisations.InliningOnly)]
     static void PureResetToContinuationPoint(in StackFrame frame, out A head)
     {
-        ref readonly var tops = ref frame.tops;
+        ref var          tops = ref frame.tops;
         ref readonly var vars = ref frame.vars;
             
         //Log.function("start-pure", in frame);
