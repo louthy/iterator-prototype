@@ -65,16 +65,16 @@ readonly struct Tops
         current = 0;
     }
     
-    Span<uint> Items
+    ReadOnlySpan<uint> Items
     {
         [MethodImpl(Optimisations.InliningOnly)]
-        get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in item0), count);
+        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in item0), count);
     }
 
-    Span<uint> AllItems
+    ReadOnlySpan<uint> AllItems
     {
         [MethodImpl(Optimisations.InliningOnly)]
-        get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in item0), Capacity);
+        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in item0), Capacity);
     }    
 
     public int Count

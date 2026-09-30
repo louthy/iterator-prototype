@@ -192,16 +192,6 @@ static class VarsExtensions
         public void PushUnmanaged<A>(in A value, bool isCoRoutineArgument) 
             where A : unmanaged =>
             vars.Ref.PushUnmanaged(value, isCoRoutineArgument);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public void PeekUnmanaged<A>(out A value) 
-            where A : unmanaged =>
-            vars.Ref.PeekUnmanaged(out value);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public ref A PeekAtUnmanaged<A>() 
-            where A : unmanaged =>
-            ref vars.Ref.PeekAtUnmanaged<A>();
         
         
         [MethodImpl(Optimisations.InliningOnly)]
@@ -222,17 +212,6 @@ static class VarsExtensions
         public void PushManaged<A>(in A value, bool isCoRoutineArgument) 
             where A : class =>
             vars.Ref.PushManaged(value, isCoRoutineArgument);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public void PeekManaged<A>(out A value) 
-            where A : class =>
-            vars.Ref.PeekManaged(out value);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public ref A PeekAtManaged<A>() 
-            where A : class =>
-            ref vars.Ref.PeekAtManaged<A>();
-        
         
         [MethodImpl(Optimisations.InliningOnly)]
         public void DupStruct<A>()
@@ -253,16 +232,6 @@ static class VarsExtensions
         public void PushStruct<A>(in A value, bool isCoRoutineArgument) 
             where A : struct =>
             vars.Ref.PushStruct(value, isCoRoutineArgument);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public void PeekStruct<A>(out A value) 
-            where A : struct =>
-            vars.Ref.PeekStruct(out value);
-
-        [MethodImpl(Optimisations.InliningOnly)]
-        public ref A PeekAtStruct<A>() 
-            where A : struct =>
-            ref vars.Ref.PeekAtStruct<A>();
         
         [MethodImpl(Optimisations.InliningOnly)]
         public void SyncTo(ref TopsMutable tops1) =>

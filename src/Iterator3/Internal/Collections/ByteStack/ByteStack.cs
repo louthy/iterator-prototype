@@ -19,7 +19,30 @@ readonly struct ByteStack
     
     [FieldOffset(4)]
     public readonly byte Stack;
+        
+    public ReadOnlySpan<byte> Values
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in Stack), Count);
+    }
     
+    public ReadOnlySpan<byte> AllValues
+    {
+        [MethodImpl(Optimisations.InliningOnly)]
+        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in Stack), Capacity);
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void Peek<A>(out A value)
+        where A : unmanaged =>
+        value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count - Unsafe.SizeOf<A>()));
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public ref A PeekAt<A>()
+        where A : unmanaged =>
+        ref Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in Stack), Count - Unsafe.SizeOf<A>()));
+
+    /*
     [MethodImpl(Optimisations.Default)]
     public void Add(in ByteStack rhs)
     {
@@ -111,5 +134,5 @@ readonly struct ByteStack
         ref var entry = ref Unsafe.As<byte, A>(ref src);
         entry = value;
         top += sizeOf;
-    }
+    }*/
 }
