@@ -11,7 +11,7 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 static class OpsVM
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static int RunOps(in StackFrame frame)
     {
         var ops    = frame.ops.BlockSpan(frame.PC);
@@ -26,7 +26,7 @@ static class OpsVM
         return result;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Optimisations.InliningOnly)]
     internal static bool VoidResetToContinuationPoint(in StackFrame frame)
     {
         //Log.function("start-void", in frame);
