@@ -5,6 +5,7 @@
 #pragma warning disable CS0649
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -36,7 +37,14 @@ readonly unsafe struct Ops
     // at a time, with up to 3 padded overflow bytes. So, we put this
     // buffer here in case of any overflow.
     readonly uint blkBuffer;
-    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public Span<Op> BlockSpan(int from)
+    {
+        var count = Unsafe.AddByteOffset(ref Unsafe.AsRef(in Blk00), from);
+        return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in Fun00), from), count);
+    }
+
     [MethodImpl(Optimisations.InliningOnly)]
     public ref Op Block(int from, out int count)
     {
