@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -12,9 +13,69 @@ static class TopsExtensions
             get => ref Unsafe.As<Tops, TopsMutable>(ref Unsafe.AsRef(in tops));
         }
 
+        public bool IsEmpty
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => tops.Count == 0;
+        }
+
+        ReadOnlySpan<uint> Items
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in tops.item0), tops.Count);
+        }
+
+        ReadOnlySpan<uint> AllItems
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in tops.item0), Tops.Capacity);
+        }
+
+        public int PC
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => (int)((tops.Current & Tops.ProgramCounterMask) >> Tops.ProgramCounterShift);
+        }
+
+        public bool IsSingleton
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => tops.YieldsInFrame == 0;
+        }
+
+        public bool HasYielded
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => tops.YieldsInFrame > 0;
+        }
+
+        public int YieldsInFrame
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => (int)((tops.Current & Tops.YieldCounterMask) >> Tops.YieldCounterShift);
+        }
+
+        public int ValuesCount
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => (int)((tops.Current & Tops.ValuesMask) >> Tops.ValuesShift);
+        }
+
+        public int ObjsCount
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => (int)((tops.Current & Tops.ObjsMask) >> Tops.ObjsShift);
+        }
+
+        public int VarsCount
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => (int)((tops.Current & Tops.VarsMask) >> Tops.VarsShift);
+        }
+        
         [MethodImpl(Optimisations.InliningOnly)]
         public void NextOp() =>
-            tops.Ref.NextOp();
+            tops.Ref.Current++;
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void SetCurrent(uint current) =>

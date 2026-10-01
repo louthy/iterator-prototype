@@ -1,4 +1,7 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using IteratorPrototype.Memory;
+
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
@@ -12,7 +15,110 @@ static class VarsExtensions
             [MethodImpl(Optimisations.InliningOnly)]
             get => ref Unsafe.As<Vars, VarsMutable>(ref Unsafe.AsRef(in vars));
         }
-        
+
+        public ReadOnlySpan<bool> Flags
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<byte, bool>(ref Unsafe.AsRef(in vars.flag0)), vars.top);
+        }
+
+        ReadOnlySpan<byte> FlagBytes
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in vars.flag0), vars.top);
+        }
+
+        ReadOnlySpan<bool> AllFlags
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<byte, bool>(ref Unsafe.AsRef(in vars.flag0)), Vars.Capacity);
+        }
+
+        ReadOnlySpan<byte> AllFlagBytes
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in vars.flag0), Vars.Capacity);
+        }
+
+        public int ObjsCount =>
+            vars.objs.Count;
+
+        public int ValuesCount =>
+            vars.values.Count;
+
+        public bool PeekIsCoRoutineArgument
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get
+            {
+                var s = vars.FlagBytes;
+                return s.Length > 0 && (s[^1] & 1) == 1;
+            }
+        }
+
+        bool PeekIsManaged
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get
+            {
+                var s = vars.FlagBytes;
+                return s.Length > 0 && (s[^1] & 2) == 0;
+            }
+        }
+
+        bool PeekIsUnmanaged
+        {
+            [MethodImpl(Optimisations.InliningOnly)]
+            get
+            {
+                var s = vars.FlagBytes;
+                return s.Length > 0 && (s[^1] & 2) == 2;
+            }
+        }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void SyncTo(ref TopsMutable tops)
+        {
+            var os      = (uint)(vars.objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
+            var vs      = (uint)(vars.values.Count << Tops.ValuesShift) & Tops.ValuesMask;
+            var t       = (uint)(vars.top          << Tops.VarsShift)   & Tops.VarsMask;
+            var current = tops.Current                             & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+            tops.Current = current | os | vs | t;
+        }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public ref A PeekAtStruct<A>()
+            where A : struct =>
+            ref vars.objs.PeekAt<Box<A>>().Ref;
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public ref A PeekAtManaged<A>()
+            where A : class =>
+            ref vars.objs.PeekAt<A>();
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public ref A PeekAtUnmanaged<A>()
+            where A : unmanaged =>
+            ref vars.values.PeekAt<A>();
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void PeekStruct<A>(out A value)
+            where A : struct
+        {
+            vars.objs.Peek<Box<A>>(out var box);
+            value = box.Value;
+        }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void PeekManaged<A>(out A value)
+            where A : class =>
+            vars.objs.Peek(out value);
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void PeekUnmanaged<A>(out A value)
+            where A : unmanaged =>
+            vars.values.Peek(out value);
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void Pop<A>(out A value, bool force) =>
             VarsGen<A>.Instance.PopImpl(ref Unsafe.AsRef(in vars), out value, force);
@@ -72,7 +178,8 @@ static class VarsExtensions
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public void Pop<A, B, C, D, E, F>(out A value1, out B value2, out C value3, out D value4, out E value5, out F value6)
+        public void Pop<A, B, C, D, E, F>(out A value1, out B value2, out C value3, out D value4, out E value5,
+                                          out F value6)
         {
             var topCo6 = vars.PeekIsCoRoutineArgument;
             vars.Pop(out value6, true);
@@ -90,7 +197,7 @@ static class VarsExtensions
             if (topCo4) vars.Push(in value4, true);
             if (topCo5) vars.Push(in value5, true);
             if (topCo6) vars.Push(in value6, true);
-        }        
+        }
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Pop<A, B, C, D, E, F, G>(out A value1, out B value2, out C value3, out D value4, out E value5, out F value6, out G value7)
@@ -114,7 +221,7 @@ static class VarsExtensions
             if (topCo5) vars.Push(in value5, true);
             if (topCo6) vars.Push(in value6, true);
             if (topCo7) vars.Push(in value7, true);
-        }        
+        }
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Pop<A>(bool force) =>
@@ -141,7 +248,7 @@ static class VarsExtensions
             var isco = vars.PeekIsCoRoutineArgument;
             vars.Pop(out value2, true);
             vars.Peek(out value1);
-            vars.Push(in value2, isco); 
+            vars.Push(in value2, isco);
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
@@ -171,76 +278,72 @@ static class VarsExtensions
         [MethodImpl(Optimisations.InliningOnly)]
         public void Dup<A>() =>
             VarsGen<A>.Instance.DupImpl(ref Unsafe.AsRef(in vars));
-        
-        
+
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void DupUnmanaged<A>()
             where A : unmanaged =>
             vars.Ref.DupUnmanaged<A>();
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PopUnmanaged<A>(out A value, bool force) 
+        public void PopUnmanaged<A>(out A value, bool force)
             where A : unmanaged =>
             vars.Ref.PopUnmanaged(out value, force);
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PopUnmanaged<A>(bool force) 
+        public void PopUnmanaged<A>(bool force)
             where A : unmanaged =>
             vars.Ref.PopUnmanaged<A>(force);
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PushUnmanaged<A>(in A value, bool isCoRoutineArgument) 
+        public void PushUnmanaged<A>(in A value, bool isCoRoutineArgument)
             where A : unmanaged =>
             vars.Ref.PushUnmanaged(value, isCoRoutineArgument);
-        
-        
+
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void DupManaged<A>()
             where A : class =>
             vars.Ref.DupManaged<A>();
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PopManaged<A>(out A value, bool force) 
+        public void PopManaged<A>(out A value, bool force)
             where A : class =>
             vars.Ref.PopManaged(out value, force);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void PopManaged(bool force) =>
             vars.Ref.PopManaged(force);
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PushManaged<A>(in A value, bool isCoRoutineArgument) 
+        public void PushManaged<A>(in A value, bool isCoRoutineArgument)
             where A : class =>
             vars.Ref.PushManaged(value, isCoRoutineArgument);
-        
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void DupStruct<A>()
             where A : struct =>
             vars.Ref.DupStruct<A>();
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PopStruct<A>(out A value, bool force) 
+        public void PopStruct<A>(out A value, bool force)
             where A : struct =>
             vars.Ref.PopStruct(out value, force);
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PopStruct<A>(bool force) 
+        public void PopStruct<A>(bool force)
             where A : struct =>
             vars.Ref.PopStruct<A>(force);
-    
+
         [MethodImpl(Optimisations.InliningOnly)]
-        public void PushStruct<A>(in A value, bool isCoRoutineArgument) 
+        public void PushStruct<A>(in A value, bool isCoRoutineArgument)
             where A : struct =>
             vars.Ref.PushStruct(value, isCoRoutineArgument);
-        
-        [MethodImpl(Optimisations.InliningOnly)]
-        public void SyncTo(ref TopsMutable tops1) =>
-            vars.Ref.SyncTo(ref tops1);
-            
+
         [MethodImpl(Optimisations.InliningOnly)]
         public void SyncFrom(in Tops tops) =>
             vars.Ref.SyncFrom(in tops);
-        
+
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Zero() =>
             vars.Ref.Zero();

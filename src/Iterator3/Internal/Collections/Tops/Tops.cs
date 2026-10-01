@@ -37,106 +37,31 @@ readonly struct Tops
     public const int VarsShift           = 22;
     public const int YieldCounterShift   = 28;
     
-    readonly uint item0;
-    readonly uint item1;
-    readonly uint item2;
-    readonly uint item3;
-    readonly uint item4;
-    readonly uint item5;
-    readonly uint item6;
-    readonly uint item7;
-    readonly uint item8;
-    readonly uint item9;
-    readonly uint itemA;
-    readonly uint itemB;
-    readonly uint itemC;
-    readonly uint itemD;
-    readonly uint itemE;
-    readonly uint itemF;
-    readonly uint current;
-    readonly uint begin;
-    readonly int count;
+    public readonly uint item0;
+    public readonly uint item1;
+    public readonly uint item2;
+    public readonly uint item3;
+    public readonly uint item4;
+    public readonly uint item5;
+    public readonly uint item6;
+    public readonly uint item7;
+    public readonly uint item8;
+    public readonly uint item9;
+    public readonly uint itemA;
+    public readonly uint itemB;
+    public readonly uint itemC;
+    public readonly uint itemD;
+    public readonly uint itemE;
+    public readonly uint itemF;
+    public readonly uint Current;
+    public readonly uint Begin;
+    public readonly int Count;
 
     [MethodImpl(Optimisations.InliningOnly)]
     public Tops()
     {
-        count = 1;
-        begin = 0;
-        current = 0;
-    }
-    
-    ReadOnlySpan<uint> Items
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in item0), count);
-    }
-
-    ReadOnlySpan<uint> AllItems
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in item0), Capacity);
-    }    
-
-    public int Count
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => count;
-    }
-
-    public bool IsEmpty
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => count == 0;
-    }
-
-    /// <summary>
-    /// This is the current state of the frame
-    /// </summary>
-    public uint Current
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => current;
-    }
-
-    public int PC
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (int)((current & ProgramCounterMask) >> ProgramCounterShift);
-    }
-
-    public bool IsSingleton
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => YieldsInFrame == 0;
-    }
-
-    public bool HasYielded
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => YieldsInFrame > 0;
-    }
-
-    public int YieldsInFrame
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (int)((current & YieldCounterMask) >> YieldCounterShift);
-    }
-
-    public int ValuesCount
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (int)((current & ValuesMask) >> ValuesShift);
-    }
-
-    public int ObjsCount
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (int)((current & ObjsMask) >> ObjsShift);
-    }
-
-    public int VarsCount
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => (int)((current & VarsMask) >> VarsShift);
+        Count = 1;
+        Begin = 0;
+        Current = 0;
     }
 }
