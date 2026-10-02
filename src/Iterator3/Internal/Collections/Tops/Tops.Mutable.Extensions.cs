@@ -73,16 +73,6 @@ static class TopsMutableExtensions
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public uint IncrementPC()
-        {
-            unchecked
-            {
-                tops.Current++;
-                return tops.PC;
-            }
-        }
-
-        [MethodImpl(Optimisations.InliningOnly)]
         public void SetPC(int pc)
         {
             tops.Current = (tops.Current & Tops.NotProgramCounterMask) | ((uint)pc & Tops.ProgramCounterMask);

@@ -14,7 +14,7 @@ static class OpsVM
     [MethodImpl(Optimisations.InliningOnly)]
     internal static int RunOps(in StackFrame frame)
     {
-        var     ops    = frame.ops.Block(frame.PC);
+        var     ops    = frame.ops.Block(frame.tops.PC);
         var     result = PullState.Pure;
         ref var pc     = ref frame.tops.Current;
 

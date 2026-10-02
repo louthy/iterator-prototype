@@ -163,10 +163,4 @@ readonly ref struct StackFrame
         var yielded = tops.YieldsInFrame;
         return $"[pc:{pc}, objs:{objs}/{tops.ObjsCount}, vals:{vals}/{tops.ValuesCount}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
     }
-
-    public uint PC
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => tops.PC;
-    }
 }
