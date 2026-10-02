@@ -12,9 +12,9 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 struct VarsMutable
 {
     const int Capacity = 31;
-    
+
     public ObjStack objs;
-    public ByteStack values;
+    public ByteStackMutable values;
     
     // These flags remember if a value is a co-routine argument, or not, and if so, stops it
     // being popped off the stack (when the `force` flag is `false). That means subsequent 

@@ -24,10 +24,6 @@ static class ByteStackMutableExtensions
             amount + stack.Count > ByteStack.Capacity
                 ? throw new InvalidOperationException("Stack overflow")
                 : MemoryMarshal.CreateSpan(ref Unsafe.AddByteOffset(ref stack.Stack, stack.Count), (int)amount);        
-        
-        [MethodImpl(Optimisations.InliningOnly)]
-        public void Add(in ByteStack rhs) =>
-            rhs.Values.CopyTo(stack.NextValues(rhs.Count));
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool PopToTop(uint top)
@@ -74,6 +70,26 @@ static class ByteStackMutableExtensions
             entry = value;
             stack.Count += (uint)sizeOf;
         }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void Peek<A>(out A value)
+            where A : unmanaged
+        {
+            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Stack), stack.Count - (uint)Unsafe.SizeOf<A>());
+            value = Unsafe.As<byte, A>(ref top);
+        }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public ref A PeekAt<A>()
+            where A : unmanaged
+        {
+            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Stack), stack.Count - (uint)Unsafe.SizeOf<A>());
+            return ref Unsafe.As<byte, A>(ref top);
+        }        
+        
+        [MethodImpl(Optimisations.InliningOnly)]
+        public void Add(in ByteStack rhs) =>
+            rhs.Values.CopyTo(stack.NextValues(rhs.Count));
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Prepend<A>(in A value)
