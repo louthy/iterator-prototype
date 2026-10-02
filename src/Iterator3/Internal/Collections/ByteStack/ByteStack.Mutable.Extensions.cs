@@ -10,7 +10,7 @@ static class ByteStackMutableExtensions
         public Span<byte> Values
         {
             [MethodImpl(Optimisations.InliningOnly)]
-            get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in stack.Stack), stack.Count);
+            get => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in stack.Stack), (int)stack.Count);
         }
     
         public Span<byte> AllValues
@@ -20,17 +20,17 @@ static class ByteStackMutableExtensions
         }
     
         [MethodImpl(Optimisations.InliningOnly)]
-        public Span<byte> NextValues(int amount) =>
+        public Span<byte> NextValues(uint amount) =>
             amount + stack.Count > ByteStack.Capacity
                 ? throw new InvalidOperationException("Stack overflow")
-                : MemoryMarshal.CreateSpan(ref Unsafe.AddByteOffset(ref stack.Stack, stack.Count), amount);        
+                : MemoryMarshal.CreateSpan(ref Unsafe.AddByteOffset(ref stack.Stack, stack.Count), (int)amount);        
         
         [MethodImpl(Optimisations.InliningOnly)]
         public void Add(in ByteStack rhs) =>
             rhs.Values.CopyTo(stack.NextValues(rhs.Count));
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public bool PopToTop(int top)
+        public bool PopToTop(uint top)
         {
             stack.Count = Math.Min(stack.Count, top);
             return true;
@@ -40,26 +40,26 @@ static class ByteStackMutableExtensions
         public void Pop<A>()
         {
             var sizeOf = Unsafe.SizeOf<A>();
-            stack.Count -= sizeOf;
+            stack.Count -= (uint)sizeOf;
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Pop<A>(out A value)
         {
             var sizeOf = Unsafe.SizeOf<A>();
-            stack.Count -= sizeOf;
+            stack.Count -= (uint)sizeOf;
             value = Unsafe.As<byte, A>(ref Unsafe.AddByteOffset(ref stack.Stack, stack.Count));
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Dup<A>()
         {
-            var     sizeOf = Unsafe.SizeOf<A>();
+            var     sizeOf = (uint)Unsafe.SizeOf<A>();
             var     last   = stack.Count - sizeOf;
             var     next   = stack.Count;
             ref var src    = ref Unsafe.AddByteOffset(ref stack.Stack, last);
             ref var dst    = ref Unsafe.AddByteOffset(ref stack.Stack, next);
-            Unsafe.CopyBlock(ref dst, ref src, (uint)sizeOf);
+            Unsafe.CopyBlock(ref dst, ref src, sizeOf);
 
             stack.Count += sizeOf;
         }
@@ -72,18 +72,18 @@ static class ByteStackMutableExtensions
             ref var top    = ref Unsafe.AddByteOffset(ref stack.Stack, stack.Count);
             ref var entry  = ref Unsafe.As<byte, A>(ref top);
             entry = value;
-            stack.Count += sizeOf;
+            stack.Count += (uint)sizeOf;
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
         public void Prepend<A>(in A value)
             where A : unmanaged
         {
-            var     sizeOf = Unsafe.SizeOf<A>();
+            var     sizeOf = (uint)Unsafe.SizeOf<A>();
             ref var src    = ref stack.Stack;
             ref var dest   = ref Unsafe.AddByteOffset(ref src, sizeOf);
 
-            Unsafe.CopyBlock(ref dest, ref src, (uint)sizeOf);
+            Unsafe.CopyBlock(ref dest, ref src, sizeOf);
 
             ref var entry = ref Unsafe.As<byte, A>(ref src);
             entry = value;

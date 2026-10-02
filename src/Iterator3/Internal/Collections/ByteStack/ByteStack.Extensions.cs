@@ -24,7 +24,7 @@ static class ByteStackExtensions
             stack.Ref.Add(in rhs);
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public bool PopToTop(int top) =>
+        public bool PopToTop(uint top) =>
             stack.Ref.PopToTop(top);
 
         [MethodImpl(Optimisations.InliningOnly)]
@@ -55,7 +55,7 @@ static class ByteStackExtensions
         public ReadOnlySpan<byte> Values
         {
             [MethodImpl(Optimisations.InliningOnly)]
-            get => MemoryMarshal.CreateReadOnlySpan(ref stack.Ref.Stack, stack.Count);
+            get => MemoryMarshal.CreateReadOnlySpan(ref stack.Ref.Stack, (int)stack.Count);
         }
 
         public ReadOnlySpan<byte> AllValues
@@ -68,7 +68,7 @@ static class ByteStackExtensions
         public void Peek<A>(out A value)
             where A : unmanaged
         {
-            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Bytes), stack.Count - Unsafe.SizeOf<A>());
+            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Bytes), stack.Count - (uint)Unsafe.SizeOf<A>());
             value = Unsafe.As<byte, A>(ref top);
         }
 
@@ -76,7 +76,7 @@ static class ByteStackExtensions
         public ref A PeekAt<A>()
             where A : unmanaged
         {
-            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Bytes), stack.Count - Unsafe.SizeOf<A>());
+            ref var top = ref Unsafe.AddByteOffset(ref Unsafe.AsRef(in stack.Bytes), stack.Count - (uint)Unsafe.SizeOf<A>());
             return ref Unsafe.As<byte, A>(ref top);
         }
     }

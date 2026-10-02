@@ -15,7 +15,7 @@ readonly struct ByteStack
     public const int Capacity = 128 - sizeof(int);
     
     [FieldOffset(0)]
-    public readonly int Count;
+    public readonly uint Count;
     
     [FieldOffset(4)]
     public readonly byte Stack;

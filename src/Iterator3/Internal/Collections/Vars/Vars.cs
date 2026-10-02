@@ -3,6 +3,7 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -22,4 +23,66 @@ readonly struct Vars
     public readonly byte flag10, flag11, flag12, flag13, flag14, flag15, flag16, flag17;
     public readonly byte flag18, flag19, flag1A, flag1B, flag1C, flag1D, flag1E /*, flag1F -- we're using this byte for `top` */;
     public readonly byte top;
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int yieldManaged<A>(in StackFrame frame)
+        where A : class
+    {
+        //Log.coroutine($"start-yield [managed : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
+        
+        // Set the flag for stating this is a coroutine argument
+        ref var vars = ref frame.vars;
+        vars.FlagBytes[^1] = 1;
+        
+        // Save the current top values for the stack
+        ref var topRef   = ref Unsafe.AsRef(in vars.objs.Count);
+        var     topValue = topRef;
+        
+        // Virtually pop off the top value (which is the result of the current co-routine)
+        topRef--;
+        
+        // Start the yield co-routine
+        frame.StartYieldScope();
+        
+        // Virtually re-push the top value (it will become the argument to the co-routine).
+        topRef = topValue;
+
+        //Log.coroutine("end-yield", in frame);
+        
+        return PullState.Continue;        
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int yieldUnmanaged<A>(in StackFrame frame)
+        where A : unmanaged
+    {
+        //Log.coroutine($"start-yield [unmanaged : {Ty<A>.Pretty}, sizeof: {Unsafe.SizeOf<A>()}]", in frame);
+        
+        // Set the flag for stating this is a coroutine argument
+        ref var vars = ref frame.vars;
+        vars.FlagBytes[^1] = 1;
+        
+        // Save the current top values for the stack
+        ref var topRef   = ref Unsafe.AsRef(in vars.values.Count);
+        var     topValue = topRef;
+        var     sizeOfA  = (uint)Unsafe.SizeOf<A>();
+        
+        // Virtually pop off the top value (which is the result of the current co-routine)
+        topRef -= sizeOfA;
+        
+        // Start the yield co-routine
+        frame.StartYieldScope();
+        
+        // Virtually re-push the top value (it will become the argument to the co-routine).
+        topRef = topValue;
+
+        //Log.coroutine("end-yield", in frame);
+        
+        return PullState.Continue;        
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int yieldStruct<A>(in StackFrame frame)
+        where A : struct =>
+        yieldManaged<Box<A>>(in frame);    
 }

@@ -16,6 +16,7 @@ static class VarsExtensions
             get => ref Unsafe.As<Vars, VarsMutable>(ref Unsafe.AsRef(in vars));
         }
 
+        /*
         public ReadOnlySpan<bool> Flags
         {
             [MethodImpl(Optimisations.InliningOnly)]
@@ -82,7 +83,7 @@ static class VarsExtensions
             var os      = (uint)(vars.objs.Count   << Tops.ObjsShift)   & Tops.ObjsMask;
             var vs      = (uint)(vars.values.Count << Tops.ValuesShift) & Tops.ValuesMask;
             var t       = (uint)(vars.top          << Tops.VarsShift)   & Tops.VarsMask;
-            var current = tops.Current                             & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
+            var current = tops.Current & ~(Tops.ObjsMask | Tops.ValuesMask | Tops.VarsMask);
             tops.Current = current | os | vs | t;
         }
 
@@ -341,12 +342,12 @@ static class VarsExtensions
             vars.Ref.PushStruct(value, isCoRoutineArgument);
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public void SyncFrom(in Tops tops) =>
+        public void SyncFrom(in TopsMutable tops) =>
             vars.Ref.SyncFrom(in tops);
 
         [MethodImpl(Optimisations.InliningOnly)]
         public bool Zero() =>
-            vars.Ref.Zero();
+            vars.Ref.Zero();*/
 
     }
 }

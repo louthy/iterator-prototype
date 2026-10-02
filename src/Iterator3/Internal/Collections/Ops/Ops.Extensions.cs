@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -10,6 +11,13 @@ static class OpsExtensions
         {
             [MethodImpl(Optimisations.InliningOnly)]
             get => ref Unsafe.As<Ops, OpsMutable>(ref Unsafe.AsRef(in ops));
+        }
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public ReadOnlySpan<Op> BlockSpan(int from)
+        {
+            var count = Unsafe.AddByteOffset(ref Unsafe.AsRef(in ops.Blk00), from);
+            return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in ops.Fun00), from), count);
         }
 
         [MethodImpl(Optimisations.InliningOnly)]

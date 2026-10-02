@@ -13,7 +13,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 struct ByteStackMutable
 {
     [FieldOffset(0)]
-    public int Count;
+    public uint Count;
     
     [FieldOffset(4)]
     public byte Stack;

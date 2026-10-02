@@ -29,7 +29,7 @@ readonly struct ObjStack
     public readonly object Object0D;
     public readonly object Object0E;
     public readonly object Object0F;
-    public readonly int Count;
+    public readonly uint Count;
 
     public ref object this[int index]
     {
@@ -43,7 +43,7 @@ readonly struct ObjStack
         var     sizeOfPtr = Unsafe.SizeOf<nint>();
         var     srcSize   = (uint)(rhs.Count * sizeOfPtr);
         ref var dobj      = ref Unsafe.AsRef(in Object00);
-        ref var dest      = ref Unsafe.AddByteOffset(ref Unsafe.As<object, byte>(ref dobj), rhs.Count * sizeOfPtr);
+        ref var dest      = ref Unsafe.AddByteOffset(ref Unsafe.As<object, byte>(ref dobj), (int)rhs.Count * sizeOfPtr);
         ref var sobj      = ref Unsafe.AsRef(in rhs.Object00);
         ref var src       = ref Unsafe.As<object, byte>(ref sobj);
 
@@ -52,7 +52,7 @@ readonly struct ObjStack
     }
 
     [MethodImpl(Optimisations.Default)]
-    public bool PopToTop(int top)
+    public bool PopToTop(uint top)
     {
         if (top > Count) return false;
         if (top == Count) return true;

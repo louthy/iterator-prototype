@@ -6,19 +6,19 @@ namespace IteratorPrototype.Iterator3.Internal;
 [SkipLocalsInit]
 readonly ref struct StackFrame
 {
-    public readonly ref readonly Tops tops;
-    public readonly ref readonly Ops ops;
+    public readonly ref TopsMutable tops;
+    public readonly ref OpsMutable ops;
     public readonly ref readonly Globals globals;
-    public readonly ref readonly Vars vars;
+    public readonly ref VarsMutable vars;
     public readonly Args args;
 
     [MethodImpl(Optimisations.Max)]
     public StackFrame(in Fields fields)
     {
-        tops = ref Unsafe.AsRef(in fields.tops);
-        ops = ref fields.ops;
+        tops = ref Unsafe.As<Tops, TopsMutable>(ref Unsafe.AsRef(in fields.tops));
+        ops = ref Unsafe.As<Ops, OpsMutable>(ref Unsafe.AsRef(in fields.ops));
         globals = ref fields.globals;
-        vars = ref fields.vars;
+        vars = ref Unsafe.As<Vars, VarsMutable>(ref Unsafe.AsRef(in fields.vars));
     }
 
     [MethodImpl(Optimisations.Default)]
@@ -32,7 +32,7 @@ readonly ref struct StackFrame
     {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops.Ref);
+        vars.SyncTo(ref tops);
 
         // Push the current tops onto the stack
         tops.PushFrame(1);
@@ -102,7 +102,7 @@ readonly ref struct StackFrame
     {
         // Make sure the tops are in-sync with live object
         // and value stacks; so that we can safely pop later.
-        vars.SyncTo(ref tops.Ref);
+        vars.SyncTo(ref tops);
 
         // Push the current tops onto the stack
         tops.PushFrame(0);
@@ -157,44 +157,16 @@ readonly ref struct StackFrame
 
     public override string ToString()
     {
-        var pc      = tops.Current & 0xff;
+        var pc      = tops.PC;
         var objs    = vars.ObjsCount;
         var vals    = vars.ValuesCount;
         var yielded = tops.YieldsInFrame;
         return $"[pc:{pc}, objs:{objs}/{tops.ObjsCount}, vals:{vals}/{tops.ValuesCount}, tops:{tops.Count}, y:{yielded}, ops:{ops.Count}]";
     }
-    
-    [MethodImpl(Optimisations.Max)]
-    public ref readonly Op Op(int index) =>
-        ref ops[index];
 
-    [MethodImpl(Optimisations.Max)]
-    public ref readonly Op Op(uint index) =>
-        ref ops[index];
-
-    public int OpsRemaining
-    {
-        [MethodImpl(Optimisations.InliningOnly)]
-        get => ops.Count - tops.PC;
-    }
-
-    [MethodImpl(Optimisations.Max)]
-    public void NextOp() =>
-        tops.NextOp();
-
-    public ref readonly Op CurrentOp
-    {
-        [MethodImpl(Optimisations.Max)]
-        get => ref Op(PC);
-    }
-
-    public int PC
+    public uint PC
     {
         [MethodImpl(Optimisations.InliningOnly)]
         get => tops.PC;
     }
-
-    [MethodImpl(Optimisations.InliningOnly)]
-    public void SetPC(int pc) =>
-        tops.SetPC(pc);
 }

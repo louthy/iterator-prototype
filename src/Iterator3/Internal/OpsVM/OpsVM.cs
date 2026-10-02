@@ -14,13 +14,13 @@ static class OpsVM
     [MethodImpl(Optimisations.InliningOnly)]
     internal static int RunOps(in StackFrame frame)
     {
-        var     ops    = frame.ops.BlockSpan(frame.PC);
+        var     ops    = frame.ops.Block(frame.PC);
         var     result = PullState.Pure;
-        ref var tops   = ref frame.tops.Ref;
+        ref var pc     = ref frame.tops.Current;
 
         foreach(var op in ops)
         {
-            tops.Current++;
+            pc++;
             result = op.Invoke(in frame);
         }
         return result;
@@ -30,7 +30,7 @@ static class OpsVM
     internal static bool VoidResetToContinuationPoint(in StackFrame frame)
     {
         //Log.function("start-void", in frame);
-        ref var tops = ref frame.tops.Ref;
+        ref var tops = ref frame.tops;
             
         // Remove the current scope.
         // This is the most basic process of leaving a scope with no value: we must step up one scope level.

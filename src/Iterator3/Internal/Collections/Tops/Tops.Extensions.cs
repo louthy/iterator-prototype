@@ -12,7 +12,9 @@ static class TopsExtensions
             [MethodImpl(Optimisations.InliningOnly)]
             get => ref Unsafe.As<Tops, TopsMutable>(ref Unsafe.AsRef(in tops));
         }
+        
 
+        /*
         public bool IsEmpty
         {
             [MethodImpl(Optimisations.InliningOnly)]
@@ -112,5 +114,6 @@ static class TopsExtensions
         [MethodImpl(Optimisations.Agro)]
         public void PushFrame(uint yieldAdd) =>
             tops.Ref.PushFrame(yieldAdd);
+*/            
     }
 }

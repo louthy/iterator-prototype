@@ -30,10 +30,10 @@ static class TopsMutableExtensions
         public void NextOp() =>
             tops.Current++;
 
-        public int PC
+        public uint PC
         {
             [MethodImpl(Optimisations.InliningOnly)]
-            get => (int)((tops.Current & Tops.ProgramCounterMask) >> Tops.ProgramCounterShift);
+            get => (tops.Current & Tops.ProgramCounterMask) >> Tops.ProgramCounterShift;
         }
 
         public bool IsSingleton
@@ -73,7 +73,7 @@ static class TopsMutableExtensions
         }
 
         [MethodImpl(Optimisations.InliningOnly)]
-        public int IncrementPC()
+        public uint IncrementPC()
         {
             unchecked
             {
