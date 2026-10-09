@@ -4,13 +4,14 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
 [SkipLocalsInit]
-readonly struct Globals
+struct GlobalsMutable
 {
-    public readonly ObjStack2 objs;
-    public readonly ByteList2 values;
+    public ObjStack2 objs;
+    public ByteList2 values;
 }
 

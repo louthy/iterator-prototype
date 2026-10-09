@@ -49,17 +49,17 @@ abstract class GlobalsGen<A>
     public abstract unsafe IterOp Push(ushort index);
     public abstract unsafe IterOp Reset(ushort index);
 
-    public abstract bool At(in Globals list, ushort ix, out A value);
-    public abstract ref A At(in Globals list, ushort ix);
-    public abstract bool DeclaredAt(in Globals list, ushort ix, out A value);
-    public abstract ref A DeclaredAt(in Globals list, ushort ix);
-    public abstract bool ResetAt(in Globals list, ushort ix, out A value);
-    public abstract bool ResetAt(in Globals list, ushort ix);
-    public abstract bool AddMutable(in Globals list, in A value);
-    public abstract bool AddMutable(in Globals list, in A value, out ushort index);
-    public abstract bool AddConst(in Globals list, in A value);
-    public abstract bool AddConst(in Globals list, in A value, out ushort index);
-    public abstract bool AtEnd(in Globals list, ushort ix, out Global<A> global);
+    public abstract bool At(ref GlobalsMutable list, ushort ix, out A value);
+    public abstract ref A At(ref GlobalsMutable list, ushort ix);
+    public abstract bool DeclaredAt(ref GlobalsMutable list, ushort ix, out A value);
+    public abstract ref A DeclaredAt(ref GlobalsMutable list, ushort ix);
+    public abstract bool ResetAt(ref GlobalsMutable list, ushort ix, out A value);
+    public abstract bool ResetAt(ref GlobalsMutable list, ushort ix);
+    public abstract bool AddMutable(ref GlobalsMutable list, in A value);
+    public abstract bool AddMutable(ref GlobalsMutable list, in A value, out ushort index);
+    public abstract bool AddConst(ref GlobalsMutable list, in A value);
+    public abstract bool AddConst(ref GlobalsMutable list, in A value, out ushort index);
+    public abstract bool AtEnd(ref GlobalsMutable list, ushort ix, out Global<A> global);
 
 }
 
@@ -82,47 +82,47 @@ class ManagedGlobals<A> : GlobalsGen<A>
         GManaged<A>.reset(index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool At(in Globals list, ushort ix, out A value) =>
+    public override bool At(ref GlobalsMutable list, ushort ix, out A value) =>
         list.AtManaged(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A At(in Globals list, ushort ix)=>
+    public override ref A At(ref GlobalsMutable list, ushort ix)=>
         ref list.AtManaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool DeclaredAt(in Globals list, ushort ix, out A value) =>
+    public override bool DeclaredAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.DeclaredAtManaged(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A DeclaredAt(in Globals list, ushort ix) =>
+    public override ref A DeclaredAt(ref GlobalsMutable list, ushort ix) =>
         ref list.DeclaredAtManaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix, out A value) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.ResetAtManaged(ix, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix) =>
         list.ResetAtManaged(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value) =>
         list.AddMutableManaged(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value, out ushort index) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddMutableManaged(in value, out index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value) =>
         list.AddConstManaged(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value, out ushort index) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddConstManaged(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AtEnd(in Globals list, ushort ix, out Global<A> global) =>
+    public override bool AtEnd(ref GlobalsMutable list, ushort ix, out Global<A> global) =>
         list.AtEndManaged(ix, out global);
 }
 
@@ -145,47 +145,47 @@ class UnmanagedGlobals<A> : GlobalsGen<A>
         GUnmanaged<A>.reset(index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool At(in Globals list, ushort ix, out A value) =>
+    public override bool At(ref GlobalsMutable list, ushort ix, out A value) =>
         list.AtUnmanaged(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A At(in Globals list, ushort ix)=>
+    public override ref A At(ref GlobalsMutable list, ushort ix)=>
         ref list.AtUnmanaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool DeclaredAt(in Globals list, ushort ix, out A value) =>
+    public override bool DeclaredAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.DeclaredAtUnmanaged(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A DeclaredAt(in Globals list, ushort ix) =>
+    public override ref A DeclaredAt(ref GlobalsMutable list, ushort ix) =>
         ref list.DeclaredAtUnmanaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix, out A value) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.ResetAtUnmanaged(ix, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix) =>
         list.ResetAtUnmanaged<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value) =>
         list.AddMutableUnmanaged(in value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value, out ushort index) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddMutableUnmanaged(in value, out index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value) =>
         list.AddConstUnmanaged(in value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value, out ushort index) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddConstUnmanaged(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AtEnd(in Globals list, ushort ix, out Global<A> global) =>
+    public override bool AtEnd(ref GlobalsMutable list, ushort ix, out Global<A> global) =>
         list.AtEndUnmanaged(ix, out global);
 }
 
@@ -208,46 +208,46 @@ class StructGlobals<A> : GlobalsGen<A>
         GStruct<A>.reset(index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool At(in Globals list, ushort ix, out A value) =>
+    public override bool At(ref GlobalsMutable list, ushort ix, out A value) =>
         list.AtStruct(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A At(in Globals list, ushort ix)=>
+    public override ref A At(ref GlobalsMutable list, ushort ix)=>
         ref list.AtStruct<A>(ix);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool DeclaredAt(in Globals list, ushort ix, out A value) =>
+    public override bool DeclaredAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.DeclaredAtStruct(ix, out value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override ref A DeclaredAt(in Globals list, ushort ix) =>
+    public override ref A DeclaredAt(ref GlobalsMutable list, ushort ix) =>
         ref list.DeclaredAtStruct<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix, out A value) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix, out A value) =>
         list.ResetAtStruct(ix, out value);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool ResetAt(in Globals list, ushort ix) =>
+    public override bool ResetAt(ref GlobalsMutable list, ushort ix) =>
         list.ResetAtStruct<A>(ix);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value) =>
         list.AddMutableStruct(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddMutable(in Globals list, in A value, out ushort index) =>
+    public override bool AddMutable(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddMutableStruct(in value, out index);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value) =>
         list.AddConstStruct(in value);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AddConst(in Globals list, in A value, out ushort index) =>
+    public override bool AddConst(ref GlobalsMutable list, in A value, out ushort index) =>
         list.AddConstStruct(in value, out index);
     
     [MethodImpl(Optimisations.InliningOnly)]
-    public override bool AtEnd(in Globals list, ushort ix, out Global<A> global) =>
+    public override bool AtEnd(ref GlobalsMutable list, ushort ix, out Global<A> global) =>
         list.AtEndStruct(ix, out global);
 }

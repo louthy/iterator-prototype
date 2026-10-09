@@ -8,7 +8,7 @@ readonly ref struct StackFrame
 {
     public readonly ref TopsMutable tops;
     public readonly ref OpsMutable ops;
-    public readonly ref readonly Globals globals;
+    public readonly ref GlobalsMutable globals;
     public readonly ref VarsMutable vars;
     public readonly Args args;
 
@@ -17,7 +17,7 @@ readonly ref struct StackFrame
     {
         tops = ref Unsafe.As<Tops, TopsMutable>(ref Unsafe.AsRef(in fields.tops));
         ops = ref Unsafe.As<Ops, OpsMutable>(ref Unsafe.AsRef(in fields.ops));
-        globals = ref fields.globals;
+        globals = ref Unsafe.As<Globals, GlobalsMutable>(ref Unsafe.AsRef(in fields.globals));
         vars = ref Unsafe.As<Vars, VarsMutable>(ref Unsafe.AsRef(in fields.vars));
     }
 
