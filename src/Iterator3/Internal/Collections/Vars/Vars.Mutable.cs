@@ -3,8 +3,6 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 
@@ -24,5 +22,4 @@ struct VarsMutable
     public byte flag10, flag11, flag12, flag13, flag14, flag15, flag16, flag17;
     public byte flag18, flag19, flag1A, flag1B, flag1C, flag1D, flag1E /*, flag1F -- we're using this byte for `top` */;
     public byte top;
-
 }
