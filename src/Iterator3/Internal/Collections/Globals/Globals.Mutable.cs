@@ -4,7 +4,6 @@
 // ReSharper disable UnassignedReadonlyField
 
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Iterator3.Internal.Memory;
 
 namespace IteratorPrototype.Iterator3.Internal.Collections;
 

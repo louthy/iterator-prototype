@@ -26,7 +26,7 @@ static class OpsMutableExtensions
             int varObjsOut,
             OpReturn @return)
         {
-            if (ops.Count + 1 > Ops.Capacity) return false;
+            if (ops.Count >= Ops.Capacity) return false;
             
             var blockSpan  = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in ops.Blk00), 0), Ops.Capacity);
             var entrySpan  = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in ops.Fun00), 0), Ops.Capacity);
@@ -76,7 +76,7 @@ static class OpsMutableExtensions
             int varObjsOut,
             OpReturn @return)
         {
-            if (ops.Count + 1 > Ops.Capacity) return false;
+            if (ops.Count >= Ops.Capacity) return false;
 
             var blockSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in ops.Blk00), 0), Ops.Capacity - 1);
             var entrySpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref Unsafe.AsRef(in ops.Fun00), 0), Ops.Capacity     - 1);
