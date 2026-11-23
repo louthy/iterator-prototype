@@ -6,7 +6,7 @@ namespace IteratorPrototype.Iterator3.Internal.Collections;
 enum OpReturn : byte
 {
     Default = 0,
-    CanVoid = 1,
+    CanVoidOrSkip = 1,
     CoRoutine = 2
     
     // Can't use a number bigger than 7 here because we're using the

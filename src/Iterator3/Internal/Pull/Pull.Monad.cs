@@ -15,13 +15,13 @@ static partial class Pull
         
         while (true)
         {
-            if (tb.TryGetValue(out var b))
+            if (tb.TryRef(out var b))
             {
                 @return(in frame, b);
                 return PullState.Continue;
             }
 
-            if (ta.TryGetValue(out var a))
+            if (ta.TryRef(out var a))
             {
                 tb = f(a);
                 continue;
@@ -32,31 +32,6 @@ static partial class Pull
     }    
     
     [MethodImpl(Optimisations.Default)]
-    public static int bind2<A, B>(in StackFrame frame)
-    {
-        PullStruct.pop<Iter<A>>(in frame, out var ta);
-        ref var tb = ref PullStruct.arg1<Iter<B>>(in frame);
-        ref var f  = ref PullManaged.arg2<Func<A, Iter<B>>>(in frame);
-        
-        while (true)
-        {
-            if (tb.TryGetValue(out var b))
-            {
-                @return(in frame, b);
-                return PullState.Continue;
-            }
-
-            if (ta.TryGetValue(out var a))
-            {
-                tb = f(a);
-                continue;
-            }
-
-            return PullState.Void;
-        }
-    }
-    
-    [MethodImpl(Optimisations.Default)]
     public static int flatten<A>(in StackFrame frame)
     {
         unsafe
@@ -65,11 +40,11 @@ static partial class Pull
             {
                 case PullState.Void:
 
-                    // Pop the iterators
+                    // Read the iterators
                     PullStruct.arg2<Iter<Iter<A>>>(in frame, out var tta);
 
                     // Read the next value
-                    if (tta.TryGetValue(out var ta))
+                    if (tta.TryRef(out var ta))
                     {
                         // Push the updated iterator
                         PullStruct.update1(in frame, in ta);

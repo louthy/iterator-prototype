@@ -10,8 +10,8 @@ public static class ArrayWriterExtensions
         /// </summary>
         /// <param name="value">Value to write</param>
         [MethodImpl(Root.Optimisations.InliningOnly)]
-        public void Add(A value) => 
-            LE.ArrayWriter<A>.Add(ref writer, value);
+        public void Add(in A value) => 
+            LE.ArrayWriter<A>.Add(ref writer, in value);
 
         /// <summary>
         /// Add values to the end of the array, expanding automatically if needed.

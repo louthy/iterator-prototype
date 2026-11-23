@@ -193,68 +193,6 @@ public class ForeachVersionNonRef : Bench<ForeachVersionNonRef>
 
 //----------------------------------------------------------------------------------------------------------------------
 
-public class StrongIteratorVersion : Bench<StrongIteratorVersion>
-{
-    readonly Iterator<Arr, ArrState, int> iterator; 
-
-    public StrongIteratorVersion() =>
-        iterator = IterableImmutable.from<Arr, ArrState, int>(Arr.create(..Count));
-    
-    protected override int Count { get; } = 
-        DefaultCount;
-
-    protected override string Explain =>
-        $"Strong Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
-
-    protected override void Main()
-    {
-        var iter  = iterator;
-        var total = 0;
-        while (iter.TryGetValue(out var x, out iter))
-        {
-            total += x;
-        }
-
-        ignore(total);
-    }
-
-    protected override ConsoleColor Color => 
-        Bench.Immutable;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-public class WeakIteratorVersion : Bench<WeakIteratorVersion>
-{
-    readonly Root.Iterator<int> iterator;
-
-    public WeakIteratorVersion() =>
-        iterator = Arr.create(..Count).Forward();
-    
-    protected override int Count { get; } = 
-        DefaultCount;
-
-    protected override string Explain =>
-        $"Weak Iterator, for Arr, using while TryGetValue ({Count:N0} items)";
-
-    protected override void Main()
-    {
-        var iter  = iterator;
-        var total = 0;
-        while (iter.TryGetValue(out var x, out iter))
-        {
-            total += x;
-        }
-
-        ignore(total);
-    }
-
-    protected override ConsoleColor Color { get; } =
-        Bench.Immutable;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 public class Iterator2Version : Bench<Iterator2Version>
 {
     readonly Iterator2<int> iterator;
@@ -332,7 +270,7 @@ public class Iterator3Version : Bench<Iterator3Version>
     {
         var iter  = iterator;
         var total = 0;
-        while (iter.TryGetValue(out var x))
+        while (iter.TryRef(out var x))
         {
             total += x;
         }
@@ -355,8 +293,8 @@ public class IterApplyTest : Bench<IterApplyTest>
     
     public IterApplyTest()
     {
-        iterator = from<Arr, ArrState, int>(Arr.create(..X))
-                 * from<Arr, ArrState, int>(Arr.create(..Y))
+        iterator = from(Arr.create(..X))
+                 * from(Arr.create(..Y))
                  | select((int x, int y) => x + y);
     }
     
@@ -370,7 +308,7 @@ public class IterApplyTest : Bench<IterApplyTest>
     {
         var iter  = iterator;
         var total = 0;
-        while (iter.TryGetValue(out var x))
+        while (iter.TryRef(out var x))
         {
             total += x;
         }

@@ -52,7 +52,7 @@ static class OpsMutableExtensions
             ReadOnlySpan<byte> sizes = OpsBlocks.BS[ops.BlockSize];
             sizes.CopyTo(blockSpan[blockStart..]);
 
-            if (@return == OpReturn.CanVoid)
+            if (@return == OpReturn.CanVoidOrSkip)
             {
                 ops.BlockSize = 0;
             }
@@ -99,7 +99,7 @@ static class OpsMutableExtensions
                                  Frames: < Tops.Capacity
                              };
 
-            if (@return == OpReturn.CanVoid)
+            if (@return == OpReturn.CanVoidOrSkip)
             {
                 ops.BlockSize = 0;
                 blockSpan[0] = 1;

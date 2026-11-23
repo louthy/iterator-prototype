@@ -40,12 +40,17 @@ abstract class PullGen<A>
 
     public static unsafe IterOp iterator => 
         Instance.IteratorImpl;
+
+    public static unsafe IterOp lazyIterator => 
+        Instance.LazyIteratorImpl;
  
     public abstract unsafe IterOp IterableImpl<T, IS>()
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged;
 
     public abstract unsafe IterOp IteratorImpl { get; }
+
+    public abstract unsafe IterOp LazyIteratorImpl { get; }
 }
 
 class ManagedPull<A> : PullGen<A>
@@ -59,6 +64,9 @@ class ManagedPull<A> : PullGen<A>
 
     public override unsafe IterOp IteratorImpl =>
         &Pull.iteratorManaged<A>;
+
+    public override unsafe IterOp LazyIteratorImpl =>
+        &Pull.lazyIteratorManaged<A>;
 }
 
 class UnmanagedPull<A> : PullGen<A>
@@ -72,6 +80,9 @@ class UnmanagedPull<A> : PullGen<A>
 
     public override unsafe IterOp IteratorImpl =>
         &Pull.iteratorUnmanaged<A>;
+
+    public override unsafe IterOp LazyIteratorImpl =>
+        &Pull.lazyIteratorUnmanaged<A>;
 }
 
 class StructPull<A> : PullGen<A>
@@ -85,4 +96,7 @@ class StructPull<A> : PullGen<A>
 
     public override unsafe IterOp IteratorImpl =>
         &Pull.iteratorStruct<A>;
+
+    public override unsafe IterOp LazyIteratorImpl =>
+        &Pull.lazyIteratorStruct<A>;
 }

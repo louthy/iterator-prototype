@@ -19,7 +19,7 @@ static class OpsVMStruct<A>
             OpsVM<A>.run = &Run;
         }
     }
-    
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool Run(in StackFrame frame, out A head)
     {
@@ -36,10 +36,8 @@ static class OpsVMStruct<A>
             // TODO: Fall back to a slower backup implementation
             throw new NotImplementedException("The iterator expression is too large to run in the VM");
         }
-        
-        start:
 
-        switch (OpsVM.RunOps(in frame))
+        start: switch (OpsVM.RunOps(in frame))
         {
             // Void
             case 0:
@@ -59,16 +57,17 @@ static class OpsVMStruct<A>
 
             // Pure 
             case 2:
-                goto pure;
-            
+                PureResetToContinuationPoint(in frame, out head);
+                return true;
+
+            // Skip
+            case 3:
+                OpsVM.SkipResetToContinuationPoint(in frame);
+                goto start;
+
             default:
                 throw new InvalidOperationException();
         }
-        
-        pure:
-
-        PureResetToContinuationPoint(in frame, out head);
-        return true;      
     }
 
     [MethodImpl(Optimisations.InliningOnly)]

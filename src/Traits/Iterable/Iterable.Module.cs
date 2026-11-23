@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 using LanguageExt.Traits;
 
 namespace IteratorPrototype.Traits;
@@ -15,7 +16,7 @@ public static class Iterable
     /// <returns>Iterator</returns>
     [Pure]
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iterator<A> forward<T, A>(K<T, A> ta)
+    public static Iter<A> forward<T, A>(K<T, A> ta)
         where T : Iterable<T> =>
         ta.Forward();
 

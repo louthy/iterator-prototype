@@ -27,7 +27,7 @@ static class OpsVM
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
-    internal static bool VoidResetToContinuationPoint(in StackFrame frame)
+    public static bool VoidResetToContinuationPoint(in StackFrame frame)
     {
         //Log.function("start-void", in frame);
         ref var tops = ref frame.tops;
@@ -72,5 +72,14 @@ static class OpsVM
             
         // If there are scopes remaining, then there are more values to yield...
         return tops.Count > 0;
+    }
+        
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static void SkipResetToContinuationPoint(in StackFrame frame)
+    {
+        // Just go back to the start of the current frame if we have already yielded a value.
+        // We get here if a value has already been returned to the caller, and then there were
+        // some later operations.
+        frame.ResetFrame();
     }
 }

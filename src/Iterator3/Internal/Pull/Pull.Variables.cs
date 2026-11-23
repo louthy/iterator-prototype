@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
-using IteratorPrototype.Iterator3.Internal;
 using IteratorPrototype.Iterator3.Internal.Collections;
-using IteratorPrototype.Types;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 

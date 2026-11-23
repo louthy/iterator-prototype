@@ -156,5 +156,4 @@ public interface IterableMutable<T, IS, MS> : IterableImmutable<T, IS>
         }
         return ta;
     }
-    
 }

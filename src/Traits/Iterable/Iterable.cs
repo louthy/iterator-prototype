@@ -2,6 +2,7 @@ using LanguageExt;
 using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 
 namespace IteratorPrototype.Traits;
 
@@ -18,7 +19,7 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <returns>An iterator that enumerates from the 'first' element to the 'last' element.</returns>
     [Pure]
-    static abstract Iterator<A> Forward<A>(K<T, A> ta);
+    static abstract Iter<A> Forward<A>(K<T, A> ta);
 
     /// <summary>
     /// Bounce the iterable to a span
@@ -84,33 +85,6 @@ public interface Iterable<T>
     [Pure]
     static virtual IterableEnumerator<T, A> GetEnumerator<A>(K<T, A> ta) =>
         new (ta);
-
-    /// <summary>
-    /// Returns `true` if the iterable is empty, `false` otherwise. `Nil` is a unit-value that makes pattern-matching
-    /// more declarative.
-    /// </summary>
-    /// <param name="ta">Iterable structure</param>
-    /// <param name="nil">Nil</param>
-    /// <returns>`true` if the iterable is empty, `false` otherwise</returns>
-    [Pure]
-    static virtual bool TryGetValue<A>(K<T, A> ta, out Nil nil)
-    {
-        var i = T.Forward(ta);
-        return i.TryGetValue(out nil);
-    }
-
-    /// <summary>
-    /// Returns the first element of the iterable and the rest of the iterable in a `Cons` structure.
-    /// </summary>
-    /// <param name="ta">Iterable structure</param>
-    /// <param name="cons">Cons structure containing head and tail values</param>
-    /// <returns>`true` if it was possible to extract a head value.</returns>
-    [Pure]
-    static virtual bool TryGetValue<A>(K<T, A> ta, out Cons<A> cons)
-    {
-        var i = T.Forward(ta);
-        return i.TryGetValue(out cons);
-    }
     
     /// <summary>
     /// Returns the first element of the iterable and the rest of the iterable in a `Cons` structure.
@@ -120,7 +94,7 @@ public interface Iterable<T>
     /// <param name="tail">Tail iterator</param>
     /// <returns>`true` if it was possible to extract a head value.</returns>
     [Pure]
-    static virtual bool TryGetValue<A>(K<T, A> ta, out A head, out Iterator<A> tail)
+    static virtual bool TryGetValue<A>(K<T, A> ta, out A head, out Iter<A> tail)
     {
         var i = T.Forward(ta);
         return i.TryGetValue(out head, out tail);
@@ -355,7 +329,7 @@ public interface Iterable<T>
     /// <summary>
     /// Projects each element of a range into a new form.
     /// </summary>
-    static virtual Iterator<B> Select<A, B>(Func<A, B> f, K<T, A> fa) =>
+    static virtual Iter<B> Select<A, B>(Func<A, B> f, K<T, A> fa) =>
         T.Forward(fa).Map(f);
 
     /*

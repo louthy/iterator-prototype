@@ -59,16 +59,17 @@ static class OpsVMManaged<A>
 
             // Pure 
             case 2:
-                goto pure;
+                PureResetToContinuationPoint(in frame, out head);
+                return true;
+                
+            // Skip
+            case 3:
+                OpsVM.SkipResetToContinuationPoint(in frame);
+                goto start;
 
             default:
                 throw new InvalidOperationException();
         }
-
-        pure:
-
-        PureResetToContinuationPoint(in frame, out head);
-        return true;
     }
 
     [MethodImpl(Optimisations.InliningOnly)]

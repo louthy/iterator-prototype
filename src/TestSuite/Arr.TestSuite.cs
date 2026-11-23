@@ -1,3 +1,6 @@
+using IteratorPrototype.Iterator3;
+using static IteratorPrototype.Iterator3.Iter;
+
 namespace IteratorPrototype;
 
 public static class ArrTestSuite
@@ -40,7 +43,7 @@ public static class ArrTestSuite
         var iter  = 1 + (2 + (3 + Arr.create(4, 5).Forward()));
         var total = 0;
         
-        foreach (var x in iter)
+        foreach (var x in iter | pure)
         {
             Console.Write($"{x} ");
             total += x;
@@ -50,10 +53,10 @@ public static class ArrTestSuite
 
     static void PrependLazy()
     {
-        var iter  = 1.Cons(() => 2.Cons(() => 3.Cons(() => Arr.create(4, 5).Forward())));
+        var iter  = 1 + (2 + (3 + lazy(() => Arr.create(4, 5).Forward())));
         var total = 0;
         
-        foreach (var x in iter)
+        foreach (var x in iter | pure)
         {
             Console.Write($"{x} ");
             total += x;

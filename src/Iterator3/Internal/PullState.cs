@@ -8,4 +8,5 @@ public static class PullState
     public const int Void = 0;
     public const int Continue = 1;
     public const int Pure = 2;
+    public const int Skip = 3;
 }

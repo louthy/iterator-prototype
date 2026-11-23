@@ -25,7 +25,7 @@ static unsafe partial class Push
         ref2<Iter<Iter<A>>>(in frame) &&
 
         // Iterate over multiple iterators
-        fun<A>(in frame, &Pull.flatten<A>, OpReturn.CanVoid);
+        fun<A>(in frame, &Pull.flatten<A>, OpReturn.CanVoidOrSkip);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool bind<A, B>(in StackFrame frame, in Iter<A> ta, in Func<A, Iter<B>> f) =>
@@ -49,7 +49,7 @@ static unsafe partial class Push
         arg3(in frame, in f) &&
         
         // Add the bind operation
-        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoid);
+        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoidOrSkip);
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool bind<A, B>(in StackFrame frame, in Func<A, Iter<B>> f) =>
@@ -67,5 +67,5 @@ static unsafe partial class Push
         arg2(in frame, in f) &&
         
         // Add the bind operation
-        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoid);    
+        fun<B>(in frame, &Pull.bind<A, B>, OpReturn.CanVoidOrSkip);    
 }

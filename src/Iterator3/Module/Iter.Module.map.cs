@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype.Iterator3;
 
-public static partial class Iter
+public partial class Iter
 {
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<B> map<A, B>(Func<A, B> f, in Iter<A> ta)

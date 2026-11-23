@@ -45,7 +45,33 @@ static partial class Pull
         return PullState.Continue;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    public static int cons<A>(in StackFrame frame)
+    {
+        ref var flag = ref PullUnmanaged.arg1<bool>(in frame);
+
+        if (flag)
+        {
+            arg2<A>(in frame, out var value);
+            flag = false;
+            @return(in frame, value);
+            return PullState.Continue;
+        }
+        else
+        {
+            ref var ta = ref PullStruct.arg3<Iter<A>>(in frame);
+            if (ta.TryRef(out var x))
+            {
+                @return(in frame, x);
+                return PullState.Continue;
+            }
+            else
+            {
+                return PullState.Void;
+            }
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int tuple<A, B>(in StackFrame frame)
     {
         // Pop the second element
@@ -60,7 +86,7 @@ static partial class Pull
         return PullState.Continue;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int tuple<A, B, C>(in StackFrame frame)
     {
         // Pop the second element
@@ -78,25 +104,43 @@ static partial class Pull
         return PullState.Continue;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int take(in StackFrame frame)
     {
-        // Pop the amount 
-        arg1<int>(in frame, out var amount);
+        // Get the amount 
+        ref var amount = ref PullUnmanaged.arg1<int>(in frame);
         if (amount > 0)
         {
-            // Push the updated amount
-            update1(in frame, amount - 1);
+            // Push the updated amount and continue
+            amount--;
             return PullState.Continue;
         }
         else
         {
-            // Exit
+            // Taken all we can, so terminate the sequence.
             return PullState.Void;
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int skip(in StackFrame frame)
+    {
+        // Get the amount 
+        ref var amount = ref PullUnmanaged.arg1<int>(in frame);
+        if (amount > 0)
+        {
+            // Push the updated amount and skip
+            amount--;
+            return PullState.Skip;
+        }
+        else
+        {
+            // Skipped what we needed to, so continue the sequence.
+            return PullState.Continue;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int elements<A, B>(in StackFrame frame)
     {
         pop<(A, B)>(in frame, out var tuple);
@@ -105,7 +149,7 @@ static partial class Pull
         return PullState.Continue;
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int elements<A, B, C>(in StackFrame frame)
     {
         pop<(A, B, C)>(in frame, out var tuple);

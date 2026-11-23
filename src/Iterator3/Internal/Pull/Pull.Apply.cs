@@ -1,4 +1,4 @@
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+/*#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
 using StackFrame = IteratorPrototype.Iterator3.Internal.StackFrame;
@@ -164,4 +164,4 @@ static partial class Pull
 
         return PullState.Continue;
     }
-}
+}*/

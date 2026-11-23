@@ -1,5 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 using LanguageExt.Traits;
 
 namespace IteratorPrototype.Traits;
@@ -8,12 +8,12 @@ namespace IteratorPrototype.Traits;
 public struct IterableEnumerator<T, A>(K<T, A> ta)
     where T : Iterable<T>
 {
-    Iterator<A> iter = T.Forward(ta);
+    Iter<A> iter = T.Forward(ta);
     A? current;
 
     [MethodImpl(Optimisations.InliningOnly)]
     public bool MoveNext() =>
-        iter.TryGetValue(out current, out iter);
+        iter.TryRef(out current);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public void Reset() =>

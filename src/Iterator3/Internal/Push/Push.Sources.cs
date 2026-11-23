@@ -39,7 +39,7 @@ static unsafe partial class Push
         ref2<IS>(in frame) &&
         
         // Push iterable operation
-        fun<A>(in frame, PullGen<A>.iterable<T, IS>(), OpReturn.CanVoid);
+        fun<A>(in frame, PullGen<A>.iterable<T, IS>(), OpReturn.CanVoidOrSkip);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool iterator<A>(in StackFrame frame, in Iter<A> ta) =>
@@ -54,6 +54,32 @@ static unsafe partial class Push
         ref1<Iter<A>>(in frame) &&
 
         // Push iterator operation
-        fun<A>(in frame, PullGen<A>.iterator, OpReturn.CanVoid);
+        fun<A>(in frame, PullGen<A>.iterator, OpReturn.CanVoidOrSkip);
+    
+    public static bool lazy<A>(in StackFrame frame, in Func<Iter<A>> f) =>
+
+        // Push the slot for the acquired iterator
+        declare1(in frame, default(Iter<A>)) &&
+
+        // Push the lazy iterator 
+        declare2(in frame, f) &&
+
+        // Push the slot for the flag indicating whether the iterator has been acquired
+        declare3(in frame, false) &&
+
+        // Start the co-routine
+        coroutine(in frame) &&
+
+        // Push the iterator to the stack
+        ref1<Iter<A>>(in frame) &&
+
+        // Push the lazy iterator to the stack
+        ref2<Func<Iter<A>>>(in frame) &&
+
+        // Push the flag indicating whether the iterator has been acquired
+        ref3<bool>(in frame) &&
+
+        // Push iterator operation
+        fun<A>(in frame, PullGen<A>.lazyIterator, OpReturn.CanVoidOrSkip);
 
 }

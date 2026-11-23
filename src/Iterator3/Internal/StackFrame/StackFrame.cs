@@ -48,17 +48,24 @@ readonly ref struct StackFrame
         Pop();
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
+    public void ResetFrame()
+    {
+        // Pop the current tops
+        tops.ResetFrame();
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public void ResetFrame<A>(out A result)
     {
         // Get the return value
         vars.Pop(out result, true);
 
         // Pop the current tops
-        tops.ResetFrame();
+        ResetFrame();
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void ResetFrameManaged<A>(out A result)
         where A : class
     {
@@ -66,10 +73,10 @@ readonly ref struct StackFrame
         vars.PopManaged(out result, true);
 
         // Pop the current tops
-        tops.ResetFrame();
+        ResetFrame();
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     public void ResetFrameUnmanaged<A>(out A result)
         where A : unmanaged
     {
@@ -77,7 +84,7 @@ readonly ref struct StackFrame
         vars.PopUnmanaged(out result, true);
 
         // Pop the current tops
-        tops.ResetFrame();
+        ResetFrame();
     }
 
     [MethodImpl(Optimisations.Default)]

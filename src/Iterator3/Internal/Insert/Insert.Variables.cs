@@ -7,63 +7,201 @@ namespace IteratorPrototype.Iterator3;
 static unsafe partial class Insert
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool declare<A>(in StackFrame frame, in A value) =>
-        
+    public static bool declare1<A>(in StackFrame frame, in A value)
+    {
         // Push the value to the globals-list
-        frame.globals.AddMutable(in value, out var ix) &&
+        if(!frame.globals.AddMutable(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix;
 
         // Each time this runs, we reset the global to its declared value
-        fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool declare2<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool declare3<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool declare4<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix), OpReturn.Default);
+    }
+    
+    public static bool declare<A, B>(in StackFrame frame, in A value1, in B value2)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value1, out var ix1) ||
+           !frame.globals.AddMutable(in value2, out var ix2)) return false;
+        
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix1;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix2;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default);
+    }
+    
+    public static bool declare<A, B, C>(in StackFrame frame, in A value1, in B value2, in C value3)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value1, out var ix1) ||
+           !frame.globals.AddMutable(in value2, out var ix2) ||
+           !frame.globals.AddMutable(in value3, out var ix3)) return false;
+        
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix1;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix2;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix3;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<C>.reset(ix3), OpReturn.Default);
+    }
+    
+    public static bool declare<A, B, C, D>(in StackFrame frame, in A value1, in B value2, in C value3, in D value4)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddMutable(in value1, out var ix1) ||
+           !frame.globals.AddMutable(in value2, out var ix2) ||
+           !frame.globals.AddMutable(in value3, out var ix3) ||
+           !frame.globals.AddMutable(in value4, out var ix4)) return false;
+        
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix1;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix2;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix3;
+        Unsafe.AsRef(in frame.args.GlobalIx4) = ix4;
+
+        // Each time this runs, we reset the global to its declared value
+        return fun(in frame, GlobalsGen<A>.reset(ix1), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<B>.reset(ix2), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<C>.reset(ix3), OpReturn.Default) && 
+               fun(in frame, GlobalsGen<D>.reset(ix4), OpReturn.Default);
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool const1<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddConst(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx1) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return true;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool const2<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddConst(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx2) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return true;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool const3<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddConst(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx3) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return true;
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool const4<A>(in StackFrame frame, in A value)
+    {
+        // Push the value to the globals-list
+        if(!frame.globals.AddConst(in value, out var ix)) return false;
+        Unsafe.AsRef(in frame.args.GlobalIx4) = ix;
+
+        // Each time this runs, we reset the global to its declared value
+        return true;
+    }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static bool arg<A>(in StackFrame frame, ushort fromEnd) =>
+    public static bool ref1<A>(in StackFrame frame) =>
         
-        // Load recent global by providing an index from the end of the globals-list
-        frame.globals.AtEnd<A>(fromEnd, out var g) &&
+        // Each time this runs we make the global available as an argument 
+        fun(in frame, G1.arg(frame.args.GlobalIx1), OpReturn.Default);    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool ref2<A>(in StackFrame frame) =>
         
-        // The operation to load the global has the index built-in
-        fromEnd switch
-        {
-            1 => fun(in frame, G1.arg(g.Index), OpReturn.Default),   
-            2 => fun(in frame, G2.arg(g.Index), OpReturn.Default),   
-            3 => fun(in frame, G3.arg(g.Index), OpReturn.Default),   
-            4 => fun(in frame, G4.arg(g.Index), OpReturn.Default),
-            _ => throw new InvalidOperationException("argument indexes can only be 1, 2, 3 or 4")
-        };
+        // Each time this runs we make the global available as an argument 
+        fun(in frame, G2.arg(frame.args.GlobalIx2), OpReturn.Default);    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool ref3<A>(in StackFrame frame) =>
+        
+        // Each time this runs we make the global available as an argument 
+        fun(in frame, G3.arg(frame.args.GlobalIx3), OpReturn.Default);    
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool ref4<A>(in StackFrame frame) =>
+        
+        // Each time this runs we make the global available as an argument 
+        fun(in frame, G4.arg(frame.args.GlobalIx4), OpReturn.Default);    
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg1<A>(in StackFrame frame, in A value) =>
         
-        // Push the value to the globals-list
-        frame.globals.AddMutable(in value, out var ix) &&
-
-        // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G1.arg(ix), OpReturn.Default);
+        // Declare a new value to be used as the argument
+        frame.globals.AddConst(in value, out var ix) &&
+        
+        // Make sure it gets loaded from the globals each time we run
+        fun(in frame, G1.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg2<A>(in StackFrame frame, in A value) =>
         
-        // Push the value to the globals-list
-        frame.globals.AddMutable(in value, out var ix) &&
-
-        // Each time this runs we acquire the constant value from the globals-list
+        // Declare a new value to be used as the argument
+        frame.globals.AddConst(in value, out var ix) &&
+        
+        // Make sure it gets loaded from the globals each time we run
         fun(in frame, G2.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg3<A>(in StackFrame frame, in A value) =>
         
-        // Push the value to the globals-list
-        frame.globals.AddMutable(in value, out var ix) &&
-
-        // Each time this runs we acquire the constant value from the globals-list
+        // Declare a new value to be used as the argument
+        frame.globals.AddConst(in value, out var ix) &&
+        
+        // Make sure it gets loaded from the globals each time we run
         fun(in frame, G3.arg(ix), OpReturn.Default);    
     
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool arg4<A>(in StackFrame frame, in A value) =>
         
-        // Push the value to the globals-list
-        frame.globals.AddMutable(in value, out var ix) &&
-
-        // Each time this runs we acquire the constant value from the globals-list
-        fun(in frame, G4.arg(ix), OpReturn.Default);    
+        // Declare a new value to be used as the argument
+        frame.globals.AddConst(in value, out var ix) &&
+        
+        // Make sure it gets loaded from the globals each time we run
+        fun(in frame, G4.arg(ix), OpReturn.Default);        
 }

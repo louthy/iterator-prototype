@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 using LanguageExt;
 using LanguageExt.Traits;
-using IteratorPrototype.Iterator3.Internal;
 
 namespace IteratorPrototype.Traits;
 
@@ -24,8 +24,8 @@ public interface IterableImmutable<T, IS> : Iterable<T>
         new IterableImmutableEnumerable<T, IS, A>(ta);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    static Iterator<A> Iterable<T>.Forward<A>(K<T, A> ta) =>
-        Iterator.fromWeak<T, IS, A>(in ta);
+    static Iter<A> Iterable<T>.Forward<A>(K<T, A> ta) =>
+        Iter.from<T, IS, A>(in ta);
 
     [MethodImpl(Optimisations.InliningOnly)]
     static Unit Iterable<T>.ToWriter<A>(K<T, A> ta, ref ArrayWriter<A> writer)

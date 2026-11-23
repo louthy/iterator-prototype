@@ -27,15 +27,15 @@ public partial class Arr :
     FoldableBack<Arr, Arr.FoldState>
     */
 {
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Option<A> Tr.Indexable<Arr, Index>.At<A>(Index index, K<Arr, A> ta) =>
         ta.As().At(index);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static Option<A> Tr.Indexable<Arr, int>.At<A>(int index, K<Arr, A> ta) =>
         ta.As().At(index);
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static ref readonly A Tr.RefIndexable<Arr, Index>.AtRef<A>(in Index index, in K<Arr, A> ta)
     {
         if (index.IsFromEnd)
@@ -48,24 +48,24 @@ public partial class Arr :
         }
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static ref readonly A Tr.RefIndexable<Arr, int>.AtRef<A>(in int index, in K<Arr, A> ta) =>
         ref Unsafe.Add(ref Unsafe.As<K<Arr, A>, A>(ref Unsafe.AsRef(in ta)), (nint)(uint)index /* force zero-extension */);
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static ReadOnlySpan<A> Tr.Iterable<Arr>.AsSpan<A>(K<Arr, A> ta) =>
         (+ta).AsSpan();
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static int Tr.Countable<Arr>.Count<A>(K<Arr, A> fa) =>
         fa is Arr<A> arr ? arr.Count : 0;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static ArrState Tr.IterableImmutable<Arr, ArrState>.SetupImmutable<A>(in K<Arr, A> ta) =>
         new (0, ta.Count);
         
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static bool Tr.IterableImmutable<Arr, ArrState>.StepImmutable<A>(
         in K<Arr, A> ta, 
         in ArrState ts, 
@@ -89,7 +89,7 @@ public partial class Arr :
         return true;    
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static bool Tr.IterableImmutable<Arr, ArrState>.Next<A>(in K<Arr, A> ta, ref ArrState ts, out A head)
     {
         // 'unsafe' version.  This reads over the end of the array. However, `head` is undefined when the
@@ -120,7 +120,7 @@ public partial class Arr :
         }*/
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static ArrStateRef Tr.IterableMutable<Arr, ArrState, ArrStateRef>.SetupMutable<A>(K<Arr, A> ta)
     {
         var array = ta.AsSpan();
@@ -132,7 +132,7 @@ public partial class Arr :
         return Unsafe.As<ArrStateRef<A>, ArrStateRef>(ref stateA);
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static bool Tr.IterableMutable<Arr, ArrState, ArrStateRef>.StepMutable<A>(K<Arr, A> ta, ref ArrStateRef ts, out A value)
     {
         ref var          state    = ref Unsafe.As<ArrStateRef, ArrStateRef<A>>(ref ts);
@@ -152,6 +152,7 @@ public partial class Arr :
         return true;
     }    
     
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, B> Monad<Arr>.Bind<A, B>(K<Arr, A> ma, Func<A, K<Arr, B>> f)
     {
         var w  = ArrayWriter<B>.Init();
@@ -168,10 +169,12 @@ public partial class Arr :
         return w.ToArr();
     }
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, B> Monad<Arr>.Recur<A, B>(A value, Func<A, K<Arr, Next<A, B>>> f) =>
         // TODO: We need an Iterable recur that is fast!
         create(Monad.enumerableRecur(value, x => f(x).As().AsEnumerable()));
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, B> Functor<Arr>.Map<A, B>(Func<A, B> f, K<Arr, A> ma)
     {
         var w  = ArrayWriter<B>.Init(ma.Count);
@@ -184,9 +187,11 @@ public partial class Arr :
         return w.ToArr();
     }
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> Applicative<Arr>.Pure<A>(A value) =>
         singleton(value);
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, B> Applicative<Arr>.Apply<A, B>(K<Arr, Func<A, B>> mf, K<Arr, A> ma)
     {
         var writer = ArrayWriter<B>.Init();
@@ -202,6 +207,7 @@ public partial class Arr :
         return writer.ToArr();
     }    
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, B> Applicative<Arr>.Apply<A, B>(K<Arr, Func<A, B>> mf, Memo<Arr, A> ma)
     {
         var writer = ArrayWriter<B>.Init();
@@ -219,14 +225,15 @@ public partial class Arr :
         return writer.ToArr();
     }
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> MonoidK<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> Alternative<Arr>.Empty<A>() =>
         Arr<A>.Empty;
 
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> SemigroupK<Arr>.Combine<A>(K<Arr, A> ma, K<Arr, A> mb)
     {
         var writer = ArrayWriter<A>.Init(ma.Count + mb.Count);
@@ -235,11 +242,11 @@ public partial class Arr :
         return writer.ToArr();
     }    
     
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, K<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb : ma;
 
-    [MethodImpl(Optimisations.Default)]
+    [MethodImpl(Optimisations.InliningOnly)]
     static K<Arr, A> Choice<Arr>.Choose<A>(K<Arr, A> ma, Memo<Arr, A> mb) => 
         ma is Arr<A> { IsEmpty: true } ? mb.Value : ma;
 

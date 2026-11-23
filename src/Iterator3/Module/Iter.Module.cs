@@ -4,42 +4,102 @@ using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
-public static partial class Iter
+public partial class Iter
 {
     /// <summary>
-    /// Await
+    /// Empty iterator
     /// </summary>
-    public static IterAwait await = default;
+    public static readonly IterEmpty empty = 
+        default;
     
     /// <summary>
     /// Pure
     /// </summary>
-    public static IterPure pure = default;
+    public static readonly IterPure pure = 
+        default;
+
+    /// <summary>
+    /// Create a new co-routine scope 
+    /// </summary>
+    public static readonly IterScope scope = 
+        default;
     
     /// <summary>
-    /// Co-routine scope
+    /// Take a number of elements
     /// </summary>
-    public static IterScope scope = default;
-    
-    /// <summary>
-    /// Pure
-    /// </summary>
+    /// <param name="amount">Number of elements to take</param>
     public static IterTake take(int amount) => 
         new (amount);
+    
+    /// <summary>
+    /// Skip a number of elements
+    /// </summary>
+    /// <param name="amount">Number of elements to skip</param>
+    public static IterSkip skip(int amount) => 
+        new (amount);
+
+    /// <summary>
+    /// Lift a function into an iterator, such that it is evaluated on-demand, rather than now.
+    /// </summary>
+    public static Iter<A> lazy<A>(Func<Iter<A>> f) =>
+        IterAction.lazy(f);
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> from<A>(params ReadOnlySpan<A> ta) =>
-        from<Arr, ArrState, A>(Arr.create(ta));
-    
-    [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> from<T, IS, A>(in K<T, A> ta)
-        where T : Tr.IterableImmutable<T, IS>
-        where IS : unmanaged
+    public static Iter<A> cons<A>(A head, Iter<A> tail)
     {
-        var frame = Iter<A>.Default(out var iter);
-        return Push.iterable<T, IS, A>(in frame, in ta)
+        var frame = Iter<A>.Next(in tail, out var iter);
+        return Insert.yield(in frame, in head)
                    ? iter
-                   : default;
+                   : Insert.cons(in frame, in head, in tail)
+                       ? iter
+                       : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, Iter<A> tail)
+    {
+        var frame = Iter<A>.Next(in tail, out var iter);
+        return Insert.yield(in frame, in b)
+                   ? Insert.yield(in frame, in a)
+                         ? iter
+                         : Insert.cons(in frame, in b, in tail)
+                             ? cons(a, iter)
+                             : cons(a, cons(b, tail))
+                   : Insert.cons(in frame, in b, in tail)
+                       ? cons(a, iter)
+                       : cons(a, cons(b, tail));
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, A c, Iter<A> tail)
+    {
+        var frame = Iter<A>.Next(in tail, out var iter);
+        return Insert.yield(in frame, in c)
+                   ? Insert.yield(in frame, in b)
+                         ? Insert.yield(in frame, in a)
+                               ? iter
+                               : cons(a, cons(b, cons(c, tail)))
+                         : cons(a, cons(b, cons(c, tail)))
+                   : Insert.cons(in frame, in b, in tail)
+                       ? cons(a, iter)
+                       : cons(a, cons(b, cons(c, tail)));
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, A c, A d, Iter<A> tail)
+    {
+        var frame = Iter<A>.Next(in tail, out var iter);
+        return Insert.yield(in frame, in d)
+                   ? Insert.yield(in frame, in c)
+                         ? Insert.yield(in frame, in b)
+                               ? Insert.yield(in frame, in a)
+                                     ? iter
+                                     : cons(a, cons(b, cons(c, cons(d, tail))))
+                               : cons(a, cons(b, cons(c, cons(d, tail))))
+                         : Insert.cons(in frame, in b, in tail)
+                             ? cons(a, iter)
+                             : cons(a, cons(b, cons(c, cons(d, tail))))
+                   : cons(a, cons(b, cons(c, cons(d, tail))));
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -48,7 +108,7 @@ public static partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.forever(in frame, in head)
                     ? iter
-                    : default;
+                    : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -57,7 +117,7 @@ public static partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.singleton(in frame, in head)
                    ? iter
-                   : default;
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> lift<A>(in Iter<A> ta)
@@ -65,7 +125,7 @@ public static partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.iterator(in frame, in ta)
                    ? iter
-                   : default;
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -83,7 +143,7 @@ public static partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.flatten(in frame, in iters)
                    ? iter
-                   : default;
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
     
     [MethodImpl(Optimisations.InliningOnly)]

@@ -6,6 +6,7 @@ using static LanguageExt.Prelude;
 using System.Diagnostics.Contracts;
 using LanguageExt.UnsafeValueAccess;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 
 namespace IteratorPrototype;
 
@@ -24,6 +25,7 @@ namespace IteratorPrototype;
 /// snapshot/view data you want so the old references can be collected by the GC.
 /// </remarks>
 /// <typeparam name="A">Value type</typeparam>
+[Union]
 [Serializable]
 [CollectionBuilder(typeof(Arr), nameof(Arr.create))]
 [SkipLocalsInit]
@@ -37,8 +39,8 @@ public sealed class Arr<A> :
     IEquatable<Arr<A>>,
     Monoid<Arr<A>>,
     IComparable,
-    K<Arr, A>,
-    IUnion
+    IUnion,
+    K<Arr, A>
 {
     /// <summary>
     /// Backing array
@@ -84,6 +86,15 @@ public sealed class Arr<A> :
     [Pure]
     public static Arr<A> AdditiveIdentity => 
         Empty;
+    
+    /// <summary>
+    /// Union value support
+    /// </summary>
+    [Pure]
+    public object Value =>
+        TryGetValue(out var x, out var xs)
+            ? new Cons<Iter, A>(x, xs)
+            : Nil.DefaultObj;
 
     /// <summary>
     /// Head lens
@@ -139,6 +150,30 @@ public sealed class Arr<A> :
         Get: la => la.Count < index - 1 ? None : Some(la[index]),
         Set: a => la => la.Count < index - 1 || a.IsSome ? la : la.SetItemUnsafe(index, a.ValueUnsafe()!));
 
+    // ReSharper disable once UnusedParameter.Local
+    public Arr(Nil _)
+    {
+        Values = [];
+        Start = 0;
+        count = 0;
+    }
+    
+    public Arr(Cons<A> cons)
+    {
+        var w = LE.ArrayWriter<A>.Init();
+        w.Add(cons.Head);
+
+        var iter = cons.Tail;
+        while (iter.TryRef(out var x))
+        {
+            w.Add(in x);
+        }
+        
+        (Values, var s, var c) = w.ToArray();
+        Start = (int)s;
+        count = (int)c;
+    }    
+    
     /// <summary>
     /// Constructor
     /// </summary>
@@ -157,12 +192,6 @@ public sealed class Arr<A> :
     [Pure]
     public static Arr<A> Construct(in ReadOnlySpan<A> value) =>
         [.. value];
-
-    [Pure]
-    public object Value => 
-        TryGetValue(out var h, out var t) 
-            ? new Cons<A>(h, t) 
-            : Nil.Obj;
 
     [Pure]
     public bool HasValue =>
@@ -230,11 +259,11 @@ public sealed class Arr<A> :
     /// <summary>
     /// Test if the collection is empty
     /// </summary>
-    /// <param name="nil">Nil structure</param>
+    /// <param name="iterNil">Nil structure</param>
     /// <returns>`true` if empty, `false` otherwise</returns>
-    public bool TryGetValue(out Nil nil)
+    public bool TryGetValue(out Nil iterNil)
     {
-        nil = default;
+        iterNil = default;
         return Count == 0;
     }
 
@@ -246,7 +275,7 @@ public sealed class Arr<A> :
     /// <param name="tail">Tail iterator</param>
     /// <returns>`true` if elements exist, `false` otherwise</returns>
     // ReSharper disable once ParameterHidesMember
-    public bool TryGetValue(out A head, out Iterator<A> tail) =>
+    public bool TryGetValue(out A head, out Iter<A> tail) =>
         this.Forward().TryGetValue(out head, out tail);
 
     /// <summary>
@@ -258,15 +287,15 @@ public sealed class Arr<A> :
     [Pure]
     public bool TryGetValue(out Cons<A> cons)
     {
-        if (TryGetValue(out var h, out var t))
-        {
-            cons = new Cons<A>(h, t);
-            return true;
-        }
-        else
+        if(IsEmpty)
         {
             cons = default;
             return false;
+        }
+        else
+        {
+            return this.Forward()
+                       .TryGetValue(out cons);
         }
     }
 

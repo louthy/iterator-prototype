@@ -2,7 +2,7 @@ using IteratorPrototype.Iterator3.Internal;
 
 namespace IteratorPrototype.Iterator3;
 
-using static IteratorPrototype.Iterator3.Iter;
+using static Iter;
 
 public static class IterTests
 {
@@ -26,8 +26,8 @@ public static class IterTests
     public static void Basic1()
     {
         var iter = forever(1)
-                 | select<int, string>(x => $"'{x}'")
-                 | take(10);
+                 | take(10)
+                 | select<int, string>(x => $"'{x}'");
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -49,14 +49,24 @@ public static class IterTests
         Console.WriteLine();
     }
 
+    public static int Sum(Iter<int> iter) =>
+        iter switch
+        {
+            Cons<int>(var x, var xs) =>
+                x + Sum(xs),
+
+            Nil => 0
+        };
+    
     public static void Basic3()
     {
         var iter = singleton(1) 
                       | select<int, string>(x => $"'{x}'");
         
-        while(iter.TryGetValue(out var head, out iter))
+        while(iter is Cons<string>(var head, var tail))
         {
             Console.WriteLine($"{head} ");
+            iter = tail;
         }
         
         Console.WriteLine();
@@ -135,7 +145,7 @@ public static class IterTests
 
     public static void Basic9()
     {
-        var iter = from(1, 2) + from(3, 4);
+        var iter = from(1, 2) + from(3, 4) | pure;
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -148,7 +158,7 @@ public static class IterTests
     public static void Test0()
     {
         var arr  = Arr.create(1..6);
-        var iter = Iter.from<Arr, ArrState, int>(arr);
+        var iter = from<Arr, ArrState, int>(arr);
 
         while(iter.TryGetValue(out var head, out iter))
         {

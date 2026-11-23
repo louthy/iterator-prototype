@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using IteratorPrototype.Iterator3;
 using IteratorPrototype.Traits;
 using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
@@ -15,7 +16,7 @@ public static partial class IterableExtensions
         /// <returns>An iterator that enumerates from the 'first' element to the 'last' element.</returns>
         [Pure]
         [MethodImpl(Root.Optimisations.InliningOnly)]
-        public Root.Iterator<A> Forward() =>
+        public Iter<A> Forward() =>
             T.Forward(ta);
 
         /// <summary>

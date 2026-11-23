@@ -1,3 +1,4 @@
+/*
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
@@ -47,3 +48,4 @@ static unsafe partial class Push
         // Push apply operation
         fun<A, B, C, D, E, G>(in frame, &Pull.apply<A, B, C, D, E, F, G>, OpReturn.Default);
 }
+*/
