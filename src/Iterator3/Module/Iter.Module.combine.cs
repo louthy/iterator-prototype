@@ -3,20 +3,20 @@ namespace IteratorPrototype.Iterator3;
 public partial class Iter
 {
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb) =>
-        throw new NotImplementedException();
+        flatten(ta, tb);
     
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb, in Iter<A> tc) =>
-        throw new NotImplementedException();    
+        flatten(ta, tb, tc);
     
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb, in Iter<A> tc, in Iter<A> td) =>
-        throw new NotImplementedException();    
+        flatten(ta, tb, tc, td);
     
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb, in Iter<A> tc, in Iter<A> td, in Iter<A> te) =>
-        throw new NotImplementedException();    
+        flatten(ta, tb, tc, td, te);
     
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb, in Iter<A> tc, in Iter<A> td, in Iter<A> te, in Iter<A> tf) =>
-        throw new NotImplementedException();    
+        flatten(ta, tb, tc, td, te, tf);
     
     public static Iter<A> combine<A>(in Iter<A> ta, in Iter<A> tb, in Iter<A> tc, in Iter<A> td, in Iter<A> te, in Iter<A> tf, in Iter<A> tg) =>
-        throw new NotImplementedException();    
+        flatten(ta, tb, tc, td, te, tf, tg);
 }

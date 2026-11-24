@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3;
 using LanguageExt.ClassInstances;
@@ -40,7 +41,7 @@ public interface Iterable<T>
     static virtual LE.Unit ToWriter<A>(LT.K<T, A> ta, ref LE.ArrayWriter<A> writer)
     {
         var ts = T.Forward(ta);
-        while (ts.TryGetValue(out var x, out ts))
+        while (ts.TryRef(out var x))
         {
             LE.ArrayWriter<A>.Add(ref writer, x);
         }
@@ -56,7 +57,7 @@ public interface Iterable<T>
     static virtual LE.Unit ToWriter<A, B>(LT.K<T, A> ta, Func<A, B> f, ref LE.ArrayWriter<B> writer)
     {
         var ts = T.Forward(ta);
-        while (ts.TryGetValue(out var x, out ts))
+        while (ts.TryRef(out var x))
         {
             LE.ArrayWriter<B>.Add(ref writer, f(x));
         }
@@ -71,7 +72,7 @@ public interface Iterable<T>
     static virtual IEnumerable<A> AsEnumerable<A>(LT.K<T, A> ta)
     {
         var ts = T.Forward(ta);
-        while (ts.TryGetValue(out var x, out ts))
+        while (ts.TryRef(out var x))
         {
             yield return x;
         }
@@ -108,11 +109,11 @@ public interface Iterable<T>
     [Pure]
     static virtual string ToString<A>(LT.K<T, A> ta, string separator = ", ")
     {
-        var ix   = 0;
-        var sm   = new StringMaker(stackalloc char[1024]);
-        var iter = T.Forward(ta);
+        var ix = 0;
+        var sm = new StringMaker(stackalloc char[1024]);
+        var ts = T.Forward(ta);
 
-        while (iter.TryGetValue(out var x, out iter))
+        while (ts.TryRef(out var x))
         {
             sm.Append(x);
             ix++;
@@ -144,12 +145,12 @@ public interface Iterable<T>
     [Pure]
     static virtual string ToArrayString<A>(LT.K<T, A> ta, string separator = ", ")
     {
-        var ix   = 0;
-        var sm   = new StringMaker(stackalloc char[1024]);
-        var iter = T.Forward(ta);
+        var ix = 0;
+        var sm = new StringMaker(stackalloc char[1024]);
+        var ts = T.Forward(ta);
 
         sm.Append('[');
-        while (iter.TryGetValue(out var x, out iter))
+        while (ts.TryRef(out var x))
         {
             sm.Append(x);
             ix++;
@@ -183,10 +184,10 @@ public interface Iterable<T>
     [Pure]
     static virtual string ToFullString<A>(LT.K<T, A> ta, string separator = ", ")
     {
-        var sm   = new StringMaker(stackalloc char[1024]);
-        var iter = T.Forward(ta);
+        var sm = new StringMaker(stackalloc char[1024]);
+        var ts = T.Forward(ta);
 
-        while (iter.TryGetValue(out var x, out iter))
+        while (ts.TryRef(out var x))
         {
             sm.Append(x);
             sm.Append(separator);
@@ -207,11 +208,11 @@ public interface Iterable<T>
     [Pure]
     static virtual string ToFullArrayString<A>(LT.K<T, A> ta, string separator = ", ")
     {
-        var sm   = new StringMaker(stackalloc char[1024]);
-        var iter = T.Forward(ta);
+        var sm = new StringMaker(stackalloc char[1024]);
+        var ts = T.Forward(ta);
 
         sm.Append('[');
-        while (iter.TryGetValue(out var x, out iter))
+        while (ts.TryRef(out var x))
         {
             sm.Append(x);
             sm.Append(separator);
@@ -235,8 +236,8 @@ public interface Iterable<T>
     [MethodImpl(Optimisations.InliningOnly)]
     static virtual LT.K<T, A> Do<A>(LT.K<T, A> ta, Action<A> f)
     {
-        var iter = ta.Forward();
-        while(iter.TryGetValue(out var x, out iter))
+        var ts = ta.Forward();
+        while (ts.TryRef(out var x))
         {
             f(x);
         }
@@ -348,7 +349,8 @@ public interface Iterable<T>
     /// </summary>
     static virtual R Aggregate<S, A, R>(S state, Func<S, A, S> folder, Func<S, R> map, LT.K<T, A> fa)
     {
-        foreach (var x in T.Forward(fa))
+        var ts = T.Forward(fa);
+        while (ts.TryRef(out var x))
         {
             state = folder(state, x);
         }
@@ -358,60 +360,160 @@ public interface Iterable<T>
     /// <summary>
     /// Determines whether any element of a range satisfies a condition.
     /// </summary>
-    static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
-         .Any(predicate);
+    static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> fa)
+    {
+        var ts = T.Forward(fa);
+        while (ts.TryRef(out var x))
+        {
+            if (predicate(x)) return true;
+        }
+        return false;
+    }
 
     /// <summary>
     /// Determines whether all elements of a range satisfy a condition.
     /// </summary>
-    static virtual bool All<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
-         .All(predicate);
+    static virtual bool All<A>(Func<A, bool> predicate, LT.K<T, A> fa)
+    {
+        var ts = T.Forward(fa);
+        while (ts.TryRef(out var x))
+        {
+            if (!predicate(x)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Finds the average of a sequence of numbers
+    /// </summary>
+    static virtual A Average<A>(LT.K<T, A> fa)
+        where A : INumber<A>
+    {
+        var ts    = T.Forward(fa);
+        var total = A.Zero;
+        var count = A.Zero;
+        while (ts.TryRef(out var x))
+        {
+            total += x;
+            count++;
+        }
+        return total / count;
+    }
+
+    /// <summary>
+    /// Finds the average of a sequence of numbers
+    /// </summary>
+    static virtual B Average<A, B>(LT.K<T, A> fa, Func<A, B> map)
+        where B : INumber<B>
+    {
+        var ts    = T.Forward(fa);
+        var total = B.Zero;
+        var count = B.Zero;
+        while (ts.TryRef(out var x))
+        {
+            total += map(x);
+            count++;
+        }
+        return total / count;
+    }
 
     /// <summary>
     /// Returns the first element of a range, or an alternative value if the range contains no elements.
     /// </summary>
-    static virtual LT.K<F, A> FirstOrAlt<F, A>(LT.K<T, A> fa) 
+    static virtual LT.K<F, A> FirstOrAlt<F, A>(LT.K<T, A> fa)
         where F : LT.Alternative<F> =>
         T.Forward(fa)
-         .FirstOrAlt<F>();
+         .TryGetValue(out var x, out _)
+            ? F.Pure(x)
+            : F.Empty<A>();
 
     /// <summary>
     /// Returns the first element of a range, or `None` value if the range contains no elements.
     /// </summary>
     static virtual LE.Option<A> FirstOrNone<A>(LT.K<T, A> fa) =>
         T.Forward(fa)
-         .FirstOrNone();
+         .TryGetValue(out var x, out _)
+            ? x
+            : default;
 
     /// <summary>
     /// Returns the first element of a range, or a default value if the range contains no elements.
     /// </summary>
     static virtual A? FirstOrDefault<A>(LT.K<T, A> fa) =>
         T.Forward(fa)
-         .FirstOrDefault();
+         .TryGetValue(out var x, out _)
+            ? x
+            : default;
 
     /// <summary>
     /// Returns the last element of a range, or an alternative value if the range contains no elements.
     /// </summary>
-    static virtual LT.K<F, A> LastOrAlt<F, A>(LT.K<T, A> fa) 
-        where F : LT.Alternative<F> =>
-        T.Forward(fa)
-         .LastOrAlt<F>();
+    static virtual LT.K<F, A> LastOrAlt<F, A>(LT.K<T, A> fa)
+        where F : LT.Alternative<F>
+    {
+        var ts = T.Forward(fa);
+        while (true)
+        {
+            switch (ts)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    ts = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return F.Pure(e1);
+
+                default:
+                    return F.Empty<A>();
+            }
+        }
+    }        
 
     /// <summary>
     /// Returns the last element of a range, or `None` value if the range contains no elements.
     /// </summary>
-    static virtual LE.Option<A> LastOrNone<A>(LT.K<T, A> fa) =>
-        T.Forward(fa)
-         .LastOrNone();
+    static virtual LE.Option<A> LastOrNone<A>(LT.K<T, A> fa)
+    {
+        var ts = T.Forward(fa);
+        while (true)
+        {
+            switch (ts)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    ts = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return e1;
+
+                default:
+                    return default;
+            }
+        }
+    }
 
     /// <summary>
     /// Returns the last element of a range, or a default value if the range contains no elements.
     /// </summary>
-    static virtual A? LastOrDefault<A>(LT.K<T, A> fa) =>
-        T.Forward(fa)
-         .LastOrDefault();
+    static virtual A? LastOrDefault<A>(LT.K<T, A> fa)
+    {
+        var ts = T.Forward(fa);
+        while (true)
+        {
+            switch (ts)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    ts = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return e1;
+
+                default:
+                    return default;
+            }
+        }
+    }
 
     /// <summary>
     /// Returns a specified number of contiguous elements from the start of a range.
@@ -473,8 +575,9 @@ public interface Iterable<T>
     /// </remarks>
     static virtual Arr<A> Reverse<A>(LT.K<T, A> fa)
     {
-        var w = LE.ArrayWriter<A>.Init();
-        foreach (var x in fa)
+        var w  = LE.ArrayWriter<A>.Init();
+        var ts = T.Forward(fa);
+        while (ts.TryRef(out var x))
         {
             w.Add(x);
         }

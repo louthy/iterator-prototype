@@ -11,13 +11,13 @@ public static partial class IterableExtensions
         /// Returns the first element of a range, or `None` value if the range contains no elements.
         /// </summary>
         public LE.Option<A> FirstOrNone() =>
-            T.Forward(ta).FirstOrNone();
+            T.FirstOrNone(ta);
 
         /// <summary>
         /// Returns the first element of a range, or a default value if the range contains no elements.
         /// </summary>
         public A? FirstOrDefault() =>
-            T.Forward(ta).FirstOrDefault();
+            T.FirstOrDefault(ta);
     }
     
     extension<T, F, A>(LT.K<T, A> ta)
@@ -28,6 +28,6 @@ public static partial class IterableExtensions
         /// Returns the first element of a range, or an alternative value if the range contains no elements.
         /// </summary>
         public LT.K<F, A> FirstOrAlt() => 
-            T.Forward(ta).FirstOrAlt<F>();
+            T.FirstOrAlt<F, A>(ta);
     }    
 }

@@ -70,7 +70,7 @@ public readonly struct Iter<A> : IUnion, K<Iter, A>
     {
         if (TryGetValue(out var x, out var xs))
         {
-            cons = new Cons<A>(x, xs);
+            cons = new Cons<A>(in x, in xs);
             return true;
         }
         else
@@ -197,125 +197,6 @@ public readonly struct Iter<A> : IUnion, K<Iter, A>
     public Iter<A> DistinctBy<EqKey, Key>(Func<A, Key> key, params ReadOnlySpan<Key> seen)
         where EqKey : Eq<Key> =>
         IterAction.distinct<EqKey, Key, A>(key, seen, in this);
-    
-    /// <summary>
-    /// Determines whether any element of a range satisfies a condition.
-    /// </summary>
-    public bool Any(Func<A, bool> predicate)
-    {
-        foreach (var x in this)
-        {
-            if (predicate(x)) return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Determines whether all elements of a range satisfy a condition.
-    /// </summary>
-    public bool All(Func<A, bool> predicate)
-    {
-        foreach (var x in this)
-        {
-            if (!predicate(x)) return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// Returns the first element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public K<F, A> FirstOrAlt<F>()
-        where F : Alternative<F> =>
-        TryGetValue(out var x, out _)
-            ? F.Pure(x)
-            : F.Empty<A>();
-
-    /// <summary>
-    /// Returns the first element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public LE.Option<A> FirstOrNone() =>
-        TryGetValue(out var x, out _)
-            ? x
-            : default;
-
-    /// <summary>
-    /// Returns the first element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public A? FirstOrDefault() =>
-        TryGetValue(out var x, out _)
-            ? x
-            : default;
-
-    /// <summary>
-    /// Returns the last element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public K<F, A> LastOrAlt<F>()
-        where F : Alternative<F>
-    {
-        var iter = this;
-        while (true)
-        {
-            switch (iter)
-            {
-                case Cons<A>(_, Cons<A>(_, _) e2):
-                    iter = e2;
-                    break;
-
-                case Cons<A> (var e1, _):
-                    return F.Pure(e1);
-
-                default:
-                    return F.Empty<A>();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Returns the last element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public LE.Option<A> LastOrNone()
-    {
-        var iter = this;
-        while (true)
-        {
-            switch (iter)
-            {
-                case Cons<A>(_, Cons<A>(_, _) e2):
-                    iter = e2;
-                    break;
-
-                case Cons<A> (var e1, _):
-                    return e1;
-
-                default:
-                    return default;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Returns the last element of a range, or a default value if the range contains no elements.
-    /// </summary>
-    public A? LastOrDefault()
-    {
-        var iter = this;
-        while (true)
-        {
-            switch (iter)
-            {
-                case Cons<A>(_, Cons<A>(_, _) e2):
-                    iter = e2;
-                    break;
-
-                case Cons<A> (var e1, _):
-                    return e1;
-
-                default:
-                    return default;
-            }
-        }
-    }
 
     /*
     [MethodImpl(Optimisations.Default)]
@@ -330,6 +211,10 @@ public readonly struct Iter<A> : IUnion, K<Iter, A>
     [MethodImpl(Optimisations.Default)]
     public static IterCons<A> operator +(in A lhs, in Iter<A> rhs) =>
         new (in lhs, in rhs);
+
+    [MethodImpl(Optimisations.Default)]
+    public static Iter<A> operator +(in Iter<A> lhs, in A rhs) =>
+        Iter.combine(lhs, Iter.singleton(rhs));
     
     [MethodImpl(Optimisations.Default)]
     public static Iter<A> operator |(IterScope _, Iter<A> rhs) =>

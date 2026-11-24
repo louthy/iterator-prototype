@@ -74,8 +74,10 @@ public static partial class IterableExtensions
         /// <summary>
         /// Reverse the order of the elements in a range.
         /// </summary>
-        public Root.Arr<A> Reverse() =>
+        public Arr<A> Reverse() =>
             T.Reverse(ta);
 
+        public Iter<A> Append(A value) =>
+            T.Forward(ta) + value;
     }
 }

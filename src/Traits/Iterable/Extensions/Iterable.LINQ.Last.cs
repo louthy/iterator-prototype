@@ -11,13 +11,13 @@ public static partial class IterableExtensions
         /// Returns the last element of a range, or `None` value if the range contains no elements.
         /// </summary>
         public LE.Option<A> LastOrNone() =>
-            T.Forward(ta).LastOrNone();
+            T.LastOrNone(ta);
 
         /// <summary>
         /// Returns the last element of a range, or a default value if the range contains no elements.
         /// </summary>
         public A? LastOrDefault() =>
-            T.Forward(ta).LastOrDefault();
+            T.LastOrDefault(ta);
     }
     
     extension<T, F, A>(LT.K<T, A> ta)
@@ -28,6 +28,6 @@ public static partial class IterableExtensions
         /// Returns the last element of a range, or an alternative value if the range contains no elements.
         /// </summary>
         public LT.K<F, A> LastOrAlt() => 
-            T.Forward(ta).LastOrAlt<F>();
+            T.LastOrAlt<F, A>(ta);
     }    
 }
