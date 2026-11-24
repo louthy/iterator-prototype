@@ -2,6 +2,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3.Internal;
 using IteratorPrototype.Iterator3.Internal.Collections;
+using LanguageExt.ClassInstances;
 using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
@@ -99,13 +100,222 @@ public readonly struct Iter<A> : IUnion, K<Iter, A>
         //Log.descope();
     }
 
-    [MethodImpl(Optimisations.Default)]
+    /// <summary>
+    /// Functor map
+    /// </summary>
+    /// <param name="f">Mapping function</param>
+    /// <typeparam name="B">Resulting element type</typeparam>
+    /// <returns>Projected lazy iterator</returns>
     public Iter<B> Map<B>(Func<A, B> f) =>
         IterAction.map(f, in this);
 
-    [MethodImpl(Optimisations.Default)]
+    /// <summary>
+    /// Monad bind
+    /// </summary>
+    /// <param name="f">Bind function</param>
+    /// <typeparam name="B">Resulting element type</typeparam>
+    /// <returns>Projected lazy iterator</returns>
     public Iter<B> Bind<B>(Func<A, Iter<B>> f) =>
         IterAction.bind(in this, f);
+
+    /// <summary>
+    /// Monad bind followed by a projection function
+    /// </summary>
+    /// <param name="bind">Bind function</param>
+    /// <param name="project">Projection function</param>
+    /// <typeparam name="B">Intermediate element type</typeparam>
+    /// <typeparam name="C">Resulting element type</typeparam>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<C> SelectMany<B, C>(Func<A, Iter<B>> bind, Func<A, B, C> project) =>
+        IterAction.selectMany(in this, bind, project);
+
+    /// <summary>
+    /// Allow values through the iterator if they return `true` when passed to the predicate function provided.
+    /// </summary>
+    /// <param name="f">Predicate function</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> Filter(Func<A, bool> f) =>
+        IterAction.filter(f, in this);
+
+    /// <summary>
+    /// Allow values through the iterator if they return `true` when passed to the predicate function provided.
+    /// </summary>
+    /// <param name="f">Predicate function</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> Where(Func<A, bool> f) =>
+        Filter(f);
+
+    /// <summary>
+    /// Allow values through the iterator if they return `Some` when passed to the choice function provided.
+    /// </summary>
+    /// <param name="f">Choice function</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<B> Choose<B>(Func<A, LE.Option<B>> f) =>
+        IterAction.choose(f, in this);
+
+    /// <summary>
+    /// Cast the values in the iterator to another type. If the cast succeeds, the value will yield, otherwise
+    /// the value will be dropped. 
+    /// </summary>
+    /// <typeparam name="B">Type to cast the values to</typeparam>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<B> Cast<B>() =>
+        Choose<B>(x => x is B b ? b : default);
+
+    /// <summary>
+    /// Return a range with duplicate elements removed.
+    /// </summary>
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> Distinct(params ReadOnlySpan<A> seen) =>
+        IterAction.distinct<EqDefault<A>, A>(seen, in this);
+
+    /// <summary>
+    /// Return a range with duplicate elements removed.
+    /// </summary>
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> Distinct<EqA>(params ReadOnlySpan<A> seen)
+        where EqA : Eq<A> =>
+        IterAction.distinct<EqA, A>(seen, in this);
+
+    /// <summary>
+    /// Return a range with duplicate elements removed.
+    /// </summary>
+    /// <param name="key">Function that maps from the element-type to a key for distinct testing.</param>
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> DistinctBy<Key>(Func<A, Key> key, params ReadOnlySpan<Key> seen) =>
+        IterAction.distinct<EqDefault<Key>, Key, A>(key, seen, in this);
+
+    /// <summary>
+    /// Return a range with duplicate elements removed.
+    /// </summary>
+    /// <param name="key">Function that maps from the element-type to a key for distinct testing.</param>
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    public Iter<A> DistinctBy<EqKey, Key>(Func<A, Key> key, params ReadOnlySpan<Key> seen)
+        where EqKey : Eq<Key> =>
+        IterAction.distinct<EqKey, Key, A>(key, seen, in this);
+    
+    /// <summary>
+    /// Determines whether any element of a range satisfies a condition.
+    /// </summary>
+    public bool Any(Func<A, bool> predicate)
+    {
+        foreach (var x in this)
+        {
+            if (predicate(x)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Determines whether all elements of a range satisfy a condition.
+    /// </summary>
+    public bool All(Func<A, bool> predicate)
+    {
+        foreach (var x in this)
+        {
+            if (!predicate(x)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Returns the first element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public K<F, A> FirstOrAlt<F>()
+        where F : Alternative<F> =>
+        TryGetValue(out var x, out _)
+            ? F.Pure(x)
+            : F.Empty<A>();
+
+    /// <summary>
+    /// Returns the first element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public LE.Option<A> FirstOrNone() =>
+        TryGetValue(out var x, out _)
+            ? x
+            : default;
+
+    /// <summary>
+    /// Returns the first element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public A? FirstOrDefault() =>
+        TryGetValue(out var x, out _)
+            ? x
+            : default;
+
+    /// <summary>
+    /// Returns the last element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public K<F, A> LastOrAlt<F>()
+        where F : Alternative<F>
+    {
+        var iter = this;
+        while (true)
+        {
+            switch (iter)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    iter = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return F.Pure(e1);
+
+                default:
+                    return F.Empty<A>();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the last element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public LE.Option<A> LastOrNone()
+    {
+        var iter = this;
+        while (true)
+        {
+            switch (iter)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    iter = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return e1;
+
+                default:
+                    return default;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the last element of a range, or a default value if the range contains no elements.
+    /// </summary>
+    public A? LastOrDefault()
+    {
+        var iter = this;
+        while (true)
+        {
+            switch (iter)
+            {
+                case Cons<A>(_, Cons<A>(_, _) e2):
+                    iter = e2;
+                    break;
+
+                case Cons<A> (var e1, _):
+                    return e1;
+
+                default:
+                    return default;
+            }
+        }
+    }
 
     /*
     [MethodImpl(Optimisations.Default)]
@@ -180,7 +390,7 @@ public readonly struct Iter<A> : IUnion, K<Iter, A>
         new(in fieldsRef);
 
     [MethodImpl(Optimisations.Default)]
-    internal ref Iter<B> Cast<B>() =>
+    internal ref Iter<B> ForceCast<B>() =>
         ref Unsafe.As<Iter<A>, Iter<B>>(ref Unsafe.AsRef(in this));        
 
     [MethodImpl(Optimisations.Default)]

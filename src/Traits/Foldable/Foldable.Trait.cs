@@ -1,9 +1,5 @@
-/*
-using System;
-using System.Collections.Generic;
 using LanguageExt;
 using LanguageExt.ClassInstances;
-using LanguageExt.Traits;
 using static LanguageExt.Prelude;
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 
@@ -41,7 +37,7 @@ namespace IteratorPrototype.Traits;
 /// </para>
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface Foldable<T> : Tr.Iterable<T> 
+public interface Foldable<T> : Iterable<T> 
     where T : Foldable<T>
 {
     /// <summary>
@@ -52,7 +48,7 @@ public interface Foldable<T> : Tr.Iterable<T>
         Func<S, A, S> f,
         Func<(S State, A Value), bool> predicate,
         in S initialState,
-        K<T, A> ta)
+        LT.K<T, A> ta)
     {
         var state = initialState;
         foreach(var head in T.Forward(ta))
@@ -73,12 +69,12 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <typeparam name="S">State type</typeparam>
     /// <returns>Aggregated value</returns>
     static virtual S FoldMaybe<A, S>(
-        Func<S, A, LE.Option<S>> f,
+        Func<S, A, Option<S>> f,
         in S initialState,
-        K<T, A> ta)
+        LT.K<T, A> ta)
     {
         var state = initialState;
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             var option = f(state, head);
             if(option.IsNone) return state;
@@ -96,16 +92,16 @@ public interface Foldable<T> : Tr.Iterable<T>
         Func<S, A, MS> f, 
         Func<(S State, A Value), bool> predicate, 
         in S initialState, 
-        K<T, A> ta)
-        where M : Monad<M>
-        where MS : K<M, S>
+        LT.K<T, A> ta)
+        where M : LT.Monad<M>
+        where MS : LT.K<M, S>
     {
-        return (MS)Monad.recur((initialState, T.ForwardIterator(ta)), go);
+        return (MS)LT.Monad.recur((initialState, T.Forward(ta)), go);
         
-        K<M, LE.Next<(S State, Iterator<A> Iter), S>> go((S State, Iterator<A> Iter) input) =>
-            input.Iter is (Exist<A> (var head), var tail) && predicate((input.State, head)) 
-                ? f(input.State, head).Map(ns => LE.Next.Loop<(S State, Iterator<A> Iter), S>((ns, tail)))
-                : M.Pure(Next.Done<(S State, Iterator<A> Iter), S>(input.State));
+        LT.K<M, Next<(S State, I3.Iter<A> Iter), S>> go((S State, I3.Iter<A> Iter) input) =>
+            input.Iter is I3.Cons<A>(var head, var tail) && predicate((input.State, head)) 
+                ? f(input.State, head).Map(ns => Next.Loop<(S State, I3.Iter<A> Iter), S>((ns, tail)))
+                : M.Pure(Next.Done<(S State, I3.Iter<A> Iter), S>(input.State));
     }
 
     /// <summary>
@@ -116,10 +112,10 @@ public interface Foldable<T> : Tr.Iterable<T>
         Func<S, A, S> f,
         Func<(S State, A Value), bool> predicate,
         in S initialState,
-        K<T, A> ta)
+        LT.K<T, A> ta)
     {
         var state = initialState;
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             state = f(state, head);
             if (predicate((state, head))) return state;
@@ -136,18 +132,18 @@ public interface Foldable<T> : Tr.Iterable<T>
         Func<S, A, MS> f, 
         Func<(S State, A Value), bool> predicate, 
         in S initialState, 
-        K<T, A> ta) 
-        where M : Monad<M>
-        where MS : K<M, S>
+        LT.K<T, A> ta) 
+        where M : LT.Monad<M>
+        where MS : LT.K<M, S>
     {
-        return (MS)Monad.recur((initialState, T.ForwardIterator(ta)), go);
+        return (MS)LT.Monad.recur((initialState, T.Forward(ta)), go);
 
-        K<M, Next<(S State, Iterator<A> Iter), S>> go((S State, Iterator<A> Iter) input) =>
-            input.Iter is (Exist<A> (var head), var tail)
+        LT.K<M, Next<(S State, I3.Iter<A> Iter), S>> go((S State, I3.Iter<A> Iter) input) =>
+            input.Iter is I3.Cons<A>(var head, var tail)
                 ? f(input.State, head).Map(ns => predicate((ns, head))
-                                                     ? Next.Done<(S State, Iterator<A> Iter), S>(ns)
-                                                     : Next.Loop<(S State, Iterator<A> Iter), S>((ns, tail)))
-                : M.Pure(Next.Done<(S State, Iterator<A> Iter), S>(input.State));
+                                                     ? Next.Done<(S State, I3.Iter<A> Iter), S>(ns)
+                                                     : Next.Loop<(S State, I3.Iter<A> Iter), S>((ns, tail)))
+                : M.Pure(Next.Done<(S State, I3.Iter<A> Iter), S>(input.State));
     }
 
     /// <summary>
@@ -157,10 +153,10 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// starting value (typically the right-identity of the operator), and a
     /// list, reduces the list using the binary operator, from right to lefTA.
     /// </summary>
-    static virtual S Fold<A, S>(Func<S, A, S> f, in S initialState, K<T, A> ta)
+    static virtual S Fold<A, S>(Func<S, A, S> f, in S initialState, LT.K<T, A> ta)
     {
         var state = initialState;
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             state = f(state, head);
         }
@@ -177,16 +173,16 @@ public interface Foldable<T> : Tr.Iterable<T>
     static virtual MS FoldM<MS, M, A, S>(
         Func<S, A, MS> f,
         in S initialState,
-        K<T, A> ta)
-        where M : Monad<M>
-        where MS : K<M, S>
+        LT.K<T, A> ta)
+        where M : LT.Monad<M>
+        where MS : LT.K<M, S>
     {
-        return (MS)Monad.recur((initialState, T.ForwardIterator(ta)), go);
+        return (MS)LT.Monad.recur((initialState, T.Forward(ta)), go);
 
-        K<M, Next<(S State, Iterator<A> Iter), S>> go((S State, Iterator<A> Iter) input) =>
-            input.Iter is (Exist<A> (var head), var tail)
-                ? f(input.State, head).Map(ns => Next.Loop<(S State, Iterator<A> Iter), S>((ns, tail)))
-                : M.Pure(Next.Done<(S State, Iterator<A> Iter), S>(input.State));
+        LT.K<M, Next<(S State, I3.Iter<A> Iter), S>> go((S State, I3.Iter<A> Iter) input) =>
+            input.Iter is I3.Cons<A> (var head, var tail)
+                ? f(input.State, head).Map(ns => Next.Loop<(S State, I3.Iter<A> Iter), S>((ns, tail)))
+                : M.Pure(Next.Done<(S State, I3.Iter<A> Iter), S>(input.State));
     }
 
     /// <summary>
@@ -195,22 +191,22 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <remarks>
     /// The sequence is lazy
     /// </remarks>
-    static virtual Seq<A> ToSeq<A>(K<T, A> ta) =>
-        new(T.ForwardIterator(ta));
+    static virtual Seq<A> ToSeq<A>(LT.K<T, A> ta) =>
+        new(T.Forward(ta));
 
     /// <summary>
     /// List of elements of a structure
     /// </summary>
-    static virtual Lst<A> ToLst<A>(K<T, A> ta) =>
-        new (T.ForwardIterator(ta));
+    static virtual Lst<A> ToLst<A>(LT.K<T, A> ta) =>
+        new (T.Forward(ta));
 
     /// <summary>
     /// List of elements of a structure
     /// </summary>
-    static virtual Arr<A> ToArr<A>(K<T, A> ta)
+    static virtual Arr<A> ToArr<A>(LT.K<T, A> ta)
     {
-        var writer = ArrayWriterRef<A>.Init();
-        foreach(var head in T.ForwardIterator(ta))
+        var writer = ArrayWriter<A>.Init();
+        foreach(var head in T.Forward(ta))
         {
             writer.Add(head);
         }
@@ -218,26 +214,17 @@ public interface Foldable<T> : Tr.Iterable<T>
     }
 
     /// <summary>
-    /// List of elements of a structure
-    /// </summary>
-    /// <remarks>
-    /// The sequence is lazy
-    /// </remarks>
-    static virtual Iterable<A> ToIterable<A>(K<T, A> ta) =>
-        new (T.ForwardIterator(ta));
-
-    /// <summary>
     /// List of elements of a structure, from left to right
     /// </summary>
-    static virtual bool IsEmpty<A>(K<T, A> ta) =>
-        T.ForwardIterator(ta) is (Nil<A>, _);
+    static virtual bool IsEmpty<A>(LT.K<T, A> ta) =>
+        T.Forward(ta) is I3.Nil;
 
     /// <summary>
     /// Does an element that fits the predicate occur in the structure?
     /// </summary>
-    static virtual bool Exists<A>(Func<A, bool> predicate, K<T, A> ta)
+    static virtual bool Exists<A>(Func<A, bool> predicate, LT.K<T, A> ta)
     {
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             if(predicate(head)) return true;
         }
@@ -247,9 +234,9 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Does the predicate hold for all elements in the structure?
     /// </summary>
-    static virtual bool ForAll<A>(Func<A, bool> predicate, K<T, A> ta)
+    static virtual bool ForAll<A>(Func<A, bool> predicate, LT.K<T, A> ta)
     {
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             if(!predicate(head)) return false;
         }
@@ -259,10 +246,10 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Does the element exist in the structure?
     /// </summary>
-    static virtual bool Contains<EqA, A>(A value, K<T, A> ta) 
-        where EqA : Eq<A>
+    static virtual bool Contains<EqA, A>(A value, LT.K<T, A> ta) 
+        where EqA : LT.Eq<A>
     {
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             if(EqA.Equals(value, head)) return true;
         }
@@ -272,26 +259,26 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Does the element exist in the structure?
     /// </summary>
-    static virtual bool Contains<A>(A value, K<T, A> ta) =>
+    static virtual bool Contains<A>(A value, LT.K<T, A> ta) =>
         T.Contains<EqDefault<A>, A>(value, ta);
     
     /// <summary>
     /// Find the first element that matches the predicate
     /// </summary>
     static virtual Option<A> Find<A>(
-        Option<long> startIndex, 
-        Option<long> count, 
+        Option<int> startIndex, 
+        Option<int> count, 
         Func<A, bool> predicate, 
-        K<T, A> ta)
+        LT.K<T, A> ta)
     {
-        var iter = T.ForwardIterator(ta);
+        var iter = T.Forward(ta);
         var ix   = startIndex.IfNone(0);
-        var cnt  = count.IfNone(long.MaxValue);
+        var cnt  = count.IfNone(int.MaxValue);
         
-        for (; ix > 0L && iter is (Exist<A>, var t); iter = t, ix--) 
-            /* skipping head #1#;
+        for (; ix > 0L && iter is I3.Cons<A>(_, var t); iter = t, ix--) 
+            /* skipping head */;
 
-        for (var n = 0L; n < cnt && iter is (Exist<A> (var h), var t); n++, iter = t)
+        for (var n = 0L; n < cnt && iter is I3.Cons<A> (var h, var t); n++, iter = t)
         {
             if (predicate(h)) return h;
         }
@@ -301,17 +288,17 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Get the head item in the foldable or `None`
     /// </summary>
-    static virtual Option<A> Head<A>(K<T, A> ta) =>
-        T.ForwardIterator(ta) is (Exist<A> (var head), _)
+    static virtual Option<A> Head<A>(LT.K<T, A> ta) =>
+        T.Forward(ta) is I3.Cons<A> (var head, _)
             ? Some(head)
             : None;
 
     /// <summary>
     /// Get the head item in the `FoldableIO` or `Alternative.Empty`
     /// </summary>
-    static virtual K<M, A> HeadM<M, A>(K<T, A> ta)
-        where M : Alternative<M> =>
-        T.ForwardIterator(ta) is (Exist<A> (var head), _)
+    static virtual LT.K<M, A> HeadM<M, A>(LT.K<T, A> ta)
+        where M : LT.Alternative<M> =>
+        T.Forward(ta) is I3.Cons<A> (var head, _)
             ? M.Pure(head)
             : M.Empty<A>();
 
@@ -319,16 +306,16 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// Map each element of a structure to a monadic action, evaluate these
     /// actions from left to right, and ignore the results. 
     /// </summary>
-    static virtual K<M, Unit> IterM<MB, M, A, B>(Func<A, MB> f, K<T, A> ta)
-        where M : Monad<M>
-        where MB : K<M, B>
+    static virtual LT.K<M, Unit> IterM<MB, M, A, B>(Func<A, MB> f, LT.K<T, A> ta)
+        where M : LT.Monad<M>
+        where MB : LT.K<M, B>
     {
-        return Monad.recur(T.ForwardIterator(ta), go);
+        return LT.Monad.recur(T.Forward(ta), go);
 
-        K<M, Next<Iterator<A>, Unit>> go(Iterator<A> input) =>
-            input is (Exist<A> (var head), var tail)
-                ? f(head).Map(_ => Next.Loop<Iterator<A>, Unit>(tail))
-                : M.Pure(Next.Done<Iterator<A>, Unit>(default));
+        LT.K<M, Next<I3.Iter<A>, Unit>> go(I3.Iter<A> input) =>
+            input is I3.Cons<A> (var head, var tail)
+                ? f(head).Map(_ => Next.Loop<I3.Iter<A>, Unit>(tail))
+                : M.Pure(Next.Done<I3.Iter<A>, Unit>(default));
     }
     
     /// <summary>
@@ -336,9 +323,9 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// actions from left to right, and ignore the results.  For a version that
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
-    static virtual Unit Iter<A>(Action<A> f, K<T, A> ta)
+    static virtual Unit Iter<A>(Action<A> f, LT.K<T, A> ta)
     {
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             f(head);
         }
@@ -350,10 +337,10 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// actions from left to right, and ignore the results.  For a version that
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
-    static virtual Unit Iter<A>(Action<long, A> f, long initialIndex, K<T, A> ta)
+    static virtual Unit Iter<A>(Action<int, A> f, int initialIndex, LT.K<T, A> ta)
     {
         var ix = initialIndex;
-        foreach(var head in T.ForwardIterator(ta))
+        foreach(var head in T.Forward(ta))
         {
             f(ix++, head);
         }
@@ -363,12 +350,12 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Find the minimum value in the structure
     /// </summary>
-    static virtual Option<A> Min<OrdA, A>(K<T, A> ta)
-        where OrdA : Ord<A>
+    static virtual Option<A> Min<OrdA, A>(LT.K<T, A> ta)
+        where OrdA : LT.Ord<A>
     {
         A current;
-        var iter = T.ForwardIterator(ta);
-        if (iter is (Exist<A> (var h), var t))
+        var iter = T.Forward(ta);
+        if (iter is I3.Cons<A>(var h, var t))
         {
             current = h;
         }
@@ -387,18 +374,18 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Find the minimum value in the structure
     /// </summary>
-    static virtual Option<A> Min<A>(K<T, A> ta) =>
+    static virtual Option<A> Min<A>(LT.K<T, A> ta) =>
         T.Min<OrdDefault<A>, A>(ta);
     
     /// <summary>
     /// Find the maximum value in the structure
     /// </summary>
-    static virtual Option<A> Max<OrdA, A>(K<T, A> ta)
-        where OrdA : Ord<A> 
+    static virtual Option<A> Max<OrdA, A>(LT.K<T, A> ta)
+        where OrdA : LT.Ord<A> 
     {
         A current;
-        var iter = T.ForwardIterator(ta);
-        if (iter is (Exist<A> (var h), var t))
+        var iter = T.Forward(ta);
+        if (iter is I3.Cons<A>(var h, var t))
         {
             current = h;
         }
@@ -417,33 +404,33 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <summary>
     /// Find the maximum value in the structure
     /// </summary>
-    static virtual Option<A> Max<A>(K<T, A> ta) =>
+    static virtual Option<A> Max<A>(LT.K<T, A> ta) =>
         T.Max<OrdDefault<A>, A>(ta);
     
     /// <summary>
     /// Find the minimum value in the structure
     /// </summary>
-    static virtual A Min<OrdA, A>(A initialMin, K<T, A> ta) 
-        where OrdA : Ord<A> => 
+    static virtual A Min<OrdA, A>(A initialMin, LT.K<T, A> ta) 
+        where OrdA : LT.Ord<A> => 
         T.Min<OrdA, A>(ta).IfNone(initialMin);
 
     /// <summary>
     /// Find the minimum value in the structure
     /// </summary>
-    static virtual A Min<A>(A initialMin, K<T, A> ta) => 
+    static virtual A Min<A>(A initialMin, LT.K<T, A> ta) => 
         T.Min<OrdDefault<A>, A>(ta).IfNone(initialMin);
 
     /// <summary>
     /// Find the maximum value in the structure
     /// </summary>
-    static virtual A Max<OrdA, A>(A initialMax, K<T, A> ta) 
-        where OrdA : Ord<A> => 
+    static virtual A Max<OrdA, A>(A initialMax, LT.K<T, A> ta) 
+        where OrdA : LT.Ord<A> => 
         T.Min<OrdA, A>(ta).IfNone(initialMax);
 
     /// <summary>
     /// Find the maximum value in the structure
     /// </summary>
-    static virtual A Max<A>(A initialMax, K<T, A> ta) =>
+    static virtual A Max<A>(A initialMax, LT.K<T, A> ta) =>
         T.Max<OrdDefault<A>, A>(ta).IfNone(initialMax);
 
     
@@ -452,23 +439,24 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// </summary>
     /// <param name="startIndex">Initial index to start the search</param>
     /// <param name="count">Maximum number of elements to test before giving up</param>
+    /// <param name="predicate">When the predicate returns true, the current index is return</param>
     /// <param name="ta">Foldable structure</param>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>`Some(index)` if the predicate returns `true`, otherwise `None`</returns>
-    static virtual Option<long> IndexOf<A>(
-        Option<long> startIndex, 
-        Option<long> count, 
+    static virtual Option<int> IndexOf<A>(
+        Option<int> startIndex, 
+        Option<int> count, 
         Func<A, bool> predicate, 
-        K<T, A> ta)
+        LT.K<T, A> ta)
     {
-        var iter = T.ForwardIterator(ta);
+        var iter = T.Forward(ta);
         var ix   = startIndex.IfNone(0);
-        var cnt  = count.IfNone(long.MaxValue);
+        var cnt  = count.IfNone(int.MaxValue);
         
-        for (; ix > 0L && iter is (Exist<A>, var t); iter = t, ix--) 
-            /* skipping head #1#;
+        for (; ix > 0 && iter is I3.Cons<A>(_, var t); iter = t, ix--) 
+            /* skipping head */;
 
-        for (var n = 0L; n < cnt && iter is (Exist<A> (var h), var t); n++, iter = t)
+        for (var n = 0; n < cnt && iter is I3.Cons<A> (var h, var t); n++, iter = t)
         {
             if (predicate(h)) return n;
         }
@@ -482,11 +470,11 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <param name="ta">Foldable structure</param>
     /// <typeparam name="A">Bound value type</typeparam>
     /// <returns>Partitioned structure</returns>
-    static virtual (Arr<A> True, Arr<A> False) Partition<A>(Func<A, bool> f, K<T, A> ta)
+    static virtual (Arr<A> True, Arr<A> False) Partition<A>(Func<A, bool> f, LT.K<T, A> ta)
     {
-        var @true  = ArrayWriterRef<A>.Init();
-        var @false = ArrayWriterRef<A>.Init();
-        foreach(var head in T.ForwardIterator(ta))
+        var @true  = ArrayWriter<A>.Init();
+        var @false = ArrayWriter<A>.Init();
+        foreach(var head in T.Forward(ta))
         {
             if (f(head))
             {
@@ -506,63 +494,16 @@ public interface Foldable<T> : Tr.Iterable<T>
     /// <param name="sep">Item to inject</param>
     /// <param name="ta">Foldable structure</param>
     /// <returns>An iterable with the values injected</returns>
-    static virtual Iterator<A> Intersperse<A>(A sep, K<T, A> ta)
+    static virtual I3.Iter<A> Intersperse<A>(A sep, LT.K<T, A> ta)
     {
-        var iter = T.ForwardIterator(ta);
-        return Iterator.lazy(() => iter is (Exist<A> (var head), var tail)
-                                       ? Iterator.cons(head, prependToAll(tail))
-                                       : Iterator.empty<A>()); 
+        var iter = T.Forward(ta);
+        return I3.Iter.lazy(() => iter is I3.Cons<A> (var head, var tail)
+                                      ? I3.Iter.cons(head, prependToAll(tail))
+                                      : I3.Iter.empty); 
 
-        Iterator<A> prependToAll(Iterator<A> iter) =>
-            iter is (Exist<A> (var h), var t)
-                ? Iterator.cons(sep, Iterator.cons(h, () => prependToAll(t)))
-                : Iterator.empty<A>();
-    }
-
-    /// <summary>
-    /// Sort the items in the foldable structure in the order dictated by the OrdA constraint
-    /// </summary>
-    /// <param name="ta">Foldable structure</param>
-    /// <returns>An array of sorted values</returns>
-    static virtual Arr<A> Sort<OrdA, A>(K<T, A> ta)
-        where OrdA : Ord<A> =>
-        ta.Sort(OrdComparer<OrdA, A>.Default.Compare);
-
-    /// <summary>
-    /// Sort the items in the foldable structure in the order dictated by the ordering function
-    /// </summary>
-    /// <param name="comparer">Ordering function</param>
-    /// <param name="ta">Foldable structure</param>
-    /// <returns>An array of sorted values</returns>
-    static virtual Arr<A> Sort<A>(Comparison<A> comparer, K<T, A> ta)
-    {
-        var ys = ArrayWriterRef<A>.Init();
-        foreach(var x in T.ForwardIterator(ta))
-        {
-            ys.Add(x);
-        }
-        ys.MutableView.Sort(comparer);
-        return ys.ToArr();
-    }
-    
-    /// <summary>
-    /// Sort the items in the foldable structure in the order dictated by the ordering function using the key selector.
-    /// </summary>
-    /// <param name="key">Key selector function</param>
-    /// <param name="comparer">Ordering function</param>
-    /// <param name="ta">Foldable structure</param>
-    /// <returns>An array of sorted values</returns>
-    static virtual Arr<A> Sort<A, Key>(Func<A, Key> key, Comparison<Key> comparer, K<T, A> ta)
-    {
-        var ks = ArrayWriterRef<Key>.Init();
-        var ys = ArrayWriterRef<A>.Init();
-        foreach(var x in T.ForwardIterator(ta))
-        {
-            ks.Add(key(x));
-            ys.Add(x);
-        }
-        ks.MutableView.Sort(ys.MutableView, comparer);
-        return ys.ToArr();
+        I3.Iter<A> prependToAll(I3.Iter<A> iter) =>
+            iter is I3.Cons<A>(var h, var t)
+                ? I3.Iter.cons(sep, I3.Iter.cons(h, () => prependToAll(t)))
+                : I3.Iter.empty;
     }
 }
-*/

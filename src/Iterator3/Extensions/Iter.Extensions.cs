@@ -13,8 +13,24 @@ public static class IterExtensions
             IterAction.take(amount, in self);
 
         [MethodImpl(Optimisations.InliningOnly)]
+        public Iter<A> TakeUntil(Func<A, bool> f) =>
+            IterAction.takeUntil(f, in self);
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public Iter<A> TakeWhile(Func<A, bool> f) =>
+            IterAction.takeWhile(f, in self);
+
+        [MethodImpl(Optimisations.InliningOnly)]
         public Iter<A> Skip(int amount) =>
             IterAction.skip(amount, in self);
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public Iter<A> SkipUntil(Func<A, bool> f) =>
+            IterAction.skipUntil(f, in self);
+
+        [MethodImpl(Optimisations.InliningOnly)]
+        public Iter<A> SkipWhile(Func<A, bool> f) =>
+            IterAction.skipWhile(f, in self);
         
         [MethodImpl(Optimisations.InliningOnly)]
         internal StackFrame Next(out Iter<A> next) =>

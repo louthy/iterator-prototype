@@ -1,6 +1,4 @@
-/*
-using System;
-using LanguageExt.Traits;
+using IteratorPrototype.Traits;
 
 namespace IteratorPrototype;
 
@@ -17,8 +15,8 @@ public static partial class Prelude
     /// <typeparam name="A">Input bound value</typeparam>
     /// <typeparam name="B">Mapping bound value</typeparam>
     /// <returns></returns>
-    public static K<F, Unit> forM<T, F, A, B>(K<T, A> ta, Func<A, K<F, B>> f)
-        where F : Applicative<F>
+    public static LT.K<F, LE.Unit> forM<T, F, A, B>(LT.K<T, A> ta, Func<A, LT.K<F, B>> f)
+        where F : LT.Applicative<F>
         where T : Foldable<T> =>
         ta.ForM(f);
     
@@ -30,7 +28,7 @@ public static partial class Prelude
         Func<S, A, S> f, 
         Func<(S State, A Value), bool> predicate, 
         S initialState,
-        K<T, A> ta)
+        LT.K<T, A> ta)
         where T : Foldable<T> =>
         ta.FoldWhile(f, predicate, initialState);
 
@@ -39,13 +37,13 @@ public static partial class Prelude
     /// early exit of the operation once the predicate function becomes `false` for the
     /// state/value pair 
     /// </summary>
-    public static K<M, S> foldWhileM<T, A, M, S>(
-        Func<S, A, K<M, S>> f, 
+    public static LT.K<M, S> foldWhileM<T, A, M, S>(
+        Func<S, A, LT.K<M, S>> f, 
         Func<(S State, A Value), bool> predicate, 
         S initialState, 
-        K<T, A> ta) 
+        LT.K<T, A> ta) 
         where T : Foldable<T>
-        where M : Monad<M> =>
+        where M : LT.Monad<M> =>
         ta.FoldWhileM(f, predicate, initialState);
 
     /// <summary>
@@ -56,7 +54,7 @@ public static partial class Prelude
         Func<S, A, S> f,
         Func<(S State, A Value), bool> predicate,
         S initialState, 
-        K<T, A> ta) 
+        LT.K<T, A> ta) 
         where T : Foldable<T> =>
         ta.FoldUntil(f, predicate, initialState);
 
@@ -65,12 +63,12 @@ public static partial class Prelude
     /// early exit of the operation once the predicate function becomes `false` for the
     /// state/value pair 
     /// </summary>
-    public static K<M, S> foldUntilM<T, A, M, S>(
-        Func<S, A, K<M, S>> f, 
+    public static LT.K<M, S> foldUntilM<T, A, M, S>(
+        Func<S, A, LT.K<M, S>> f, 
         Func<(S State, A Value), bool> predicate, 
         S initialState, 
-        K<T, A> ta) 
-        where M : Monad<M>
+        LT.K<T, A> ta) 
+        where M : LT.Monad<M>
         where T : Foldable<T> => 
         ta.FoldUntilM(f, predicate, initialState);
 
@@ -81,7 +79,7 @@ public static partial class Prelude
     /// starting value (typically the right-identity of the operator), and a
     /// list, reduces the list using the binary operator, from right to left.
     /// </summary>
-    public static S fold<T, A, S>(Func<S, A, S> f, S initialState, K<T, A> ta) 
+    public static S fold<T, A, S>(Func<S, A, S> f, S initialState, LT.K<T, A> ta) 
         where T : Foldable<T> =>
         ta.Fold(f, initialState);
 
@@ -92,12 +90,12 @@ public static partial class Prelude
     /// starting value (typically the right-identity of the operator), and a
     /// list, reduces the list using the binary operator, from right to left.
     /// </summary>
-    public static K<M, S> foldM<T, A, M, S>(
-        Func<S, A, K<M, S>> f, 
+    public static LT.K<M, S> foldM<T, A, M, S>(
+        Func<S, A, LT.K<M, S>> f, 
         S initialState, 
-        K<T, A> ta) 
+        LT.K<T, A> ta) 
         where T : Foldable<T>
-        where M : Monad<M> =>
+        where M : LT.Monad<M> =>
         ta.FoldM(f, initialState);
 
     /// <summary>
@@ -106,9 +104,9 @@ public static partial class Prelude
     /// lazy in the accumulator.  When you need a strict left-associative fold,
     /// use 'foldMap'' instead, with 'id' as the map.
     /// </summary>
-    public static A fold<T, A>(K<T, A> ta)
+    public static A fold<T, A>(LT.K<T, A> ta)
         where T : Foldable<T>
-        where A : Monoid<A> =>
+        where A : LT.Monoid<A> =>
         ta.Fold();
 
     /// <summary>
@@ -117,9 +115,9 @@ public static partial class Prelude
     /// lazy in the accumulator.  When you need a strict left-associative fold,
     /// use 'foldMap'' instead, with 'id' as the map.
     /// </summary>
-    public static A foldWhile<T, A>(Func<(A State, A Value), bool> predicate, K<T, A> ta) 
+    public static A foldWhile<T, A>(Func<(A State, A Value), bool> predicate, LT.K<T, A> ta) 
         where T : Foldable<T>
-        where A : Monoid<A> =>
+        where A : LT.Monoid<A> =>
         ta.FoldWhile(predicate) ;
 
     /// <summary>
@@ -128,22 +126,22 @@ public static partial class Prelude
     /// lazy in the accumulator.  When you need a strict left-associative fold,
     /// use 'foldMap'' instead, with 'id' as the map.
     /// </summary>
-    public static A foldUntil<T, A>(Func<(A State, A Value), bool> predicate, K<T, A> ta) 
+    public static A foldUntil<T, A>(Func<(A State, A Value), bool> predicate, LT.K<T, A> ta) 
         where T : Foldable<T>
-        where A : Monoid<A> =>
+        where A : LT.Monoid<A> =>
         ta.FoldUntil(predicate) ;
 
     /// <summary>
     /// Does an element that fits the predicate occur in the structure?
     /// </summary>
-    public static bool exists<T, A>(Func<A, bool> predicate, K<T, A> ta) 
+    public static bool exists<T, A>(Func<A, bool> predicate, LT.K<T, A> ta) 
         where T : Foldable<T> =>
         ta.Exists(predicate);
 
     /// <summary>
     /// Does the predicate hold for all elements in the structure?
     /// </summary>
-    public static bool forAll<T, A>(Func<A, bool> predicate, K<T, A> ta) 
+    public static bool forAll<T, A>(Func<A, bool> predicate, LT.K<T, A> ta) 
         where T : Foldable<T> =>
         ta.ForAll(predicate);
 
@@ -152,9 +150,9 @@ public static partial class Prelude
     /// actions from left to right, and ignore the results.  For a version that
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
-    public static K<F, Unit> iterM<T, A, F, B>(Func<A, K<F, B>> f, K<T, A> ta)
+    public static LT.K<F, LE.Unit> iterM<T, A, F, B>(Func<A, LT.K<F, B>> f, LT.K<T, A> ta)
         where T : Foldable<T>
-        where F : Monad<F> =>
+        where F : LT.Monad<F> =>
         ta.IterM(f);
     
     /// <summary>
@@ -162,7 +160,7 @@ public static partial class Prelude
     /// actions from left to right, and ignore the results.  For a version that
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
-    public static Unit iter<T, A>(Action<long, A> f, K<T, A> ta) 
+    public static LE.Unit iter<T, A>(Action<int, A> f, LT.K<T, A> ta) 
         where T : Foldable<T> =>
         ta.Iter(f);
     
@@ -171,7 +169,7 @@ public static partial class Prelude
     /// actions from left to right, and ignore the results.  For a version that
     /// doesn't ignore the results see `Traversable.traverse`.
     /// </summary>
-    public static Unit iter<T, A>(Action<A> f, K<T, A> ta)
+    public static LE.Unit iter<T, A>(Action<A> f, LT.K<T, A> ta)
         where T : Foldable<T> =>
         ta.Iter(f);
 
@@ -181,9 +179,9 @@ public static partial class Prelude
     /// <param name="f">Predicate function</param>
     /// <param name="ta">Foldable structure</param>
     /// <typeparam name="A">Bound value type</typeparam>
+    /// <typeparam name="T">Foldable trait</typeparam>
     /// <returns>Partitioned structure</returns>
-    public static (Arr<A> True, Arr<A> False) partition<T, A>(Func<A, bool> f, K<T, A> ta)
+    public static (Arr<A> True, Arr<A> False) partition<T, A>(Func<A, bool> f, LT.K<T, A> ta)
         where T : Foldable<T> =>
         ta.Partition(f);
 }
-*/

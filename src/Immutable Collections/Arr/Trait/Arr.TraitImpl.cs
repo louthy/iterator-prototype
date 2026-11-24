@@ -1,8 +1,7 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using IteratorPrototype.Iterator3.Internal;
 using LanguageExt;
 using LanguageExt.Traits;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace IteratorPrototype;
 
@@ -15,9 +14,10 @@ public partial class Arr :
     Tr.Indexable<Arr, Index>,
     Tr.RefIndexable<Arr, Index>,
     Tr.RefIndexable<Arr, int>,
-    Tr.IterableMutable<Arr, ArrState, ArrStateRef>/*,
+    Tr.IterableMutable<Arr, ArrState, ArrStateRef>
+
+/*,
     Traversable<Arr>,
-    Tr.Indexable<Arr, Index>,
     Natural<Arr, LE.Seq>,
     Natural<Arr, LE.Iterable>,
     Natural<Arr, LE.Lst>,
@@ -104,7 +104,7 @@ public partial class Arr :
         index++;
         return index <= ts.Count;
 
-        // This is the safe version.
+        // This is the 'safe' version.
         
         /*ref var index = ref Unsafe.AsRef(in ts.Index);
         if (index < ts.Count)

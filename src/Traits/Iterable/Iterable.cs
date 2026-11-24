@@ -1,8 +1,7 @@
-using LanguageExt;
-using LanguageExt.Traits;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using IteratorPrototype.Iterator3;
+using LanguageExt.ClassInstances;
 
 namespace IteratorPrototype.Traits;
 
@@ -19,16 +18,16 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <returns>An iterator that enumerates from the 'first' element to the 'last' element.</returns>
     [Pure]
-    static abstract Iter<A> Forward<A>(K<T, A> ta);
+    static abstract Iter<A> Forward<A>(LT.K<T, A> ta);
 
     /// <summary>
     /// Bounce the iterable to a span
     /// </summary>
     /// <param name="ta">Iterable structure</param>
     [Pure]
-    static virtual ReadOnlySpan<A> AsSpan<A>(K<T, A> ta)
+    static virtual ReadOnlySpan<A> AsSpan<A>(LT.K<T, A> ta)
     {
-        var w  = ArrayWriter<A>.Init();
+        var w  = LE.ArrayWriter<A>.Init();
         T.ToWriter(ta, ref w);
         return w.View;
     }
@@ -38,12 +37,12 @@ public interface Iterable<T>
     /// </summary>
     /// <param name="ta">Iterable structure</param>
     /// <param name="writer">Writer to emit the elements to</param>
-    static virtual Unit ToWriter<A>(K<T, A> ta, ref ArrayWriter<A> writer)
+    static virtual LE.Unit ToWriter<A>(LT.K<T, A> ta, ref LE.ArrayWriter<A> writer)
     {
         var ts = T.Forward(ta);
         while (ts.TryGetValue(out var x, out ts))
         {
-            ArrayWriter<A>.Add(ref writer, x);
+            LE.ArrayWriter<A>.Add(ref writer, x);
         }
         return default;
     }
@@ -54,12 +53,12 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <param name="f">Map function</param>
     /// <param name="writer">Writer to emit the elements to</param>
-    static virtual Unit ToWriter<A, B>(K<T, A> ta, Func<A, B> f, ref ArrayWriter<B> writer)
+    static virtual LE.Unit ToWriter<A, B>(LT.K<T, A> ta, Func<A, B> f, ref LE.ArrayWriter<B> writer)
     {
         var ts = T.Forward(ta);
         while (ts.TryGetValue(out var x, out ts))
         {
-            ArrayWriter<B>.Add(ref writer, f(x));
+            LE.ArrayWriter<B>.Add(ref writer, f(x));
         }
         return default;
     }
@@ -69,7 +68,7 @@ public interface Iterable<T>
     /// </summary>
     /// <param name="ta">Iterable structure</param>
     [Pure]
-    static virtual IEnumerable<A> AsEnumerable<A>(K<T, A> ta)
+    static virtual IEnumerable<A> AsEnumerable<A>(LT.K<T, A> ta)
     {
         var ts = T.Forward(ta);
         while (ts.TryGetValue(out var x, out ts))
@@ -83,7 +82,7 @@ public interface Iterable<T>
     /// </summary>
     /// <param name="ta">Iterable structure</param>
     [Pure]
-    static virtual IterableEnumerator<T, A> GetEnumerator<A>(K<T, A> ta) =>
+    static virtual IterableEnumerator<T, A> GetEnumerator<A>(LT.K<T, A> ta) =>
         new (ta);
     
     /// <summary>
@@ -94,7 +93,7 @@ public interface Iterable<T>
     /// <param name="tail">Tail iterator</param>
     /// <returns>`true` if it was possible to extract a head value.</returns>
     [Pure]
-    static virtual bool TryGetValue<A>(K<T, A> ta, out A head, out Iter<A> tail)
+    static virtual bool TryGetValue<A>(LT.K<T, A> ta, out A head, out Iter<A> tail)
     {
         var i = T.Forward(ta);
         return i.TryGetValue(out head, out tail);
@@ -107,7 +106,7 @@ public interface Iterable<T>
     /// <param name="separator">Text to separate each element by</param>
     /// <returns></returns>
     [Pure]
-    static virtual string ToString<A>(K<T, A> ta, string separator = ", ")
+    static virtual string ToString<A>(LT.K<T, A> ta, string separator = ", ")
     {
         var ix   = 0;
         var sm   = new StringMaker(stackalloc char[1024]);
@@ -143,7 +142,7 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <param name="separator">Text to separate each element by</param>
     [Pure]
-    static virtual string ToArrayString<A>(K<T, A> ta, string separator = ", ")
+    static virtual string ToArrayString<A>(LT.K<T, A> ta, string separator = ", ")
     {
         var ix   = 0;
         var sm   = new StringMaker(stackalloc char[1024]);
@@ -182,7 +181,7 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <param name="separator">Text to separate each element by</param>
     [Pure]
-    static virtual string ToFullString<A>(K<T, A> ta, string separator = ", ")
+    static virtual string ToFullString<A>(LT.K<T, A> ta, string separator = ", ")
     {
         var sm   = new StringMaker(stackalloc char[1024]);
         var iter = T.Forward(ta);
@@ -206,7 +205,7 @@ public interface Iterable<T>
     /// <param name="ta">Iterable structure</param>
     /// <param name="separator">Text to separate each element by</param>
     [Pure]
-    static virtual string ToFullArrayString<A>(K<T, A> ta, string separator = ", ")
+    static virtual string ToFullArrayString<A>(LT.K<T, A> ta, string separator = ", ")
     {
         var sm   = new StringMaker(stackalloc char[1024]);
         var iter = T.Forward(ta);
@@ -234,7 +233,7 @@ public interface Iterable<T>
     /// <returns>The original unchanged structure</returns>
     [Pure]
     [MethodImpl(Optimisations.InliningOnly)]
-    static virtual K<T, A> Do<A>(K<T, A> ta, Action<A> f)
+    static virtual LT.K<T, A> Do<A>(LT.K<T, A> ta, Action<A> f)
     {
         var iter = ta.Forward();
         while(iter.TryGetValue(out var x, out iter))
@@ -250,13 +249,13 @@ public interface Iterable<T>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
     [MethodImpl(Optimisations.InliningOnly)]
-    static virtual ReadOnlySpan<A> Sort<A>(K<T, A> ta)
+    static virtual Arr<A> Sort<A>(LT.K<T, A> ta)
     {
-        var w = ArrayWriter<A>.Init();
+        var w = LE.ArrayWriter<A>.Init();
         T.ToWriter(ta, ref w);
         var s = w.MutableView;
-        s.Sort();
-        return s;
+        s.Sort(OrdDefault<A>.Compare);
+        return w.ToArr();
     }
 
     /// <summary>
@@ -265,13 +264,13 @@ public interface Iterable<T>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
     [MethodImpl(Optimisations.InliningOnly)]
-    static virtual ReadOnlySpan<A> Sort<A>(K<T, A> ta, Comparison<A> comparer)
+    static virtual Arr<A> Sort<A>(LT.K<T, A> ta, Comparison<A> comparer)
     {
-        var w = ArrayWriter<A>.Init();
+        var w = LE.ArrayWriter<A>.Init();
         T.ToWriter(ta, ref w);
         var s = w.MutableView;
         s.Sort(comparer);
-        return s;
+        return w.ToArr();
     }
 
     /// <summary>
@@ -280,28 +279,23 @@ public interface Iterable<T>
     /// <returns>ReadOnlySpan</returns>
     [Pure]
     [MethodImpl(Optimisations.InliningOnly)]
-    static virtual ReadOnlySpan<A> SortBy<A, Key>(K<T, A> ta, Func<A, Key> key, Comparison<Key> comparer)
+    static virtual Arr<A> SortBy<A, Key>(LT.K<T, A> ta, Func<A, Key> key, Comparison<Key> comparer)
     {
         // Blit the keys
-        var kw = ArrayWriter<Key>.Init();
+        var kw = LE.ArrayWriter<Key>.Init();
         T.ToWriter(ta, key, ref kw);
         var k = kw.MutableView;
 
         // Blit the values 
-        var sw = ArrayWriter<A>.Init(k.Length);
+        var sw = LE.ArrayWriter<A>.Init(k.Length);
         T.ToWriter(ta, ref sw);
         var s = sw.MutableView;
         
         // Sort based on the keys
         k.Sort(s, comparer);
         
-        return s;
+        return sw.ToArr();
     }
-    
-    
-    
-    
-    
     
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -309,178 +303,192 @@ public interface Iterable<T>
     // LINQ operators
     // 
 
-    /*
-    /// <summary>
-    /// Yield items in ascending order 
-    /// </summary>
-    /// <returns>Iterable</returns>
-    static virtual Iterator<A> Order<A>(Comparison<A> comparer, K<T, A> fa) =>
-        T.Forward(fa)
-         .Order(comparer);
-
-    /// <summary>
-    /// Yield items in ascending order 
-    /// </summary>
-    /// <returns>Iterable</returns>
-    static virtual Iterator<A> OrderBy<Key, A>(Func<A, Key> keySelector, Comparison<Key> comparer, K<T, A> fa) =>
-        T.Forward(fa)
-         .OrderBy(keySelector, comparer);*/
-
     /// <summary>
     /// Projects each element of a range into a new form.
     /// </summary>
-    static virtual Iter<B> Select<A, B>(Func<A, B> f, K<T, A> fa) =>
-        T.Forward(fa).Map(f);
+    static virtual Iter<B> Select<A, B>(Func<A, B> f, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .Map(f);
 
-    /*
     /// <summary>
     /// Filters a range of values based on a predicate.
     /// </summary>
-    static virtual Iterator<A> Where<A>(Func<A, bool> f, K<T, A> fa) =>
+    static virtual Iter<A> Where<A>(Func<A, bool> f, LT.K<T, A> fa) =>
         T.Forward(fa)
          .Filter(f);
 
     /// <summary>
-    /// Monadic bind
+    /// Bind
     /// </summary>
-    static virtual Iterator<B> SelectMany<A, B>(Func<A, Iterator<B>> f, K<T, A> fa) =>
+    static virtual Iter<B> SelectMany<A, B>(Func<A, Iter<B>> f, LT.K<T, A> fa) =>
         T.Forward(fa)
          .Bind(f);
 
     /// <summary>
-    /// Monadic bind and project
+    /// Bind and project
     /// </summary>
-    static virtual Iterator<C> SelectMany<A, B, C>(Func<A, Iterator<B>> bind, Func<A, B, C> project, K<T, A> fa) =>
+    static virtual Iter<C> SelectMany<A, B, C>(Func<A, Iter<B>> bind, Func<A, B, C> project, LT.K<T, A> fa) =>
         T.Forward(fa)
-         .SelectMany(x => bind(x).Select(y => project(x, y)));
+         .SelectMany(bind, project);
 
     /// <summary>
     /// Applies an accumulator function over a range.
     /// </summary>
-    static virtual S Aggregate<S, A>(S state, Func<S, A, S> folder, K<T, A> fa) =>
-        T.Forward(fa)
-         .Fold(folder, state);
-
+    static virtual S Aggregate<S, A>(S state, Func<S, A, S> folder, LT.K<T, A> fa)
+    {
+        foreach (var x in T.Forward(fa))
+        {
+            state = folder(state, x);
+        }
+        return state;
+    }
+    
     /// <summary>
     /// Determines whether any element of a range satisfies a condition.
     /// </summary>
-    static virtual bool Any<A>(Func<A, bool> predicate, K<T, A> fa) =>
+    static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
         T.Forward(fa)
-         .Exists(predicate);
+         .Any(predicate);
 
     /// <summary>
     /// Determines whether all elements of a range satisfy a condition.
     /// </summary>
-    static virtual bool All<A>(Func<A, bool> predicate, K<T, A> fa) =>
+    static virtual bool All<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
         T.Forward(fa)
-         .ForAll(predicate);
+         .All(predicate);
+
+    /// <summary>
+    /// Returns the first element of a range, or an alternative value if the range contains no elements.
+    /// </summary>
+    static virtual LT.K<F, A> FirstOrAlt<F, A>(LT.K<T, A> fa) 
+        where F : LT.Alternative<F> =>
+        T.Forward(fa)
+         .FirstOrAlt<F>();
+
+    /// <summary>
+    /// Returns the first element of a range, or `None` value if the range contains no elements.
+    /// </summary>
+    static virtual LE.Option<A> FirstOrNone<A>(LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .FirstOrNone();
 
     /// <summary>
     /// Returns the first element of a range, or a default value if the range contains no elements.
     /// </summary>
-    static virtual Option<A> FirstOrNone<A>(K<T, A> fa) =>
-        T.Forward(fa) switch
-        {
-            (Exist<A> exist, _) => exist.Value,
-            _                   => default
-        };
+    static virtual A? FirstOrDefault<A>(LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .FirstOrDefault();
+
+    /// <summary>
+    /// Returns the last element of a range, or an alternative value if the range contains no elements.
+    /// </summary>
+    static virtual LT.K<F, A> LastOrAlt<F, A>(LT.K<T, A> fa) 
+        where F : LT.Alternative<F> =>
+        T.Forward(fa)
+         .LastOrAlt<F>();
+
+    /// <summary>
+    /// Returns the last element of a range, or `None` value if the range contains no elements.
+    /// </summary>
+    static virtual LE.Option<A> LastOrNone<A>(LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .LastOrNone();
 
     /// <summary>
     /// Returns the last element of a range, or a default value if the range contains no elements.
     /// </summary>
-    static virtual Option<A> LastOrNone<A>(K<T, A> fa)
+    static virtual A? LastOrDefault<A>(LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .LastOrDefault();
+
+    /// <summary>
+    /// Returns a specified number of contiguous elements from the start of a range.
+    /// </summary>
+    static virtual Iter<A> Skip<A>(int count, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .Skip(count);
+
+    /// <summary>
+    /// Skip items at the start of the sequence whilst the predicate returns true.
+    /// </summary>
+    static virtual Iter<A> SkipWhile<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .SkipWhile(predicate);
+
+    /// <summary>
+    /// Skip items at the start of the sequence until the predicate returns true.
+    /// </summary>
+    static virtual Iter<A> SkipUntil<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .SkipUntil(predicate);
+
+    /// <summary>
+    /// Returns a specified number of contiguous elements from the start of a range.
+    /// </summary>
+    static virtual Iter<A> Take<A>(int count, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .Take(count);
+
+    /// <summary>
+    /// Take items from the sequence whilst the predicate returns true.
+    /// </summary>
+    static virtual Iter<A> TakeWhile<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .TakeWhile(predicate);
+
+    /// <summary>
+    /// Take items from the sequence until the predicate returns true.
+    /// </summary>
+    static virtual Iter<A> TakeUntil<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .TakeUntil(predicate);
+
+    /// <summary>
+    /// Filter out items that don't match the specified type.
+    /// </summary>
+    static virtual Iter<B> Cast<A, B>(LT.K<T, A> fa) =>
+        T.Forward(fa)
+         .Cast<B>();
+
+    /// <summary>
+    /// Reverse the order of the elements in a range.
+    /// </summary>
+    /// <remarks>The return-type is an array to indicate that: to reverse a set of values, all values must be available.
+    /// Using `Reverse` with an infinite sequence, for example, will just fill up memory.
+    /// The array return value highlights that all values will be acquired from the stream AND THEN reversed.
+    /// And because the resulting array-type is also an `Iterable`, all of the `Iterable` operators can continue to work
+    /// on the reversed-set.
+    /// </remarks>
+    static virtual Arr<A> Reverse<A>(LT.K<T, A> fa)
     {
-        var iter = T.Forward(fa); 
-        while (true)
+        var w = LE.ArrayWriter<A>.Init();
+        foreach (var x in fa)
         {
-            switch (iter)
-            {
-                case (Exist<A>, (Exist<A>, _) e2):
-                    iter = e2;
-                    break;
-
-                case (Exist<A> (var e1), _):
-                    return e1;
-
-                default:
-                    return default;
-            }
+            w.Add(x);
         }
+
+        var (array, start, length) = w.ToArrayBack();
+        return new Arr<A>(array, start, length);
     }
 
     /// <summary>
-    /// Returns a specified number of contiguous elements from the start of a range.
+    /// Return a range with duplicate elements removed.
     /// </summary>
-    static virtual Iterator<A> Skip<A>(long count, K<T, A> fa) =>
-        T.Forward(fa).Skip(count);
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    static virtual Iter<A> Distinct<EqA, A>(ReadOnlySpan<A> seen, LT.K<T, A> fa)
+        where EqA : LT.Eq<A> =>
+        T.Forward(fa)
+         .Distinct<EqA>(seen);
 
     /// <summary>
-    /// Skip items at the start of the sequence whilst the predicate returns true. 
+    /// Return a range with duplicate elements removed.
     /// </summary>
-    static virtual Iterator<A> SkipWhile<A>(Func<A, bool> predicate, K<T, A> fa) =>
-        T.Forward(fa).SkipWhile(predicate);
-
-    /// <summary>
-    /// Skip items at the start of the sequence until the predicate returns true. 
-    /// </summary>
-    static virtual Iterator<A> SkipUntil<A>(Func<A, bool> predicate, K<T, A> fa) =>
-        T.Forward(fa).SkipUntil(predicate);
-
-    /// <summary>
-    /// Returns a specified number of contiguous elements from the start of a range.
-    /// </summary>
-    static virtual Iterator<A> Take<A>(long count, K<T, A> fa) =>
-        T.Forward(fa).Take(count);
-
-    /// <summary>
-    /// Take items from the sequence whilst the predicate returns true.   
-    /// </summary>
-    static virtual Iterator<A> TakeWhile<A>(Func<A, bool> predicate, K<T, A> fa) =>
-        T.Forward(fa).TakeWhile(predicate);
-
-    /// <summary>
-    /// Take items from the sequence until the predicate returns true.   
-    /// </summary>
-    static virtual Iterator<A> TakeUntil<A>(Func<A, bool> predicate, K<T, A> fa) =>
-        T.Forward(fa).TakeUntil(predicate);    
-
-    /// <summary>
-    /// Filter out items that don't match the specified type.    
-    /// </summary>
-    static virtual Iterator<B> Cast<A, B>(K<T, A> fa) =>
-        T.Forward(fa).Cast<B>();
-
-    /// <summary>
-    /// Reverse the order of the elements in a range.    
-    /// </summary>
-    static virtual Iterator<A> Reverse<A>(K<T, A> fa) =>
-        T.Forward(fa).Reverse();
-    
-    /// <summary>
-    /// Return a range with duplicate elements removed.   
-    /// </summary>
-    static virtual Iterator<A> Distinct<EqA, A>(K<T, A> fa) 
-        where EqA : Eq<A> =>
-        T.Forward(fa).Distinct<EqA>();
-    
-    /// <summary>
-    /// Return a range with duplicate elements removed.   
-    /// </summary>
-    static virtual Iterator<A> Distinct<EqA, A>(ReadOnlySpan<A> seen, K<T, A> fa) 
-        where EqA : Eq<A> =>
-        T.Forward(fa).Distinct<EqA>(seen);
-    
-    /// <summary>
-    /// Return a range with duplicate elements removed.   
-    /// </summary>
-    static virtual Iterator<A> DistinctBy<EqKey, Key, A>(Func<A, Key> key, K<T, A> fa)  
-        where EqKey : Eq<Key> =>
-        T.Forward(fa).DistinctBy<EqKey, Key>(key);    
-    
-    /// <summary>
-    /// Return a range with duplicate elements removed.   
-    /// </summary>
-    static virtual Iterator<A> DistinctBy<EqKey, Key, A>(Func<A, Key> key, ReadOnlySpan<Key> seen, K<T, A> fa)  
-        where EqKey : Eq<Key> =>
-        T.Forward(fa).DistinctBy<EqKey, Key>(key, seen);*/
+    /// <param name="key">Function that maps from the element-type to a key for distinct testing.</param>
+    /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <returns>Projected lazy iterator</returns>
+    static virtual Iter<A> DistinctBy<EqKey, Key, A>(Func<A, Key> key, ReadOnlySpan<Key> seen, LT.K<T, A> fa)
+        where EqKey : LT.Eq<Key> =>
+        T.Forward(fa)
+         .DistinctBy<EqKey, Key>(key, seen);
 }

@@ -13,7 +13,7 @@ public static partial class ArrExtensions
 
         [Pure]
         public static Arr<A> operator +(LE.Pure<A> lhs, Arr<A> rhs) =>
-            rhs.Cons(lhs.Value);
+            rhs.Prepend(lhs.Value);
 
         [Pure]
         public static Arr<A> operator +(Arr<A> lhs, LE.Pure<A> rhs) =>
@@ -21,7 +21,7 @@ public static partial class ArrExtensions
 
         [Pure]
         public static Arr<A> operator +(A lhs, Arr<A> rhs) =>
-            rhs.Cons(lhs);
+            rhs.Prepend(lhs);
 
         [Pure]
         public static Arr<A> operator +(Arr<A> lhs, A rhs) =>
@@ -44,7 +44,7 @@ public static partial class ArrExtensions
 
         [Pure]
         public static Arr<A> operator +(LE.Pure<A> lhs, K<Arr, A> rhs) =>
-            (+rhs).Cons(lhs.Value);
+            (+rhs).Prepend(lhs.Value);
 
         [Pure]
         public static Arr<A> operator +(K<Arr, A> lhs, LE.Pure<A> rhs) =>
@@ -52,7 +52,7 @@ public static partial class ArrExtensions
 
         [Pure]
         public static Arr<A> operator +(A lhs, K<Arr, A> rhs) =>
-            (+rhs).Cons(lhs);
+            (+rhs).Prepend(lhs);
 
         [Pure]
         public static Arr<A> operator +(K<Arr, A> lhs, A rhs) =>

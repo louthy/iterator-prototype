@@ -17,3 +17,6 @@ public readonly record struct IterTake(int amount);
 
 [SkipLocalsInit]
 public readonly record struct IterSkip(int amount);
+
+[SkipLocalsInit]
+public readonly record struct IterDistinct;

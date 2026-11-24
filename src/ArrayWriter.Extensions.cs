@@ -45,9 +45,7 @@ public static class ArrayWriterExtensions
         public Span<A> ToSpan()
         {
             var (xs, start, count) = writer.ToArray();
-            return start + count > int.MaxValue
-                        ? throw new InvalidOperationException("Backing collection is too big to return a view")
-                        : new Span<A>(xs, (int)start, (int)count);
+            return new Span<A>(xs, start, count);
         }
 
         /// <summary>
@@ -74,9 +72,7 @@ public static class ArrayWriterExtensions
         public Span<A> ToSpanBack()
         {
             var (xs, start, count) = writer.ToArrayBack();
-            return start + count > int.MaxValue
-                       ? throw new InvalidOperationException("Backing collection is too big to return a view")
-                       : new Span<A>(xs, (int)start, (int)count);
+            return new Span<A>(xs, start, count);
         }
         
         /// <summary>
@@ -99,7 +95,7 @@ public static class ArrayWriterExtensions
         /// effectively disposed. 
         /// </para>
         /// </remarks>
-        public (A[] Buffer, long Start, long Count) ToArray()
+        public (A[] Buffer, int Start, int Count) ToArray()
         {
             if (Interlocked.CompareExchange(ref writer.disposed, 1, 0) == 0)
             {
@@ -154,7 +150,7 @@ public static class ArrayWriterExtensions
         /// effectively disposed. 
         /// </para>
         /// </remarks>
-        public (A[] Buffer, long Start, long Count) ToArrayBack()
+        public (A[] Buffer, int Start, int Count) ToArrayBack()
         {
             if (Interlocked.CompareExchange(ref writer.disposed, 1, 0) == 0)
             {

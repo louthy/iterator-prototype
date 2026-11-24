@@ -20,7 +20,25 @@ static unsafe partial class Insert
         
         // Push the amount
         arg1(in frame, amount);
+        
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool takeUntil<A>(in StackFrame frame, Func<A, bool> f) =>
+        
+        // Push take operation
+        fun(in frame, &Pull.takeUntil<A>, OpReturn.CanVoidOrSkip) &&
+        
+        // Push the predicate
+        arg1(in frame, f);
     
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool takeWhile<A>(in StackFrame frame, Func<A, bool> f) =>
+        
+        // Push take operation
+        fun(in frame, &Pull.takeWhile<A>, OpReturn.CanVoidOrSkip) &&
+        
+        // Push the predicate
+        arg1(in frame, f);
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool skip(in StackFrame frame, in int amount) =>
         
@@ -29,6 +47,24 @@ static unsafe partial class Insert
         
         // Push the amount
         arg1(in frame, amount);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool skipUntil<A>(in StackFrame frame, Func<A, bool> f) =>
+        
+        // Push take operation
+        fun(in frame, &Pull.skipUntil<A>, OpReturn.CanVoidOrSkip) &&
+        
+        // Push the predicate
+        arg1(in frame, f);
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool skipWhile<A>(in StackFrame frame, Func<A, bool> f) =>
+        
+        // Push take operation
+        fun(in frame, &Pull.skipWhile<A>, OpReturn.CanVoidOrSkip) &&
+        
+        // Push the predicate
+        arg1(in frame, f);
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool yield<A>(in StackFrame frame, in A value) =>

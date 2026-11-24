@@ -123,6 +123,42 @@ static partial class Pull
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static int takeUntil<A>(in StackFrame frame)
+    {
+        // Get the amount 
+        ref var f = ref PullManaged.arg1<Func<A, bool>>(in frame);
+        peek<A>(in frame, out var x);
+
+        if (f(x))
+        {
+            pop<A>(in frame);
+            return PullState.Void;
+        }
+        else
+        {
+            return PullState.Continue;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int takeWhile<A>(in StackFrame frame)
+    {
+        // Get the amount 
+        ref var f = ref PullManaged.arg1<Func<A, bool>>(in frame);
+        peek<A>(in frame, out var x);
+
+        if (f(x))
+        {
+            return PullState.Continue;
+        }
+        else
+        {
+            pop<A>(in frame);
+            return PullState.Void;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int skip(in StackFrame frame)
     {
         // Get the amount 
@@ -136,6 +172,117 @@ static partial class Pull
         else
         {
             // Skipped what we needed to, so continue the sequence.
+            return PullState.Continue;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int skipUntil<A>(in StackFrame frame)
+    {
+        // Get the predicate 
+        ref var f = ref PullManaged.arg1<Func<A, bool>>(in frame);
+        peek<A>(in frame, out var x);
+        if (f(x))
+        {
+            f = _ => true;
+            return PullState.Continue;
+        }
+        else
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int skipWhile<A>(in StackFrame frame)
+    {
+        // Get the predicate 
+        ref var f = ref PullManaged.arg1<Func<A, bool>>(in frame);
+        peek<A>(in frame, out var x);
+        if (f(x))
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+        else
+        {
+            f = _ => false;
+            return PullState.Continue;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int choose<A, B>(in StackFrame frame)
+    {
+        // Get the predicate 
+        var f = PullManaged.arg1<Func<A, LE.Option<B>>>(in frame);
+        peek<A>(in frame, out var x);
+        var mb = f(x);
+        if (mb.IsSome)
+        {
+            pop<A>(in frame);
+            push(in frame, (B)mb);
+            return PullState.Continue;
+        }
+        else
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int filter<A>(in StackFrame frame)
+    {
+        // Get the predicate 
+        var f = PullManaged.arg1<Func<A, bool>>(in frame);
+        peek<A>(in frame, out var x);
+        if (f(x))
+        {
+            return PullState.Continue;
+        }
+        else
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int distinct<EqA, A>(in StackFrame frame)
+        where EqA : LT.Eq<A>
+    {
+        ref var set = ref PullStruct.arg1<LE.HashSet<EqA, A>>(in frame);
+        peek<A>(in frame, out var x);
+        if (set.Contains(x))
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+        else
+        {
+            set = set.Add(x);
+            return PullState.Continue;
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static int distinct<EqKey, Key, A>(in StackFrame frame)
+        where EqKey : LT.Eq<Key>
+    {
+        ref var set = ref PullStruct.arg1<LE.HashSet<EqKey, Key>>(in frame);
+        var     f   = PullManaged.arg2<Func<A, Key>>(in frame);
+        peek<A>(in frame, out var x);
+        var k = f(x);
+        if (set.Contains(k))
+        {
+            pop<A>(in frame);
+            return PullState.Skip;
+        }
+        else
+        {
+            set = set.Add(k);
             return PullState.Continue;
         }
     }

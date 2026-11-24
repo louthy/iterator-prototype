@@ -29,7 +29,7 @@ namespace IteratorPrototype;
 [Serializable]
 [CollectionBuilder(typeof(Arr), nameof(Arr.create))]
 [SkipLocalsInit]
-public sealed class Arr<A> :
+public sealed partial class Arr<A> :
     IComparisonOperators<Arr<A>, Arr<A>, bool>,
     IAdditionOperators<Arr<A>, Arr<A>, Arr<A>>,
     Constructor<Arr<A>, ReadOnlySpan<A>>,
@@ -259,12 +259,12 @@ public sealed class Arr<A> :
     /// <summary>
     /// Test if the collection is empty
     /// </summary>
-    /// <param name="iterNil">Nil structure</param>
+    /// <param name="nil">Nil structure</param>
     /// <returns>`true` if empty, `false` otherwise</returns>
-    public bool TryGetValue(out Nil iterNil)
+    public bool TryGetValue(out Nil nil)
     {
-        iterNil = default;
-        return Count == 0;
+        nil = default;
+        return count == 0;
     }
 
     /// <summary>
@@ -444,7 +444,7 @@ public sealed class Arr<A> :
     /// certain scenarios, but it is inefficient if done regularly.  Consider using a data-structure that can handle
     /// an expanding set as its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public Arr<A> Cons(in A value)
+    public Arr<A> Prepend(in A value)
     {
         var span   = AsSpan();
         var narray = new A[Count + 1];
@@ -525,7 +525,7 @@ public sealed class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public Arr<A> ConsRange(in ReadOnlySpan<A> range)
+    public Arr<A> PrependRange(in ReadOnlySpan<A> range)
     {
         if (range.Length == 0) return this;
         var lcount = Count;
@@ -541,16 +541,6 @@ public sealed class Arr<A> :
         
         return new Arr<A>(narray, 0, ncount);
     }
-        /// <summary>
-    /// Concatenate the provided collection with this collection (the provided collection is prepended to this one) 
-    /// </summary>
-    /// <remarks>NOTE: This needs to create a whole new backing array which is the size of this collection and the range
-    /// provided. The two collections are then copied to the new backing array. That is 'okay' for certain scenarios,
-    /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
-    /// its core offering, like `Seq` or `Lst`.</remarks>
-    [Pure]
-    public Arr<A> ConsRange(IEnumerable<A> range) =>
-        ConsRange((ReadOnlySpan<A>)[..range]);
     
     /// <summary>
     /// Concatenate the provided collection with this collection (the provided collection is prepended to this one) 
@@ -560,11 +550,22 @@ public sealed class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public Arr<A> ConsRange(Arr<A> range) =>
+    public Arr<A> PrependRange(IEnumerable<A> range) =>
+        PrependRange((ReadOnlySpan<A>)[..range]);
+    
+    /// <summary>
+    /// Concatenate the provided collection with this collection (the provided collection is prepended to this one) 
+    /// </summary>
+    /// <remarks>NOTE: This needs to create a whole new backing array which is the size of this collection and the range
+    /// provided. The two collections are then copied to the new backing array. That is 'okay' for certain scenarios,
+    /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
+    /// its core offering, like `Seq` or `Lst`.</remarks>
+    [Pure]
+    public Arr<A> PrependRange(Arr<A> range) =>
         Count switch
         {
             0 => range,
-            _ => ConsRange(range.AsSpan())
+            _ => PrependRange(range.AsSpan())
         };
 
     /// <summary>
@@ -575,10 +576,10 @@ public sealed class Arr<A> :
     /// but it is inefficient if done regularly.  Consider using a data-structure that can handle an expanding set as
     /// its core offering, like `Seq` or `Lst`.</remarks>
     [Pure]
-    public Arr<A> ConsRange<T>(in K<T, A> range)
+    public Arr<A> PrependRange<T>(K<T, A> range)
         where T : Iterable<T> =>
-        ConsRange(range.AsSpan());
-
+        PrependRange(range.AsSpan());
+    
     /// <summary>
     /// Insert an element at the specified index
     /// </summary>
@@ -596,7 +597,7 @@ public sealed class Arr<A> :
         
         if (offset == 0)
         {
-            return Cons(in value);
+            return Prepend(in value);
         }
         else if (offset == Count)
         {
@@ -744,7 +745,7 @@ public sealed class Arr<A> :
         var offset = index.GetOffset(Count);
         if (offset == 0)
         {
-            return ConsRange(in range);
+            return PrependRange(in range);
         }
         else if (offset == Count)
         {

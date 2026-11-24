@@ -71,4 +71,42 @@ static unsafe partial class Push
         
         // Push elements operation
         fun3<(A, B, C), A, B, C>(in frame, &Pull.elements<A, B, C>, OpReturn.Default);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    internal static bool choose<A, B>(in StackFrame frame, Func<A, LE.Option<B>> f) =>
+
+        arg1(in frame, f) &&
+
+        fun(in frame, &Pull.choose<A, B>, OpReturn.CanVoidOrSkip);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    internal static bool filter<A>(in StackFrame frame, Func<A, bool> f) =>
+
+        arg1(in frame, f) &&
+
+        fun(in frame, &Pull.filter<A>, OpReturn.CanVoidOrSkip);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    internal static bool distinct<EqA, A>(in StackFrame frame, ReadOnlySpan<A> seen)
+        where EqA : LT.Eq<A> =>
+
+        // Set the hash-set used to track seen values as argument 1 
+        declare1(in frame, LE.Prelude.toHashSet<EqA, A>(seen)) &&
+
+        // Distinct
+        fun(in frame, &Pull.distinct<EqA, A>, OpReturn.CanVoidOrSkip);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    internal static bool distinct<EqKey, Key, A>(in StackFrame frame, Func<A, Key> f, ReadOnlySpan<Key> seen)
+        where EqKey : LT.Eq<Key> =>
+
+        // Set the hash-set used to track seen values as argument 1 
+        declare1(in frame, LE.Prelude.toHashSet<EqKey, Key>(seen)) &&
+
+        // Set the key mapping function to argument 2
+        arg2(in frame, f) &&
+        
+        // Distinct
+        fun(in frame, &Pull.distinct<EqKey, Key, A>, OpReturn.CanVoidOrSkip);
+
 }

@@ -1,6 +1,5 @@
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 using System.Runtime.CompilerServices;
-using LanguageExt.Traits;
 
 namespace IteratorPrototype.Iterator3;
 
@@ -22,6 +21,12 @@ public partial class Iter
     /// Create a new co-routine scope 
     /// </summary>
     public static readonly IterScope scope = 
+        default;
+
+    /// <summary>
+    /// Only yield unique elements 
+    /// </summary>
+    public static readonly IterDistinct distinct = 
         default;
     
     /// <summary>
@@ -54,6 +59,22 @@ public partial class Iter
                        ? iter
                        : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A head, Func<Iter<A>> lazyTail) =>
+        cons(head, lazy(lazyTail));
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, Func<Iter<A>> lazyTail) =>
+        cons(a, b, lazy(lazyTail));
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, A c, Func<Iter<A>> lazyTail) =>
+        cons(a, b, c, lazy(lazyTail));
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> cons<A>(A a, A b, A c, A d, Func<Iter<A>> lazyTail) =>
+        cons(a, b, c, d, lazy(lazyTail));
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> cons<A>(A a, A b, Iter<A> tail)

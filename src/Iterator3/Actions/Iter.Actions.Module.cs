@@ -24,10 +24,46 @@ static class IterAction
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> takeUntil<A>(Func<A, bool> f, in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Insert.takeUntil(in frame, f)
+                   ? ta1
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> takeWhile<A>(Func<A, bool> f, in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Insert.takeWhile(in frame, f)
+                   ? ta1
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> skip<A>(int amount, in Iter<A> ta)
     {
         var frame = ta.Next(out var ta1);
         return Insert.skip(in frame, amount)
+                   ? ta1
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> skipUntil<A>(Func<A, bool> f, in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Insert.skipUntil(in frame, f)
+                   ? ta1
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> skipWhile<A>(Func<A, bool> f, in Iter<A> ta)
+    {
+        var frame = ta.Next(out var ta1);
+        return Insert.skipWhile(in frame, f)
                    ? ta1
                    : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
@@ -96,10 +132,53 @@ static class IterAction
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<B> bind<A, B>(in Iter<A> ta, in Func<A, Iter<B>> f)
+    public static Iter<B> bind<A, B>(in Iter<A> ta, Func<A, Iter<B>> f)
     {
         var frame = Iter<B>.Default(out var tb);
         return Push.bind(in frame, ta, f)
+                   ? tb
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<C> selectMany<A, B, C>(in Iter<A> ta, Func<A, Iter<B>> f, Func<A, B, C> project) =>
+        // TODO: Optimise this to run as a single operation
+        bind(in ta, a => map(b => project(a, b), f(a)));
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<B> choose<A, B>(Func<A, LE.Option<B>> f, in Iter<A> iterator)
+    {
+        var frame = iterator.Next<A, B>(out var tb);
+        return Push.choose(in frame, f)
+                   ? tb
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> filter<A>(Func<A, bool> f, in Iter<A> iterator)
+    {
+        var frame = iterator.Next(out var tb);
+        return Push.filter(in frame, f)
+                   ? tb
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> distinct<EqA, A>(ReadOnlySpan<A> seen, in Iter<A> iterator)
+        where EqA : LT.Eq<A>
+    {
+        var frame = iterator.Next(out var tb);
+        return Push.distinct<EqA, A>(in frame, seen)
+                   ? tb
+                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+    }
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> distinct<EqKey, Key, A>(Func<A, Key> f, ReadOnlySpan<Key> seen, in Iter<A> iterator)
+        where EqKey : LT.Eq<Key>
+    {
+        var frame = iterator.Next(out var tb);
+        return Push.distinct<EqKey, Key, A>(in frame, f, seen)
                    ? tb
                    : throw new NotImplementedException("TODO: Deal with a full StackFrame");
     }
