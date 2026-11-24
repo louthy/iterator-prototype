@@ -52,12 +52,6 @@ public static partial class IterableExtensions
         /// <returns>Lazy iterator</returns>
         public Iter<A> Where(Func<A, bool> f) =>
             T.Where(f, ta);
-        
-        /// <summary>
-        /// Applies an accumulator function over a range.
-        /// </summary>
-        public S Aggregate<S>(S state, Func<S, A, S> folder) =>
-            T.Aggregate(state, folder, ta);
 
         /// <summary>
         /// Determines whether any element of a range satisfies a condition.

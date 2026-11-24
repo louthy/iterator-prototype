@@ -344,6 +344,18 @@ public interface Iterable<T>
     }
     
     /// <summary>
+    /// Applies an accumulator function over a range and then maps the result
+    /// </summary>
+    static virtual R Aggregate<S, A, R>(S state, Func<S, A, S> folder, Func<S, R> map, LT.K<T, A> fa)
+    {
+        foreach (var x in T.Forward(fa))
+        {
+            state = folder(state, x);
+        }
+        return map(state);
+    }
+    
+    /// <summary>
     /// Determines whether any element of a range satisfies a condition.
     /// </summary>
     static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
