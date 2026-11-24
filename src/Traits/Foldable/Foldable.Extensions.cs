@@ -214,30 +214,6 @@ public static partial class FoldableExtensions
             T.Iter(f, initialIndex, ta);
 
         /// <summary>
-        /// Find the minimum value in the structure
-        /// </summary>
-        public LE.Option<A> Min() =>
-            T.Min(ta);
-
-        /// <summary>
-        /// Find the maximum value in the structure
-        /// </summary>
-        public LE.Option<A> Max() =>
-            T.Max(ta);
-
-        /// <summary>
-        /// Find the minimum value in the structure
-        /// </summary>
-        public A Min(A initialMin) =>
-            T.Min(initialMin, ta);
-
-        /// <summary>
-        /// Find the maximum value in the structure
-        /// </summary>
-        public A Max(A initialMax) =>
-            T.Max(initialMax, ta);
-
-        /// <summary>
         /// Find the first index of an element in the structure that matches the predicate
         /// </summary>
         /// <param name="startIndex">Initial index to start the search</param>
@@ -398,39 +374,6 @@ public static partial class FoldableExtensions
         /// <returns>`Some(index)` if the predicate returns `true`, otherwise `None`</returns>
         public LE.Option<int> IndexOf(A item) => 
             T.IndexOf(None, None, x => EqA.Equals(item, x), ta);    
-    }
-
-    /// <param name="ta">Foldable structure</param>
-    /// <typeparam name="A">Value type</typeparam>
-    /// <typeparam name="OrdA">Ordering trait</typeparam>
-    /// <typeparam name="T">Foldable trait</typeparam>
-    extension<OrdA, T, A>(LT.K<T, A> ta)
-        where T : Foldable<T>
-        where OrdA : LT.Ord<A>
-    {
-        /// <summary>
-        /// Find the minimum value in the structure
-        /// </summary>
-        public LE.Option<A> Min() =>
-            T.Min<OrdA, A>(ta);
-
-        /// <summary>
-        /// Find the maximum value in the structure
-        /// </summary>
-        public LE.Option<A> Max() =>
-            T.Max<OrdA, A>(ta);
-
-        /// <summary>
-        /// Find the minimum value in the structure
-        /// </summary>
-        public A Min(A initialMin) =>
-            T.Min<OrdA, A>(initialMin, ta);
-
-        /// <summary>
-        /// Find the maximum value in the structure
-        /// </summary>
-        public A Max(A initialMax) =>
-            T.Max<OrdA, A>(initialMax, ta);
     }
     
     /// <param name="ta">Foldable structure</param>

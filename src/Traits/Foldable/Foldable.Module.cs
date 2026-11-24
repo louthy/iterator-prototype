@@ -256,67 +256,6 @@ public static class Foldable
         ta.Iter(f);
     
     /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    public static Option<A> min<OrdA, T, A>(K<T, A> ta)
-        where T : Foldable<T>
-        where OrdA : Ord<A> =>
-        T.Min<OrdA, A>(ta);
-
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    public static Option<A> min<T, A>(K<T, A> ta)
-        where T : Foldable<T>
-        where A : IComparable<A> =>
-        ta.Min();
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    public static Option<A> max<OrdA, T, A>(K<T, A> ta)
-        where T : Foldable<T>
-        where OrdA : Ord<A> =>
-        T.Max<OrdA, A>(ta);
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    public static Option<A> max<T, A>(K<T, A> ta)
-        where T : Foldable<T> =>
-        ta.Max();
-    
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    public static A min<OrdA, T, A>(K<T, A> ta, A initialMin)
-        where T : Foldable<T>
-        where OrdA : Ord<A> =>
-        T.Min<OrdA, A>(initialMin, ta);
-
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    public static A min<T, A>(K<T, A> ta, A initialMin)
-        where T : Foldable<T> =>
-        ta.Min(initialMin);
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    public static A max<OrdA, T, A>(K<T, A> ta, A initialMax)
-        where T : Foldable<T>
-        where OrdA : Ord<A> =>
-        T.Max<OrdA, A>(initialMax, ta);
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    public static A max<T, A>(K<T, A> ta, A initialMax)
-        where T : Foldable<T> =>
-        ta.Max(initialMax);
-
-    /// <summary>
     /// Find the average of all the values in the structure
     /// </summary>
     public static A average<T, A>(K<T, A> ta)

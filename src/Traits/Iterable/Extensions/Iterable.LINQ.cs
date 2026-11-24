@@ -77,7 +77,30 @@ public static partial class IterableExtensions
         public Arr<A> Reverse() =>
             T.Reverse(ta);
 
-        public Iter<A> Append(A value) =>
-            T.Forward(ta) + value;
+        /// <summary>
+        /// Append a value to the sequence
+        /// </summary>
+        /// <param name="value">Value to append</param>
+        /// <returns>Transformed lazy iterator</returns>
+        public Iter<A> Append(in A value) =>
+            T.Append(in value, ta);
+
+        /// <summary>
+        /// Prepend a value to the sequence
+        /// </summary>
+        /// <param name="value">Value to prepend</param>
+        /// <returns>Transformed lazy iterator</returns>
+        public Iter<A> Prepend(in A value) =>
+            T.Prepend(in value, ta);
+
+        /// <summary>
+        /// Concatenate two iterable sequences
+        /// </summary>
+        /// <param name="tb">Second sequence</param>
+        /// <typeparam name="A">Element type</typeparam>
+        /// <returns>Concatenated sequence</returns>
+        public Iter<A> Concat(LT.K<T, A> tb) =>
+            T.Concat(ta, tb);
+
     }
 }

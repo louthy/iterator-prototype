@@ -242,25 +242,6 @@ public interface Foldable<T> : Iterable<T>
         }
         return true;
     }
-
-    /// <summary>
-    /// Does the element exist in the structure?
-    /// </summary>
-    static virtual bool Contains<EqA, A>(A value, LT.K<T, A> ta) 
-        where EqA : LT.Eq<A>
-    {
-        foreach(var head in T.Forward(ta))
-        {
-            if(EqA.Equals(value, head)) return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Does the element exist in the structure?
-    /// </summary>
-    static virtual bool Contains<A>(A value, LT.K<T, A> ta) =>
-        T.Contains<EqDefault<A>, A>(value, ta);
     
     /// <summary>
     /// Find the first element that matches the predicate
@@ -346,93 +327,6 @@ public interface Foldable<T> : Iterable<T>
         }
         return default;
     }
-
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    static virtual Option<A> Min<OrdA, A>(LT.K<T, A> ta)
-        where OrdA : LT.Ord<A>
-    {
-        A current;
-        var iter = T.Forward(ta);
-        if (iter is I3.Cons<A>(var h, var t))
-        {
-            current = h;
-        }
-        else
-        {
-            return None;
-        }
-
-        foreach(var head in t)
-        {
-            if(OrdA.Compare(head, current) < 0) current = head;
-        }
-        return current;
-    }
-
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    static virtual Option<A> Min<A>(LT.K<T, A> ta) =>
-        T.Min<OrdDefault<A>, A>(ta);
-    
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    static virtual Option<A> Max<OrdA, A>(LT.K<T, A> ta)
-        where OrdA : LT.Ord<A> 
-    {
-        A current;
-        var iter = T.Forward(ta);
-        if (iter is I3.Cons<A>(var h, var t))
-        {
-            current = h;
-        }
-        else
-        {
-            return None;
-        }
-
-        foreach(var head in t)
-        {
-            if(OrdA.Compare(head, current) > 0) current = head;
-        }
-        return current;
-    }
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    static virtual Option<A> Max<A>(LT.K<T, A> ta) =>
-        T.Max<OrdDefault<A>, A>(ta);
-    
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    static virtual A Min<OrdA, A>(A initialMin, LT.K<T, A> ta) 
-        where OrdA : LT.Ord<A> => 
-        T.Min<OrdA, A>(ta).IfNone(initialMin);
-
-    /// <summary>
-    /// Find the minimum value in the structure
-    /// </summary>
-    static virtual A Min<A>(A initialMin, LT.K<T, A> ta) => 
-        T.Min<OrdDefault<A>, A>(ta).IfNone(initialMin);
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    static virtual A Max<OrdA, A>(A initialMax, LT.K<T, A> ta) 
-        where OrdA : LT.Ord<A> => 
-        T.Min<OrdA, A>(ta).IfNone(initialMax);
-
-    /// <summary>
-    /// Find the maximum value in the structure
-    /// </summary>
-    static virtual A Max<A>(A initialMax, LT.K<T, A> ta) =>
-        T.Max<OrdDefault<A>, A>(ta).IfNone(initialMax);
-
     
     /// <summary>
     /// Find the first index of an element in the structure that matches the predicate

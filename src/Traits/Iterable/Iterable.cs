@@ -307,37 +307,49 @@ public interface Iterable<T>
     /// <summary>
     /// Projects each element of a range into a new form.
     /// </summary>
-    static virtual Iter<B> Select<A, B>(Func<A, B> f, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="f">Mapping function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<B> Select<A, B>(Func<A, B> f, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Map(f);
 
     /// <summary>
     /// Filters a range of values based on a predicate.
     /// </summary>
-    static virtual Iter<A> Where<A>(Func<A, bool> f, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="f">Filtering function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> Where<A>(Func<A, bool> f, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Filter(f);
 
     /// <summary>
     /// Bind
     /// </summary>
-    static virtual Iter<B> SelectMany<A, B>(Func<A, Iter<B>> f, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="f">Bind function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<B> SelectMany<A, B>(Func<A, Iter<B>> f, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Bind(f);
 
     /// <summary>
     /// Bind and project
     /// </summary>
-    static virtual Iter<C> SelectMany<A, B, C>(Func<A, Iter<B>> bind, Func<A, B, C> project, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="bind">Bind function</param>
+    /// <param name="project">Projection function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<C> SelectMany<A, B, C>(Func<A, Iter<B>> bind, Func<A, B, C> project, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .SelectMany(bind, project);
 
     /// <summary>
     /// Applies an accumulator function over a range.
     /// </summary>
-    static virtual S Aggregate<S, A>(S state, Func<S, A, S> folder, LT.K<T, A> fa)
+    /// <param name="state">Initial state</param>
+    /// <param name="folder">Aggregation function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual S Aggregate<S, A>(S state, Func<S, A, S> folder, LT.K<T, A> ta)
     {
-        foreach (var x in T.Forward(fa))
+        foreach (var x in T.Forward(ta))
         {
             state = folder(state, x);
         }
@@ -347,9 +359,13 @@ public interface Iterable<T>
     /// <summary>
     /// Applies an accumulator function over a range and then maps the result
     /// </summary>
-    static virtual R Aggregate<S, A, R>(S state, Func<S, A, S> folder, Func<S, R> map, LT.K<T, A> fa)
+    /// <param name="state">Initial state</param>
+    /// <param name="folder">Aggregation function</param>
+    /// <param name="map">Result mapping function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual R Aggregate<S, A, R>(S state, Func<S, A, S> folder, Func<S, R> map, LT.K<T, A> ta)
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (ts.TryRef(out var x))
         {
             state = folder(state, x);
@@ -360,9 +376,11 @@ public interface Iterable<T>
     /// <summary>
     /// Determines whether any element of a range satisfies a condition.
     /// </summary>
-    static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> fa)
+    /// <param name="predicate">Predicate function that tests the condition</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual bool Any<A>(Func<A, bool> predicate, LT.K<T, A> ta)
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (ts.TryRef(out var x))
         {
             if (predicate(x)) return true;
@@ -373,9 +391,11 @@ public interface Iterable<T>
     /// <summary>
     /// Determines whether all elements of a range satisfy a condition.
     /// </summary>
-    static virtual bool All<A>(Func<A, bool> predicate, LT.K<T, A> fa)
+    /// <param name="predicate">Predicate function that tests the condition</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual bool All<A>(Func<A, bool> predicate, LT.K<T, A> ta)
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (ts.TryRef(out var x))
         {
             if (!predicate(x)) return false;
@@ -386,10 +406,11 @@ public interface Iterable<T>
     /// <summary>
     /// Finds the average of a sequence of numbers
     /// </summary>
-    static virtual A Average<A>(LT.K<T, A> fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual A Average<A>(LT.K<T, A> ta)
         where A : INumber<A>
     {
-        var ts    = T.Forward(fa);
+        var ts    = T.Forward(ta);
         var total = A.Zero;
         var count = A.Zero;
         while (ts.TryRef(out var x))
@@ -403,10 +424,12 @@ public interface Iterable<T>
     /// <summary>
     /// Finds the average of a sequence of numbers
     /// </summary>
-    static virtual B Average<A, B>(LT.K<T, A> fa, Func<A, B> map)
+    /// <param name="map">Mapping function</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual B Average<A, B>(Func<A, B> map, LT.K<T, A> ta)
         where B : INumber<B>
     {
-        var ts    = T.Forward(fa);
+        var ts    = T.Forward(ta);
         var total = B.Zero;
         var count = B.Zero;
         while (ts.TryRef(out var x))
@@ -420,9 +443,10 @@ public interface Iterable<T>
     /// <summary>
     /// Returns the first element of a range, or an alternative value if the range contains no elements.
     /// </summary>
-    static virtual LT.K<F, A> FirstOrAlt<F, A>(LT.K<T, A> fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual LT.K<F, A> FirstOrAlt<F, A>(LT.K<T, A> ta)
         where F : LT.Alternative<F> =>
-        T.Forward(fa)
+        T.Forward(ta)
          .TryGetValue(out var x, out _)
             ? F.Pure(x)
             : F.Empty<A>();
@@ -430,8 +454,9 @@ public interface Iterable<T>
     /// <summary>
     /// Returns the first element of a range, or `None` value if the range contains no elements.
     /// </summary>
-    static virtual LE.Option<A> FirstOrNone<A>(LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual LE.Option<A> FirstOrNone<A>(LT.K<T, A> ta) =>
+        T.Forward(ta)
          .TryGetValue(out var x, out _)
             ? x
             : default;
@@ -439,19 +464,21 @@ public interface Iterable<T>
     /// <summary>
     /// Returns the first element of a range, or a default value if the range contains no elements.
     /// </summary>
-    static virtual A? FirstOrDefault<A>(LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual A? FirstOrDefault<A>(LT.K<T, A> ta) =>
+        T.Forward(ta)
          .TryGetValue(out var x, out _)
             ? x
             : default;
 
     /// <summary>
     /// Returns the last element of a range, or an alternative value if the range contains no elements.
+    /// <param name="ta">Iterable sequence</param>
     /// </summary>
-    static virtual LT.K<F, A> LastOrAlt<F, A>(LT.K<T, A> fa)
+    static virtual LT.K<F, A> LastOrAlt<F, A>(LT.K<T, A> ta)
         where F : LT.Alternative<F>
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (true)
         {
             switch (ts)
@@ -472,9 +499,10 @@ public interface Iterable<T>
     /// <summary>
     /// Returns the last element of a range, or `None` value if the range contains no elements.
     /// </summary>
-    static virtual LE.Option<A> LastOrNone<A>(LT.K<T, A> fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual LE.Option<A> LastOrNone<A>(LT.K<T, A> ta)
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (true)
         {
             switch (ts)
@@ -495,9 +523,10 @@ public interface Iterable<T>
     /// <summary>
     /// Returns the last element of a range, or a default value if the range contains no elements.
     /// </summary>
-    static virtual A? LastOrDefault<A>(LT.K<T, A> fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual A? LastOrDefault<A>(LT.K<T, A> ta)
     {
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (true)
         {
             switch (ts)
@@ -518,65 +547,79 @@ public interface Iterable<T>
     /// <summary>
     /// Returns a specified number of contiguous elements from the start of a range.
     /// </summary>
-    static virtual Iter<A> Skip<A>(int count, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="count">Number of elements to skip</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> Skip<A>(int count, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Skip(count);
 
     /// <summary>
     /// Skip items at the start of the sequence whilst the predicate returns true.
     /// </summary>
-    static virtual Iter<A> SkipWhile<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="predicate">Keep skipping elements while this predicate returns `true`</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> SkipWhile<A>(Func<A, bool> predicate, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .SkipWhile(predicate);
 
     /// <summary>
     /// Skip items at the start of the sequence until the predicate returns true.
     /// </summary>
-    static virtual Iter<A> SkipUntil<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="predicate">Keep skipping elements until this predicate returns `true`</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> SkipUntil<A>(Func<A, bool> predicate, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .SkipUntil(predicate);
 
     /// <summary>
     /// Returns a specified number of contiguous elements from the start of a range.
     /// </summary>
-    static virtual Iter<A> Take<A>(int count, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="count">Number of elements to take</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> Take<A>(int count, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Take(count);
 
     /// <summary>
     /// Take items from the sequence whilst the predicate returns true.
     /// </summary>
-    static virtual Iter<A> TakeWhile<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="predicate">Keep taking elements while this predicate returns `true`</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> TakeWhile<A>(Func<A, bool> predicate, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .TakeWhile(predicate);
 
     /// <summary>
     /// Take items from the sequence until the predicate returns true.
     /// </summary>
-    static virtual Iter<A> TakeUntil<A>(Func<A, bool> predicate, LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="predicate">Keep taking elements until this predicate returns `true`</param>
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<A> TakeUntil<A>(Func<A, bool> predicate, LT.K<T, A> ta) =>
+        T.Forward(ta)
          .TakeUntil(predicate);
 
     /// <summary>
     /// Filter out items that don't match the specified type.
     /// </summary>
-    static virtual Iter<B> Cast<A, B>(LT.K<T, A> fa) =>
-        T.Forward(fa)
+    /// <param name="ta">Iterable sequence</param>
+    static virtual Iter<B> Cast<A, B>(LT.K<T, A> ta) =>
+        T.Forward(ta)
          .Cast<B>();
 
     /// <summary>
     /// Reverse the order of the elements in a range.
     /// </summary>
+    /// <param name="ta">Iterable sequence</param>
     /// <remarks>The return-type is an array to indicate that: to reverse a set of values, all values must be available.
     /// Using `Reverse` with an infinite sequence, for example, will just fill up memory.
     /// The array return value highlights that all values will be acquired from the stream AND THEN reversed.
     /// And because the resulting array-type is also an `Iterable`, all of the `Iterable` operators can continue to work
     /// on the reversed-set.
     /// </remarks>
-    static virtual Arr<A> Reverse<A>(LT.K<T, A> fa)
+    static virtual Arr<A> Reverse<A>(LT.K<T, A> ta)
     {
         var w  = LE.ArrayWriter<A>.Init();
-        var ts = T.Forward(fa);
+        var ts = T.Forward(ta);
         while (ts.TryRef(out var x))
         {
             w.Add(x);
@@ -590,10 +633,11 @@ public interface Iterable<T>
     /// Return a range with duplicate elements removed.
     /// </summary>
     /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <param name="ta">Iterable sequence</param>
     /// <returns>Projected lazy iterator</returns>
-    static virtual Iter<A> Distinct<EqA, A>(ReadOnlySpan<A> seen, LT.K<T, A> fa)
+    static virtual Iter<A> Distinct<EqA, A>(ReadOnlySpan<A> seen, LT.K<T, A> ta)
         where EqA : LT.Eq<A> =>
-        T.Forward(fa)
+        T.Forward(ta)
          .Distinct<EqA>(seen);
 
     /// <summary>
@@ -601,9 +645,153 @@ public interface Iterable<T>
     /// </summary>
     /// <param name="key">Function that maps from the element-type to a key for distinct testing.</param>
     /// <param name="seen">Allows pre-seeding of the distinct-set with elements that have already been seen.</param>
+    /// <param name="ta">Iterable sequence</param>
     /// <returns>Projected lazy iterator</returns>
-    static virtual Iter<A> DistinctBy<EqKey, Key, A>(Func<A, Key> key, ReadOnlySpan<Key> seen, LT.K<T, A> fa)
+    static virtual Iter<A> DistinctBy<EqKey, Key, A>(Func<A, Key> key, ReadOnlySpan<Key> seen, LT.K<T, A> ta)
         where EqKey : LT.Eq<Key> =>
-        T.Forward(fa)
+        T.Forward(ta)
          .DistinctBy<EqKey, Key>(key, seen);
+
+    /// <summary>
+    /// Append a value to the sequence
+    /// </summary>
+    /// <param name="value">Non-null value to append</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <returns>Transformed lazy iterator</returns>
+    static virtual Iter<A> Append<A>(in A value, LT.K<T, A> ta) =>
+        value is null
+            ? T.Forward(ta)
+            : T.Forward(ta) + value;
+
+    /// <summary>
+    /// Prepend a value to the sequence
+    /// </summary>
+    /// <param name="value">Non-null value to prepend</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <returns>Transformed lazy iterator</returns>
+    static virtual Iter<A> Prepend<A>(in A value, LT.K<T, A> ta) =>
+        value is null
+            ? T.Forward(ta)
+            : value + T.Forward(ta);
+    
+    /// <summary>
+    /// Concatenate two iterable sequences
+    /// </summary>
+    /// <param name="tx">First sequence</param>
+    /// <param name="ty">Second sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>Concatenated sequence</returns>
+    static virtual Iter<A> Concat<A>(LT.K<T, A> tx, LT.K<T, A> ty) =>
+        Iter.flatten(tx.Forward(), ty.Forward());
+    
+    /// <summary>
+    /// Returns true if the `value` is contained in the iterable sequence
+    /// </summary>
+    /// <remarks>
+    /// Stops processing the sequence upon discovery of a matching value.
+    /// </remarks>
+    /// <param name="value">Value to find</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>True if the `value` is contained in the iterable sequence</returns>
+    static virtual bool Contains<A>(in A value, LT.K<T, A> ta) =>
+        T.Contains(in value, EqDefault<A>.Equals, ta);
+    
+    /// <summary>
+    /// Returns true if the `value` is contained in the iterable sequence
+    /// </summary>
+    /// <remarks>
+    /// Stops processing the sequence upon discovery of a matching value.
+    /// </remarks>
+    /// <param name="value">Value to find</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <typeparam name="EqA">Equality trait</typeparam>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>True if the `value` is contained in the iterable sequence</returns>
+    static virtual bool Contains<EqA, A>(in A value, LT.K<T, A> ta)
+        where EqA : LT.Eq<A> =>
+        T.Contains(in value, EqA.Equals, ta);
+
+    /// <summary>
+    /// Returns true if the `value` is contained in the iterable sequence
+    /// </summary>
+    /// <remarks>
+    /// Stops processing the sequence upon discovery of a matching value.
+    /// </remarks>
+    /// <param name="value">Value to find</param>
+    /// <param name="eq">Equality comparer, for bespoke equality testing</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>True if the `value` is contained in the iterable sequence</returns>
+    static virtual bool Contains<A>(in A value, IEqualityComparer<A> eq, LT.K<T, A> ta) =>
+        T.Contains(in value, eq.Equals, ta);
+    
+    /// <summary>
+    /// Returns true if the `value` is contained in the iterable sequence
+    /// </summary>
+    /// <remarks>
+    /// Stops processing the sequence upon discovery of a matching value.
+    /// </remarks>
+    /// <param name="value">Value to find</param>
+    /// <param name="eq">Equality comparer function, for bespoke equality testing</param>
+    /// <param name="ta">Iterable sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>True if the `value` is contained in the iterable sequence</returns>
+    static virtual bool Contains<A>(in A value, Func<A, A, bool> eq, LT.K<T, A> ta)
+    {
+        var ts = T.Forward(ta);
+        while (ts.TryRef(out var x))
+        {
+            if (eq(x, value)) return true;
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Find the minimum value in the structure
+    /// </summary>
+    static virtual LE.Option<A> Min<OrdA, A>(LT.K<T, A> ta)
+        where OrdA : LT.Ord<A>
+    {
+        A current;
+        var iter = T.Forward(ta);
+        if (iter is Cons<A>(var h, var t))
+        {
+            current = h;
+        }
+        else
+        {
+            return default;
+        }
+
+        foreach(var head in t)
+        {
+            if(OrdA.Compare(head, current) < 0) current = head;
+        }
+        return current;
+    }
+
+    /// <summary>
+    /// Find the maximum value in the structure
+    /// </summary>
+    static virtual LE.Option<A> Max<OrdA, A>(LT.K<T, A> ta)
+        where OrdA : LT.Ord<A> 
+    {
+        A current;
+        var iter = T.Forward(ta);
+        if (iter is Cons<A>(var h, var t))
+        {
+            current = h;
+        }
+        else
+        {
+            return default;
+        }
+
+        foreach(var head in t)
+        {
+            if(OrdA.Compare(head, current) > 0) current = head;
+        }
+        return current;
+    }
 }

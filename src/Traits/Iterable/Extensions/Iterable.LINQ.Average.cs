@@ -12,8 +12,8 @@ public static partial class IterableExtensions
         /// <summary>
         /// Finds the average of a sequence of numbers
         /// </summary>
-        public A Average(LT.K<T, A> fa) =>
-            T.Average(fa);
+        public A Average() =>
+            T.Average(ta);
     }
 
     extension<T, A, B>(LT.K<T, A> ta)
@@ -23,7 +23,7 @@ public static partial class IterableExtensions
         /// <summary>
         /// Finds the average of a sequence of numbers
         /// </summary>
-        public B Average(LT.K<T, A> fa, Func<A, B> map) =>
-            T.Average(fa, map);
+        public B Average(Func<A, B> map) =>
+            T.Average(map, ta);
     }
 }
