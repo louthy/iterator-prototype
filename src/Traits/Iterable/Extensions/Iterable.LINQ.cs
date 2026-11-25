@@ -101,6 +101,28 @@ public static partial class IterableExtensions
         /// <returns>Concatenated sequence</returns>
         public Iter<A> Concat(LT.K<T, A> tb) =>
             T.Concat(ta, tb);
+        
+        /// <summary>
+        /// Returns the elements of the specified sequence or the default value for the element-type in a singleton
+        /// collection if the sequence is empty.
+        /// </summary>
+        /// <param name="ta">Iterable sequence</param>
+        /// <typeparam name="A">Element type</typeparam>
+        /// <returns>The elements of the specified sequence or the default value for the element-type in a singleton
+        /// collection if the sequence is empty.</returns>
+        public Iter<A?> DefaultIfEmpty() =>
+            T.DefaultIfEmpty(ta);
 
+        /// <summary>
+        /// Returns the elements of the specified sequence or the specified value in a singleton
+        /// collection if the sequence is empty.
+        /// </summary>
+        /// <param name="ta">Iterable sequence</param>
+        /// <param name="defaultValue">The value to return if the sequence is empty.</param>
+        /// <typeparam name="A">Element type</typeparam>
+        /// <returns>The elements of the specified sequence or the specified value in a singleton
+        /// collection if the sequence is empty.</returns>
+        public Iter<A> DefaultIfEmpty(A defaultValue) =>
+            T.DefaultIfEmpty(defaultValue, ta);
     }
 }

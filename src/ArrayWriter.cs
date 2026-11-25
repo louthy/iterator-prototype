@@ -68,7 +68,7 @@ public struct ArrayWriter<A>
     /// <param name="buffer">Backing buffer</param>
     /// <param name="start">Start offset</param>
     /// <param name="rented">True if the buffer has been rented from the ArrayPool</param>
-    ArrayWriter(A[] buffer, int start, bool rented)
+    internal ArrayWriter(A[] buffer, int start, bool rented)
     {
         this.start = start;
         this.buffer = buffer;

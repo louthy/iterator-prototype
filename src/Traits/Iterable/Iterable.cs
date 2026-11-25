@@ -794,4 +794,103 @@ public interface Iterable<T>
         }
         return current;
     }
+
+    /// <summary>
+    /// Returns the elements of the specified sequence or the default value for the element-type in a singleton
+    /// collection if the sequence is empty.
+    /// </summary>
+    /// <param name="ta">Iterable sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>The elements of the specified sequence or the default value for the element-type in a singleton
+    /// collection if the sequence is empty.</returns>
+    static virtual Iter<A?> DefaultIfEmpty<A>(LT.K<T, A> ta) =>
+        T.Forward(ta)
+         .TryGetValue(out var x, out var xs)
+            ? Iter.cons(x, xs.ForceCast<A?>())
+            : Iter.singleton<A?>(default);
+
+    /// <summary>
+    /// Returns the elements of the specified sequence or the specified value in a singleton
+    /// collection if the sequence is empty.
+    /// </summary>
+    /// <param name="ta">Iterable sequence</param>
+    /// <param name="defaultValue">The value to return if the sequence is empty.</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>The elements of the specified sequence or the specified value in a singleton
+    /// collection if the sequence is empty.</returns>
+    static virtual Iter<A> DefaultIfEmpty<A>(A defaultValue, LT.K<T, A> ta) =>
+        T.Forward(ta)
+         .TryGetValue(out var x, out var xs)
+            ? Iter.cons(x, xs)
+            : Iter.singleton(defaultValue);
+
+    /// <summary>
+    /// Produces the set difference of two sequences.
+    /// </summary>
+    /// <remarks>
+    /// The set difference of two sets is defined as the members of the first set that don't appear in the second set.
+    /// This method returns those elements in `ta` that don't appear in `tb`. It doesn't return those elements in `tb
+    /// that don't appear in `ta`. Only unique elements are returned.
+    /// </remarks>
+    /// <param name="ta">First sequence</param>
+    /// <param name="tb">Second sequence</param>
+    /// <typeparam name="EqA">Equality trait</typeparam>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>An array that contains the set difference of the elements of two sequences.</returns>
+    static virtual Arr<A> Except<EqA, A>(LT.K<T, A> ta, LT.K<T, A> tb)
+        where EqA : LT.Eq<A> =>
+        T.Except(ta, tb, LE.Eq.Comparer<EqA, A>());
+    
+    /// <summary>
+    /// Produces the set difference of two sequences.
+    /// </summary>
+    /// <remarks>
+    /// The set difference of two sets is defined as the members of the first set that don't appear in the second set.
+    /// This method returns those elements in `ta` that don't appear in `tb`. It doesn't return those elements in `tb
+    /// that don't appear in `ta`. Only unique elements are returned.
+    /// </remarks>
+    /// <param name="ta">First sequence</param>
+    /// <param name="tb">Second sequence</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>An array that contains the set difference of the elements of two sequences.</returns>
+    static virtual Arr<A> Except<A>(LT.K<T, A> ta, LT.K<T, A> tb) =>
+        T.Except(ta, tb, LE.Eq.Comparer<EqDefault<A>, A>());
+    
+    /// <summary>
+    /// Produces the set difference of two sequences.
+    /// </summary>
+    /// <remarks>
+    /// The set difference of two sets is defined as the members of the first set that don't appear in the second set.
+    /// This method returns those elements in `ta` that don't appear in `tb`. It doesn't return those elements in `tb
+    /// that don't appear in `ta`. Only unique elements are returned.
+    /// </remarks>
+    /// <param name="ta">First sequence</param>
+    /// <param name="tb">Second sequence</param>
+    /// <param name="comparer">Equality comparer</param>
+    /// <typeparam name="A">Element type</typeparam>
+    /// <returns>An array that contains the set difference of the elements of two sequences.</returns>
+    static virtual Arr<A> Except<A>(LT.K<T, A> ta, LT.K<T, A> tb, IEqualityComparer<A> comparer)
+    {
+        var xa    = new HashSet<A>(comparer);
+        var count = 0;
+        foreach (var a in ta)
+        {
+            if (!xa.Contains(a)) count++;
+            xa.Add(a);
+            count++;
+        }
+        foreach (var b in tb)
+        {
+            if (xa.Contains(b)) count--;
+            xa.Remove(b);
+        }
+
+        var arr = new A[count];
+        var w   = new LE.ArrayWriter<A>(arr, 0, false);
+        foreach (var x in xa)
+        {
+            w.Add(x);
+        }
+        return w.ToArr();
+    }    
 }
