@@ -373,7 +373,7 @@ public class IterBoxingTest : Bench<IterBoxingTest>
     public IterBoxingTest() =>
         iterator = from<Arr, ArrState, int>(Arr.create(..X))
                  * from<Arr, ArrState, int>(Arr.create(..Y))
-                 * from(labels);
+                 * many(labels);
     
     protected override int Count => 
         X * Y * labels.Length;

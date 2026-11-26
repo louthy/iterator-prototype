@@ -78,7 +78,7 @@ public partial class Iter
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> flatten<A>(params ReadOnlySpan<Iter<A>> ts)
     {
-        var iters = from(ts);
+        var iters = many(ts);
         var frame = Iter<A>.Default(out var iter);
         return Push.flatten(in frame, in iters)
                    ? iter

@@ -74,7 +74,7 @@ public static class IterTests
 
     public static void Basic4()
     {
-        var iter = from(10, 20, 30, 40, 50);
+        var iter = many(10, 20, 30, 40, 50);
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -86,8 +86,8 @@ public static class IterTests
 
     public static void Basic5()
     {
-        var iter = from(10, 20)
-                 * from(100, 200)
+        var iter = many(10, 20)
+                 * many(100, 200)
                  | select((int x, int y) => x * y);
         
         while(iter.TryGetValue(out var head, out iter))
@@ -100,9 +100,9 @@ public static class IterTests
 
     public static void Basic6()
     {
-        var iter = from(1, 2, 3)
-                 * from("One", "Two", "Three")
-                 * from(true, false)
+        var iter = many(1, 2, 3)
+                 * many("One", "Two", "Three")
+                 * many(true, false)
                  | select((int x, string y, bool z) => $"{x}. {y} ({z.ToString().ToLower()})");
         
         while(iter.TryGetValue(out var head, out iter))
@@ -115,10 +115,10 @@ public static class IterTests
 
     public static void Basic7()
     {
-        var iter = from(1, 2, 3)
-                 * from("One", "Two", "Three")
-                 * from(true, false)
-                 * from(ConsoleColor.Red, ConsoleColor.Green, ConsoleColor.Blue)
+        var iter = many(1, 2, 3)
+                 * many("One", "Two", "Three")
+                 * many(true, false)
+                 * many(ConsoleColor.Red, ConsoleColor.Green, ConsoleColor.Blue)
                  | select((int x, string y, bool z, ConsoleColor c) => $"{x}. {y} {z.ToString().ToLower()} {c}");
         
         while(iter.TryGetValue(out var head, out iter))
@@ -131,8 +131,8 @@ public static class IterTests
 
     public static void Basic8()
     {
-        var iter = from(1, 2, 3)
-                 * from("One", "Two", "Three")
+        var iter = many(1, 2, 3)
+                 * many("One", "Two", "Three")
                  | select((int x, string y) => $"{x}. {y}");
         
         while(iter.TryGetValue(out var head, out iter))
@@ -145,7 +145,7 @@ public static class IterTests
 
     public static void Basic9()
     {
-        var iter = from(1, 2) + from(3, 4) | pure;
+        var iter = many(1, 2) + many(3, 4) | pure;
         
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -158,7 +158,7 @@ public static class IterTests
     public static void Test0()
     {
         var arr  = Arr.create(1..6);
-        var iter = from<Arr, ArrState, int>(arr);
+        var iter = from(arr);
 
         while(iter.TryGetValue(out var head, out iter))
         {
@@ -196,7 +196,7 @@ public static class IterTests
     public static void Test3()
     {
         var arr  = Arr.create(1..6);
-        var iter = from<Arr, ArrState, int>(arr).Map(x => $"Item {x}");
+        var iter = from(arr).Map(x => $"Item {x}");
         
         while(iter.TryGetValue(out var head, out iter))
         {

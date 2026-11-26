@@ -7,7 +7,7 @@ namespace IteratorPrototype.Iterator3;
 public partial class Iter
 {
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> from<A>(params ReadOnlySpan<A> ta) =>
+    public static Iter<A> many<A>(params ReadOnlySpan<A> ta) =>
         from<Arr, ArrState, A>(Arr.create(ta));
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -23,4 +23,12 @@ public partial class Iter
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> from<A>(in Arr<A> ta) =>
         from<Arr, ArrState, A>(ta);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static Iter<A> from<A>(IList<A> ta)
+    {
+        var frame = Iter<A>.Default(out var iter);
+        Push.ilist(in frame, in ta);
+        return iter;
+    }
 }

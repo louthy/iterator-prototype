@@ -81,5 +81,23 @@ static unsafe partial class Push
 
         // Push iterator operation
         fun<A>(in frame, PullGen<A>.lazyIterator, OpReturn.CanVoidOrSkip);
+    
+    
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool ilist<A>(in StackFrame frame, in IList<A> xs) =>
+        
+        // Initialise the list state
+        declare(in frame, in xs, 0) &&
+        
+        // Start the co-routine
+        coroutine(in frame) &&
 
+        // Load the args
+        ref1<IList<A>>(in frame) &&
+ 
+        // Load the state
+        ref2<int>(in frame) &&
+        
+        // Push iterable operation
+        fun<A>(in frame, PullGen<A>.ilist, OpReturn.CanVoidOrSkip);
 }

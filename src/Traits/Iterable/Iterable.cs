@@ -28,11 +28,11 @@ public interface Iterable<T>
     [Pure]
     static virtual ReadOnlySpan<A> AsSpan<A>(LT.K<T, A> ta)
     {
-        var w  = LE.ArrayWriter<A>.Init();
+        var w = LE.ArrayWriter<A>.Init();
         T.ToWriter(ta, ref w);
         return w.View;
     }
-        
+
     /// <summary>
     /// Write every element of this iterable to the `ArrayWriter` provided
     /// </summary>
@@ -45,9 +45,10 @@ public interface Iterable<T>
         {
             LE.ArrayWriter<A>.Add(ref writer, x);
         }
+
         return default;
     }
-        
+
     /// <summary>
     /// Write every element of this iterable to the `ArrayWriter` provided
     /// </summary>
@@ -61,6 +62,7 @@ public interface Iterable<T>
         {
             LE.ArrayWriter<B>.Add(ref writer, f(x));
         }
+
         return default;
     }
 
@@ -77,15 +79,15 @@ public interface Iterable<T>
             yield return x;
         }
     }
-    
+
     /// <summary>
     /// Return an enumerator for this iterable
     /// </summary>
     /// <param name="ta">Iterable structure</param>
     [Pure]
     static virtual IterableEnumerator<T, A> GetEnumerator<A>(LT.K<T, A> ta) =>
-        new (ta);
-    
+        new(ta);
+
     /// <summary>
     /// Returns the first element of the iterable and the rest of the iterable in a `Cons` structure.
     /// </summary>
@@ -99,7 +101,7 @@ public interface Iterable<T>
         var i = T.Forward(ta);
         return i.TryGetValue(out head, out tail);
     }
-    
+
     /// <summary>
     /// Convert to string 
     /// </summary>
@@ -136,7 +138,7 @@ public interface Iterable<T>
 
         return sm.ToString();
     }
-    
+
     /// <summary>
     /// Convert to string 
     /// </summary>
@@ -192,6 +194,7 @@ public interface Iterable<T>
             sm.Append(x);
             sm.Append(separator);
         }
+
         if (sm.Length > 0)
         {
             sm.Undo(separator.Length); // Remove the last separator
@@ -217,15 +220,17 @@ public interface Iterable<T>
             sm.Append(x);
             sm.Append(separator);
         }
+
         if (sm.Length > 1)
         {
             sm.Undo(separator.Length); // Remove the last separator
         }
+
         sm.Append(']');
 
         return sm.ToString();
     }
-    
+
     /// <summary>
     /// Perform an action on each element of the iterable
     /// </summary>
@@ -241,6 +246,7 @@ public interface Iterable<T>
         {
             f(x);
         }
+
         return ta;
     }
 
@@ -291,14 +297,14 @@ public interface Iterable<T>
         var sw = LE.ArrayWriter<A>.Init(k.Length);
         T.ToWriter(ta, ref sw);
         var s = sw.MutableView;
-        
+
         // Sort based on the keys
         k.Sort(s, comparer);
-        
+
         return sw.ToArr();
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 
     // LINQ operators
@@ -353,9 +359,10 @@ public interface Iterable<T>
         {
             state = folder(state, x);
         }
+
         return state;
     }
-    
+
     /// <summary>
     /// Applies an accumulator function over a range and then maps the result
     /// </summary>
@@ -370,9 +377,10 @@ public interface Iterable<T>
         {
             state = folder(state, x);
         }
+
         return map(state);
     }
-    
+
     /// <summary>
     /// Determines whether any element of a range satisfies a condition.
     /// </summary>
@@ -385,6 +393,7 @@ public interface Iterable<T>
         {
             if (predicate(x)) return true;
         }
+
         return false;
     }
 
@@ -400,6 +409,7 @@ public interface Iterable<T>
         {
             if (!predicate(x)) return false;
         }
+
         return true;
     }
 
@@ -418,6 +428,7 @@ public interface Iterable<T>
             total += x;
             count++;
         }
+
         return total / count;
     }
 
@@ -437,6 +448,7 @@ public interface Iterable<T>
             total += map(x);
             count++;
         }
+
         return total / count;
     }
 
@@ -494,7 +506,7 @@ public interface Iterable<T>
                     return F.Empty<A>();
             }
         }
-    }        
+    }
 
     /// <summary>
     /// Returns the last element of a range, or `None` value if the range contains no elements.
@@ -673,7 +685,7 @@ public interface Iterable<T>
         value is null
             ? T.Forward(ta)
             : value + T.Forward(ta);
-    
+
     /// <summary>
     /// Concatenate two iterable sequences
     /// </summary>
@@ -683,7 +695,7 @@ public interface Iterable<T>
     /// <returns>Concatenated sequence</returns>
     static virtual Iter<A> Concat<A>(LT.K<T, A> tx, LT.K<T, A> ty) =>
         Iter.flatten(tx.Forward(), ty.Forward());
-    
+
     /// <summary>
     /// Returns true if the `value` is contained in the iterable sequence
     /// </summary>
@@ -696,7 +708,7 @@ public interface Iterable<T>
     /// <returns>True if the `value` is contained in the iterable sequence</returns>
     static virtual bool Contains<A>(in A value, LT.K<T, A> ta) =>
         T.Contains(in value, EqDefault<A>.Equals, ta);
-    
+
     /// <summary>
     /// Returns true if the `value` is contained in the iterable sequence
     /// </summary>
@@ -725,7 +737,7 @@ public interface Iterable<T>
     /// <returns>True if the `value` is contained in the iterable sequence</returns>
     static virtual bool Contains<A>(in A value, IEqualityComparer<A> eq, LT.K<T, A> ta) =>
         T.Contains(in value, eq.Equals, ta);
-    
+
     /// <summary>
     /// Returns true if the `value` is contained in the iterable sequence
     /// </summary>
@@ -744,16 +756,17 @@ public interface Iterable<T>
         {
             if (eq(x, value)) return true;
         }
+
         return false;
     }
-    
+
     /// <summary>
     /// Find the minimum value in the structure
     /// </summary>
     static virtual LE.Option<A> Min<OrdA, A>(LT.K<T, A> ta)
         where OrdA : LT.Ord<A>
     {
-        A current;
+        A   current;
         var iter = T.Forward(ta);
         if (iter is Cons<A>(var h, var t))
         {
@@ -764,10 +777,11 @@ public interface Iterable<T>
             return default;
         }
 
-        foreach(var head in t)
+        foreach (var head in t)
         {
-            if(OrdA.Compare(head, current) < 0) current = head;
+            if (OrdA.Compare(head, current) < 0) current = head;
         }
+
         return current;
     }
 
@@ -775,9 +789,9 @@ public interface Iterable<T>
     /// Find the maximum value in the structure
     /// </summary>
     static virtual LE.Option<A> Max<OrdA, A>(LT.K<T, A> ta)
-        where OrdA : LT.Ord<A> 
+        where OrdA : LT.Ord<A>
     {
-        A current;
+        A   current;
         var iter = T.Forward(ta);
         if (iter is Cons<A>(var h, var t))
         {
@@ -788,10 +802,11 @@ public interface Iterable<T>
             return default;
         }
 
-        foreach(var head in t)
+        foreach (var head in t)
         {
-            if(OrdA.Compare(head, current) > 0) current = head;
+            if (OrdA.Compare(head, current) > 0) current = head;
         }
+
         return current;
     }
 
@@ -840,7 +855,7 @@ public interface Iterable<T>
     static virtual Arr<A> Except<EqA, A>(LT.K<T, A> ta, LT.K<T, A> tb)
         where EqA : LT.Eq<A> =>
         T.Except(ta, tb, LE.Eq.Comparer<EqA, A>());
-    
+
     /// <summary>
     /// Produces the set difference of two sequences.
     /// </summary>
@@ -855,7 +870,7 @@ public interface Iterable<T>
     /// <returns>An array that contains the set difference of the elements of two sequences.</returns>
     static virtual Arr<A> Except<A>(LT.K<T, A> ta, LT.K<T, A> tb) =>
         T.Except(ta, tb, LE.Eq.Comparer<EqDefault<A>, A>());
-    
+
     /// <summary>
     /// Produces the set difference of two sequences.
     /// </summary>
@@ -879,6 +894,7 @@ public interface Iterable<T>
             xa.Add(a);
             count++;
         }
+
         foreach (var b in tb)
         {
             if (xa.Contains(b)) count--;
@@ -891,6 +907,218 @@ public interface Iterable<T>
         {
             w.Add(x);
         }
+
         return w.ToArr();
-    }    
+    }
+
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<C> GroupBy<Key, A, B, C>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        Func<Key, Iter<B>, LT.K<T, C>> resultSelector,
+        IEqualityComparer<Key> comparer,
+        LT.K<T, A> ta)
+        where Key : notnull
+    {
+        var dict = new Dictionary<Key, List<B>>(comparer);
+        var ts   = T.Forward(ta);
+        while (ts.TryRef(out var x))
+        {
+            var k = keySelector(x);
+            var b = elementSelector(x);
+            if (dict.ContainsKey(k))
+            {
+                dict[k].Add(b);
+            }
+            else
+            {
+                dict.Add(k, [b]);
+            }
+        }
+
+        return Iter.from([.. dict])
+                   .SelectMany(kv => resultSelector(kv.Key, Iter.from(dict[kv.Key])).Forward());
+    }
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<C> GroupBy<Key, A, B, C>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        Func<Key, Iter<B>, LT.K<T, C>> resultSelector,
+        LT.K<T, A> ta)
+        where Key : notnull =>
+        T.GroupBy(keySelector, elementSelector, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<C> GroupBy<EqKey, Key, A, B, C>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        Func<Key, Iter<B>, LT.K<T, C>> resultSelector,
+        LT.K<T, A> ta)
+        where Key : notnull
+        where EqKey : LT.Eq<Key> =>
+        T.GroupBy(keySelector, elementSelector, resultSelector, LE.Eq.Comparer<EqKey, Key>(), ta);
+
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<B> GroupBy<Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        IEqualityComparer<Key> comparer,
+        LT.K<T, A> ta)
+        where Key : notnull
+    {
+        var dict = new Dictionary<Key, List<B>>(comparer);
+        var ts   = T.Forward(ta);
+        while (ts.TryRef(out var x))
+        {
+            var k = keySelector(x);
+            var b = elementSelector(x);
+            if (dict.ContainsKey(k))
+            {
+                dict[k].Add(b);
+            }
+            else
+            {
+                dict.Add(k, [b]);
+            }
+        }
+
+        return Iter.from([.. dict])
+                   .SelectMany(kv => Iter.from(dict[kv.Key]).Forward());
+    }
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<B> GroupBy<Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        LT.K<T, A> ta)
+        where Key : notnull =>
+        T.GroupBy(keySelector, elementSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key. The elements of each group are projected by using a specified function.
+    /// </summary>
+    static virtual Iter<B> GroupBy<EqKey, Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<A, B> elementSelector,
+        LT.K<T, A> ta)
+        where Key : notnull
+        where EqKey : LT.Eq<Key> =>
+        T.GroupBy(keySelector, elementSelector, LE.Eq.Comparer<EqKey, Key>(), ta);
+
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key.
+    /// </summary>
+    static virtual Iter<B> GroupBy<Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<Key, Iter<A>, LT.K<T, B>> resultSelector,
+        IEqualityComparer<Key> comparer,
+        LT.K<T, A> ta)
+        where Key : notnull
+    {
+        var dict = new Dictionary<Key, List<A>>(comparer);
+        var ts   = T.Forward(ta);
+        while (ts.TryRef(out var x))
+        {
+            var k = keySelector(x);
+            if (dict.ContainsKey(k))
+            {
+                dict[k].Add(x);
+            }
+            else
+            {
+                dict.Add(k, [x]);
+            }
+        }
+
+        return Iter.from([.. dict])
+                   .SelectMany(kv => resultSelector(kv.Key, Iter.from(dict[kv.Key])).Forward());
+    }
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key.
+    /// </summary>
+    static virtual Iter<B> GroupBy<Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<Key, Iter<A>, LT.K<T, B>> resultSelector,
+        LT.K<T, A> ta)
+        where Key : notnull =>
+        T.GroupBy(keySelector, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function and creates a result value
+    /// from each group and its key.
+    /// </summary>
+    static virtual Iter<B> GroupBy<EqKey, Key, A, B>(
+        Func<A, Key> keySelector,
+        Func<Key, Iter<A>, LT.K<T, B>> resultSelector,
+        LT.K<T, A> ta)
+        where Key : notnull
+        where EqKey : LT.Eq<Key> =>
+        T.GroupBy(keySelector, resultSelector, LE.Eq.Comparer<EqKey, Key>(), ta);    
+
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function.
+    /// </summary>
+    static virtual Iter<A> GroupBy<Key, A>(
+        Func<A, Key> keySelector,
+        IEqualityComparer<Key> comparer,
+        LT.K<T, A> ta)
+        where Key : notnull
+    {
+        var dict = new Dictionary<Key, List<A>>(comparer);
+        var ts   = T.Forward(ta);
+        while (ts.TryRef(out var x))
+        {
+            var k = keySelector(x);
+            if (dict.ContainsKey(k))
+            {
+                dict[k].Add(x);
+            }
+            else
+            {
+                dict.Add(k, [x]);
+            }
+        }
+
+        return Iter.from([.. dict])
+                   .SelectMany(kv => Iter.from(dict[kv.Key]).Forward());
+    }
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function.
+    /// </summary>
+    static virtual Iter<A> GroupBy<Key, A>(
+        Func<A, Key> keySelector,
+        LT.K<T, A> ta)
+        where Key : notnull =>
+        T.GroupBy(keySelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
+    
+    /// <summary>
+    /// Groups the elements of a sequence according to a specified key selector function.
+    /// </summary>
+    static virtual Iter<A> GroupBy<EqKey, Key, A>(
+        Func<A, Key> keySelector,
+        LT.K<T, A> ta)
+        where Key : notnull
+        where EqKey : LT.Eq<Key> =>
+        T.GroupBy(keySelector, LE.Eq.Comparer<EqKey, Key>(), ta);      
 }
