@@ -55,7 +55,7 @@ public static partial class IterableExtensions
         /// Groups the elements of a sequence according to a specified key selector function and creates a result value
         /// from each group and its key. The elements of each group are projected by using a specified function.
         /// </summary>
-        public Iter<B> GroupBy(
+        public Iter<Group<Key, B>> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector,
             IEqualityComparer<Key> comparer) =>
@@ -65,7 +65,7 @@ public static partial class IterableExtensions
         /// Groups the elements of a sequence according to a specified key selector function and creates a result value
         /// from each group and its key. The elements of each group are projected by using a specified function.
         /// </summary>
-        public Iter<B> GroupBy(
+        public Iter<Group<Key, B>> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector) =>
             T.GroupBy(keySelector, elementSelector, ta);
@@ -99,7 +99,7 @@ public static partial class IterableExtensions
         /// Groups the elements of a sequence according to a specified key selector function and creates a result value
         /// from each group and its key. The elements of each group are projected by using a specified function.
         /// </summary>
-        public Iter<B> GroupBy(
+        public Iter<Group<Key, B>> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector) =>
             T.GroupBy<EqKey, Key, A, B>(keySelector, elementSelector, ta);
@@ -121,7 +121,7 @@ public static partial class IterableExtensions
         /// <summary>
         /// Groups the elements of a sequence according to a specified key selector function.
         /// </summary>
-        public Iter<A> GroupBy(
+        public Iter<Group<Key, A>> GroupBy(
             Func<A, Key> keySelector,
             IEqualityComparer<Key> comparer) =>
             T.GroupBy(keySelector, comparer, ta);
@@ -129,7 +129,7 @@ public static partial class IterableExtensions
         /// <summary>
         /// Groups the elements of a sequence according to a specified key selector function.
         /// </summary>
-        public Iter<A> GroupBy(
+        public Iter<Group<Key, A>> GroupBy(
             Func<A, Key> keySelector) =>
             T.GroupBy(keySelector, ta);
     }
@@ -142,7 +142,7 @@ public static partial class IterableExtensions
         /// <summary>
         /// Groups the elements of a sequence according to a specified key selector function.
         /// </summary>
-        public Iter<A> GroupBy(
+        public Iter<Group<Key, A>> GroupBy(
             Func<A, Key> keySelector) =>
             T.GroupBy<EqKey, Key, A>(keySelector, ta);
     }

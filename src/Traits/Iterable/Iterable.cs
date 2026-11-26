@@ -972,7 +972,7 @@ public interface Iterable<T>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
     /// </summary>
-    static virtual Iter<B> GroupBy<Key, A, B>(
+    static virtual Iter<Group<Key, B>> GroupBy<Key, A, B>(
         Func<A, Key> keySelector,
         Func<A, B> elementSelector,
         IEqualityComparer<Key> comparer,
@@ -996,14 +996,14 @@ public interface Iterable<T>
         }
 
         return Iter.from([.. dict])
-                   .SelectMany(kv => Iter.from(dict[kv.Key]).Forward());
+                   .Map(kv => new Group<Key, B>(kv.Key, Iter.from(dict[kv.Key]).Forward()));
     }
     
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
     /// </summary>
-    static virtual Iter<B> GroupBy<Key, A, B>(
+    static virtual Iter<Group<Key, B>> GroupBy<Key, A, B>(
         Func<A, Key> keySelector,
         Func<A, B> elementSelector,
         LT.K<T, A> ta)
@@ -1014,7 +1014,7 @@ public interface Iterable<T>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
     /// </summary>
-    static virtual Iter<B> GroupBy<EqKey, Key, A, B>(
+    static virtual Iter<Group<Key, B>> GroupBy<EqKey, Key, A, B>(
         Func<A, Key> keySelector,
         Func<A, B> elementSelector,
         LT.K<T, A> ta)
@@ -1078,7 +1078,7 @@ public interface Iterable<T>
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
     /// </summary>
-    static virtual Iter<A> GroupBy<Key, A>(
+    static virtual Iter<Group<Key, A>> GroupBy<Key, A>(
         Func<A, Key> keySelector,
         IEqualityComparer<Key> comparer,
         LT.K<T, A> ta)
@@ -1100,13 +1100,13 @@ public interface Iterable<T>
         }
 
         return Iter.from([.. dict])
-                   .SelectMany(kv => Iter.from(dict[kv.Key]).Forward());
+                   .Map(kv => new Group<Key, A>(kv.Key, Iter.from(dict[kv.Key]).Forward()));
     }
     
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
     /// </summary>
-    static virtual Iter<A> GroupBy<Key, A>(
+    static virtual Iter<Group<Key, A>> GroupBy<Key, A>(
         Func<A, Key> keySelector,
         LT.K<T, A> ta)
         where Key : notnull =>
@@ -1115,7 +1115,7 @@ public interface Iterable<T>
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
     /// </summary>
-    static virtual Iter<A> GroupBy<EqKey, Key, A>(
+    static virtual Iter<Group<Key, A>> GroupBy<EqKey, Key, A>(
         Func<A, Key> keySelector,
         LT.K<T, A> ta)
         where Key : notnull
