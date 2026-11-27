@@ -20,3 +20,5 @@ public readonly record struct IterSkip(int amount);
 
 [SkipLocalsInit]
 public readonly record struct IterDistinct;
+
+[SkipLocalsInit]public readonly record struct IterIndex;

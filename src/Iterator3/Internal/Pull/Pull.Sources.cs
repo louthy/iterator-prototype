@@ -16,6 +16,15 @@ static partial class Pull
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static int iteratorIndexed<A>(in StackFrame frame)
+    {
+        unsafe
+        {
+            return PullGen<A>.iteratorIndexed(in frame);
+        }
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int iterable<T, IS, A>(in StackFrame frame)
         where T : Tr.IterableImmutable<T, IS>
         where IS : unmanaged

@@ -11,7 +11,7 @@ public partial class Iter
         var frame = ta.Next<A, B>(out var tb);
         return Push.map(in frame, f)
                    ? tb
-                   : default;
+                   : map(f, lift(in ta));
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -22,7 +22,7 @@ public partial class Iter
                Push.iterator(in frame, in tb) && 
                Push.bimap(in frame, f)
                    ? tc
-                   : default;
+                   : map(f, lift(in ta), lift(in tb));
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -35,7 +35,7 @@ public partial class Iter
                Push.iterator(in frame, in tc) && 
                Push.trimap(in frame, f) 
                    ? td
-                   : default;
+                   : map(f, lift(in ta), lift(in tb), lift(in tc));
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -50,7 +50,7 @@ public partial class Iter
                Push.iterator(in frame, in td) && 
                Push.quadmap(in frame, f)
                    ? te
-                   : default;
+                   : map(f, lift(in ta), lift(in tb), lift(in tc), lift(in td));
     }
     
     [MethodImpl(Optimisations.InliningOnly)]
@@ -67,7 +67,7 @@ public partial class Iter
                Push.iterator(in frame, in te) && 
                Push.pentamap(in frame, f) 
                    ? tf
-                   : default;
+                   : map(f, lift(in ta), lift(in tb), lift(in tc), lift(in td), lift(in te));
     }
         
     [MethodImpl(Optimisations.InliningOnly)]
@@ -86,7 +86,7 @@ public partial class Iter
                Push.iterator(in frame, in tf) && 
                Push.sextamap(in frame, f)
                    ? tg
-                   : default;
+                   : map(f, lift(in ta), lift(in tb), lift(in tc), lift(in td), lift(in te), lift(in tf));
     }
             
     [MethodImpl(Optimisations.InliningOnly)]
@@ -107,6 +107,6 @@ public partial class Iter
                Push.iterator(in frame, in tg) &&
                Push.septamap(in frame, f)
                    ? th
-                   : default;
+                   : map(f, lift(in ta), lift(in tb), lift(in tc), lift(in td), lift(in te), lift(in tf), lift(in tg));
     }
 }

@@ -288,6 +288,16 @@ static partial class Pull
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
+    public static int index<A>(in StackFrame frame)
+    {
+        ref var ix = ref PullStruct.arg1<int>(in frame);
+        pop<A>(in frame, out var x);
+        push(in frame, (Index: ix, Item: x));
+        ix++;
+        return PullState.Continue;
+    }
+
+    [MethodImpl(Optimisations.InliningOnly)]
     public static int elements<A, B>(in StackFrame frame)
     {
         pop<(A, B)>(in frame, out var tuple);

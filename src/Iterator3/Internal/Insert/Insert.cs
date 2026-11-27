@@ -11,7 +11,7 @@ static unsafe partial class Insert
         
         // Push the no-arg coroutine operation
         fun(in frame, &Pull.coroutine, OpReturn.CoRoutine);
- 
+
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool take(in StackFrame frame, in int amount) =>
         
@@ -80,15 +80,17 @@ static unsafe partial class Insert
 
     [MethodImpl(Optimisations.InliningOnly)]
     public static bool cons<A>(in StackFrame frame, in A head, in Iter<A> tail) =>
-    
-        // Flag indicating we've processed
-        declare1(in frame, true) &&
-        
-        // Declare the head
-        declare2(in frame, in head) &&
+
+        fun(in frame, &Pull.cons<A>, OpReturn.Default) &&
+
+        scope(in frame) &&
         
         // Declare the tail
         declare3(in frame, in tail) &&
 
-        fun(in frame, &Pull.cons<A>, OpReturn.Default);
+        // Declare the head
+        declare2(in frame, in head) &&
+
+        // Flag indicating we've processed
+        declare1(in frame, true);
 }

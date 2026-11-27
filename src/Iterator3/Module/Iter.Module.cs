@@ -28,11 +28,18 @@ public partial class Iter
     /// </summary>
     public static readonly IterDistinct distinct = 
         default;
+
+    /// <summary>
+    /// Add an index to the element stream
+    /// </summary>
+    public static readonly IterIndex index =
+        default;
     
     /// <summary>
     /// Take a number of elements
     /// </summary>
     /// <param name="amount">Number of elements to take</param>
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterTake take(int amount) => 
         new (amount);
     
@@ -40,39 +47,57 @@ public partial class Iter
     /// Skip a number of elements
     /// </summary>
     /// <param name="amount">Number of elements to skip</param>
+    [MethodImpl(Optimisations.InliningOnly)]
     public static IterSkip skip(int amount) => 
         new (amount);
 
     /// <summary>
     /// Lift a function into an iterator, such that it is evaluated on-demand, rather than now.
     /// </summary>
+    [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> lazy<A>(Func<Iter<A>> f) =>
         IterAction.lazy(f);
-
+    
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> forever<A>(in A head)
+    public static Iter<A> forever<A>(in A value)
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.forever(in frame, in head)
+        return Push.forever(in frame, in value)
                     ? iter
-                    : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                    : throw new ArgumentException("The size of `value` is too large for an `Iter` structure");
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
-    public static Iter<A> singleton<A>(in A head)
+    public static Iter<A> singleton<A>(in A value)
     {
         var frame = Iter<A>.Default(out var iter);
-        return Push.singleton(in frame, in head)
+        return Push.singleton(in frame, in value)
                    ? iter
-                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                   : throw new ArgumentException("The size of `value` is too large for an `Iter` structure");
     }
+
+    /// <summary>
+    /// Lifts an `Iter` into a 'variable' within a new `Iter` structure. 
+    /// </summary>
+    /// <remarks>
+    /// The variable will be a serialised as a `struct` with 'managed' fields; and so it will cause
+    /// the passed `Iter` to be boxed.
+    ///
+    /// The reason we might want this is that the `Iter` structure can become 'full' when its internal
+    /// actions and variables take up more space within the fixes sized `Iter` struct.  This allows
+    /// the whole structure to become a reference and gives more space within a new `Iter` to do
+    /// additional operations on it.
+    /// </remarks>
+    /// <param name="ta">Structure to lift</param>
+    /// <typeparam name="A">Value type</typeparam>
+    /// <returns>Iterator</returns>
     [MethodImpl(Optimisations.InliningOnly)]
     public static Iter<A> lift<A>(in Iter<A> ta)
     {
         var frame = Iter<A>.Default(out var iter);
         return Push.iterator(in frame, in ta)
                    ? iter
-                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                   : throw new InvalidOperationException();
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -82,7 +107,7 @@ public partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.flatten(in frame, in iters)
                    ? iter
-                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                   : throw new InvalidOperationException();
     }
 
     [MethodImpl(Optimisations.InliningOnly)]
@@ -91,7 +116,7 @@ public partial class Iter
         var frame = Iter<A>.Default(out var iter);
         return Push.flatten(in frame, in ts)
                    ? iter
-                   : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                   : throw new InvalidOperationException();
     }
     
     [MethodImpl(Optimisations.InliningOnly)]

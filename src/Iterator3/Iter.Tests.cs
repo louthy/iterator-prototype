@@ -10,7 +10,7 @@ public static class IterTests
     {
         Log.enable();
 
-        Basic9();
+        Basic10();
         
         Basic1();
         Basic2();
@@ -21,6 +21,7 @@ public static class IterTests
         Basic7();
         Basic8();
         Basic9();
+        Basic10();
     }
 
     public static void Basic1()
@@ -146,6 +147,18 @@ public static class IterTests
     public static void Basic9()
     {
         var iter = many(1, 2) + many(3, 4) | pure;
+        
+        while(iter.TryGetValue(out var head, out iter))
+        {
+            Console.Write($"{head} ");
+        }
+        
+        Console.WriteLine();
+    }
+
+    public static void Basic10()
+    {
+        var iter = many("Ross", "Rachel", "Phoebe", "Joey", "Chandler", "Monica") | index;
         
         while(iter.TryGetValue(out var head, out iter))
         {

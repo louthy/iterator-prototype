@@ -13,7 +13,7 @@ public partial class Iter
                    ? iter
                    : Insert.cons(in frame, in head, in tail)
                        ? iter
-                       : throw new NotImplementedException("TODO: Deal with a full StackFrame");
+                       : cons(head, lift(in tail));
     }
 
     [MethodImpl(Optimisations.InliningOnly)]

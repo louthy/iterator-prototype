@@ -55,6 +55,24 @@ static unsafe partial class Push
 
         // Push iterator operation
         fun<A>(in frame, PullGen<A>.iterator, OpReturn.CanVoidOrSkip);
+
+    [MethodImpl(Optimisations.InliningOnly)]
+    public static bool index<A>(in StackFrame frame, in Iter<A> ta) =>
+
+        // Push the iterator and initial index
+        declare(in frame, ta, 0) &&
+
+        // Start the co-routine
+        coroutine(in frame) &&
+
+        // Push the iterator to the stack
+        ref1<Iter<A>>(in frame) &&
+
+        // Push the index to the stack
+        ref2<int>(in frame) &&
+
+        // Push iterator operation
+        fun<A>(in frame, PullGen<A>.iteratorIndexed, OpReturn.CanVoidOrSkip);
     
     public static bool lazy<A>(in StackFrame frame, in Func<Iter<A>> f) =>
 
