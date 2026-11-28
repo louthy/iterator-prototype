@@ -942,7 +942,7 @@ public interface Iterable<T>
         return Iter.from([.. dict])
                    .Select(kv => resultSelector(kv.Key, Iter.from(dict[kv.Key])));
     }
-    
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
@@ -954,7 +954,7 @@ public interface Iterable<T>
         LT.K<T, A> ta)
         where Key : notnull =>
         T.GroupBy(keySelector, elementSelector, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
-    
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
@@ -978,12 +978,12 @@ public interface Iterable<T>
         IEqualityComparer<Key> comparer,
         LT.K<T, A> ta)
         where Key : notnull =>
-        T.GroupBy(keySelector: keySelector, 
-                  elementSelector: elementSelector , 
-                  resultSelector: (k, xs) => new Group<Key, B>(k, xs), 
-                  comparer, 
-                  ta); 
-    
+        T.GroupBy(keySelector: keySelector,
+                  elementSelector: elementSelector,
+                  resultSelector: (k, xs) => new Group<Key, B>(k, xs),
+                  comparer,
+                  ta);
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
@@ -994,7 +994,7 @@ public interface Iterable<T>
         LT.K<T, A> ta)
         where Key : notnull =>
         T.GroupBy(keySelector, elementSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
-    
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key. The elements of each group are projected by using a specified function.
@@ -1017,12 +1017,12 @@ public interface Iterable<T>
         IEqualityComparer<Key> comparer,
         LT.K<T, A> ta)
         where Key : notnull =>
-        T.GroupBy(keySelector: keySelector, 
-                  elementSelector: x => x, 
-                  resultSelector: resultSelector, 
-                  comparer, 
-                  ta); 
-    
+        T.GroupBy(keySelector: keySelector,
+                  elementSelector: x => x,
+                  resultSelector: resultSelector,
+                  comparer,
+                  ta);
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key.
@@ -1033,7 +1033,7 @@ public interface Iterable<T>
         LT.K<T, A> ta)
         where Key : notnull =>
         T.GroupBy(keySelector, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
-    
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function and creates a result value
     /// from each group and its key.
@@ -1044,7 +1044,7 @@ public interface Iterable<T>
         LT.K<T, A> ta)
         where Key : notnull
         where EqKey : LT.Eq<Key> =>
-        T.GroupBy(keySelector, resultSelector, LE.Eq.Comparer<EqKey, Key>(), ta);    
+        T.GroupBy(keySelector, resultSelector, LE.Eq.Comparer<EqKey, Key>(), ta);
 
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
@@ -1054,12 +1054,12 @@ public interface Iterable<T>
         IEqualityComparer<Key> comparer,
         LT.K<T, A> ta)
         where Key : notnull =>
-        T.GroupBy(keySelector: keySelector, 
-                  elementSelector: x => x , 
-                  resultSelector: (k, xs) => new Group<Key, A>(k, xs), 
-                  comparer, 
-                  ta);     
-    
+        T.GroupBy(keySelector: keySelector,
+                  elementSelector: x => x,
+                  resultSelector: (k, xs) => new Group<Key, A>(k, xs),
+                  comparer,
+                  ta);
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
     /// </summary>
@@ -1068,7 +1068,7 @@ public interface Iterable<T>
         LT.K<T, A> ta)
         where Key : notnull =>
         T.GroupBy(keySelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta);
-    
+
     /// <summary>
     /// Groups the elements of a sequence according to a specified key selector function.
     /// </summary>
@@ -1109,7 +1109,7 @@ public interface Iterable<T>
         while (tsb.TryRef(out var y))
         {
             var ky = keySelectorB(y);
-            
+
             if (lookup.ContainsKey(ky))
             {
                 lookup[ky].Add(y);
@@ -1172,13 +1172,13 @@ public interface Iterable<T>
         LT.K<T, A> ta,
         LT.K<T, B> tb)
         where Key : notnull =>
-        T.GroupJoin(keySelectorA, 
-                    keySelectorB, 
-                    (x, ys) => new Group<A, B>(x, ys), 
-                    comparer, 
-                    ta, 
+        T.GroupJoin(keySelectorA,
+                    keySelectorB,
+                    (x, ys) => new Group<A, B>(x, ys),
+                    comparer,
+                    ta,
                     tb);
-    
+
     /// <summary>
     /// Correlates the elements of two sequences based on key equality and groups the results.
     /// </summary>
@@ -1199,11 +1199,11 @@ public interface Iterable<T>
         LT.K<T, B> tb)
         where EqKey : LT.Eq<Key>
         where Key : notnull =>
-        T.GroupJoin(keySelectorA, 
-                    keySelectorB, 
-                    (x, ys) => new Group<A, B>(x, ys), 
-                    LE.Eq.Comparer<EqKey, Key>(), 
-                    ta, 
+        T.GroupJoin(keySelectorA,
+                    keySelectorB,
+                    (x, ys) => new Group<A, B>(x, ys),
+                    LE.Eq.Comparer<EqKey, Key>(),
+                    ta,
                     tb);
 
     /// <summary>
@@ -1228,8 +1228,8 @@ public interface Iterable<T>
         LT.K<T, A> ta,
         LT.K<T, B> tb)
         where Key : notnull =>
-        T.GroupJoin(keySelectorA, keySelectorB, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta, tb);    
-    
+        T.GroupJoin(keySelectorA, keySelectorB, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta, tb);
+
     /// <summary>
     /// Correlates the elements of two sequences based on key equality and groups the results.
     /// </summary>
@@ -1248,11 +1248,106 @@ public interface Iterable<T>
         LT.K<T, A> ta,
         LT.K<T, B> tb)
         where Key : notnull =>
-        T.GroupJoin(keySelectorA, 
-                    keySelectorB, 
-                    (x, ys) => new Group<A, B>(x, ys), 
-                    LE.Eq.Comparer<EqDefault<Key>, Key>(), 
-                    ta, 
+        T.GroupJoin(keySelectorA,
+                    keySelectorB,
+                    (x, ys) => new Group<A, B>(x, ys),
+                    LE.Eq.Comparer<EqDefault<Key>, Key>(),
+                    ta,
                     tb);
+
+    /// <summary>
+    /// Correlates the elements of two sequences based on matching keys.
+    /// </summary>
+    /// <param name="keySelectorA">A function to extract the join key from each element of the first sequence.</param>
+    /// <param name="keySelectorB">A function to extract the join key from each element of the second sequence.</param>
+    /// <param name="resultSelector">Takes the element from the first sequence and the element from the second sequence
+    /// and maps to a new result-value.</param>
+    /// <param name="comparer">Bespoke comparer for comparing the keys</param>
+    /// <param name="ta">The first sequence to join.</param>
+    /// <param name="tb">The sequence to join to the first sequence.</param>
+    /// <typeparam name="Key">The type of the keys returned by the key selector functions.</typeparam>
+    /// <typeparam name="A">The type of the elements of the first sequence.</typeparam>
+    /// <typeparam name="B">The type of the elements of the second sequence.</typeparam>
+    /// <typeparam name="C">The type of the result elements.</typeparam>
+    /// <returns>A sequence of values that represent the inner-join of the two input sequences.</returns>
+    static virtual Iter<C> Join<Key, A, B, C>(
+        Func<A, Key> keySelectorA,
+        Func<B, Key> keySelectorB,
+        Func<A, B, C> resultSelector,
+        IEqualityComparer<Key> comparer,
+        LT.K<T, A> ta,
+        LT.K<T, B> tb)
+        where Key : notnull
+    {
+        var lookup = new Dictionary<Key, List<B>>(comparer);
+        var tsb    = T.Forward(tb);
+        while (tsb.TryRef(out var y))
+        {
+            var ky = keySelectorB(y);
+
+            if (lookup.ContainsKey(ky))
+            {
+                lookup[ky].Add(y);
+            }
+            else
+            {
+                lookup.Add(ky, [y]);
+            }
+        }
+
+        return T.Forward(ta)
+                .Bind(x => lookup.TryGetValue(keySelectorA(x), out var ys)
+                              ? Iter.from(ys).Map(y => resultSelector(x, y))
+                              : Iter.empty);
+    }
+    
+    /// <summary>
+    /// Correlates the elements of two sequences based on matching keys.
+    /// </summary>
+    /// <param name="keySelectorA">A function to extract the join key from each element of the first sequence.</param>
+    /// <param name="keySelectorB">A function to extract the join key from each element of the second sequence.</param>
+    /// <param name="resultSelector">Takes the element from the first sequence and the element from the second sequence
+    /// and maps to a new result-value.</param>
+    /// <param name="ta">The first sequence to join.</param>
+    /// <param name="tb">The sequence to join to the first sequence.</param>
+    /// <typeparam name="EqKey">Key equality trait.</typeparam>
+    /// <typeparam name="Key">The type of the keys returned by the key selector functions.</typeparam>
+    /// <typeparam name="A">The type of the elements of the first sequence.</typeparam>
+    /// <typeparam name="B">The type of the elements of the second sequence.</typeparam>
+    /// <typeparam name="C">The type of the result elements.</typeparam>
+    /// <returns>A sequence of values that represent the inner-join of the two input sequences.</returns>
+    static virtual Iter<C> Join<EqKey, Key, A, B, C>(
+        Func<A, Key> keySelectorA,
+        Func<B, Key> keySelectorB,
+        Func<A, B, C> resultSelector,
+        LT.K<T, A> ta,
+        LT.K<T, B> tb)
+        where EqKey : LT.Eq<Key>
+        where Key : notnull =>
+        T.Join(keySelectorA, keySelectorB, resultSelector, LE.Eq.Comparer<EqKey, Key>(), ta, tb);
+    
+    /// <summary>
+    /// Correlates the elements of two sequences based on matching keys.
+    /// </summary>
+    /// <param name="keySelectorA">A function to extract the join key from each element of the first sequence.</param>
+    /// <param name="keySelectorB">A function to extract the join key from each element of the second sequence.</param>
+    /// <param name="resultSelector">Takes the element from the first sequence and the element from the second sequence
+    /// and maps to a new result-value.</param>
+    /// <param name="ta">The first sequence to join.</param>
+    /// <param name="tb">The sequence to join to the first sequence.</param>
+    /// <typeparam name="Key">The type of the keys returned by the key selector functions.</typeparam>
+    /// <typeparam name="A">The type of the elements of the first sequence.</typeparam>
+    /// <typeparam name="B">The type of the elements of the second sequence.</typeparam>
+    /// <typeparam name="C">The type of the result elements.</typeparam>
+    /// <returns>A sequence of values that represent the inner-join of the two input sequences.</returns>
+    static virtual Iter<C> Join<Key, A, B, C>(
+        Func<A, Key> keySelectorA,
+        Func<B, Key> keySelectorB,
+        Func<A, B, C> resultSelector,
+        LT.K<T, A> ta,
+        LT.K<T, B> tb)
+        where Key : notnull =>
+        T.Join(keySelectorA, keySelectorB, resultSelector, LE.Eq.Comparer<EqDefault<Key>, Key>(), ta, tb);
     
 }
+
