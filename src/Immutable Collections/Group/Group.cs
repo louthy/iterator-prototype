@@ -3,19 +3,25 @@ using IteratorPrototype.Iterator3;
 namespace IteratorPrototype;
 
 /// <summary>
-/// A group of values, partitioned by a key.
+/// A group of items, labelled by a value.
 /// </summary>
 /// <remarks>
-/// The result of a `GroupBy` operation.
+/// The result of `GroupBy` and `GroupJoin` operations.
 /// </remarks>
-/// <param name="Key">Key</param>
-/// <param name="Values">Values</param>
-/// <typeparam name="K">Key type</typeparam>
-/// <typeparam name="V">Value type</typeparam>
-public readonly record struct Group<K, V>(K Key, Iter<V> Values) : Group<V>
+/// <param name="Label">Value that discriminates this group.</param>
+/// <param name="Items">Items in the group</param>
+/// <typeparam name="A">Group discriminator type</typeparam>
+/// <typeparam name="B">Item value type</typeparam>
+public readonly record struct Group<A, B>(in A Label, in Iter<B> Items) : Group<B>
 {
     /// <summary>
-    /// Values implementation from the base-interface
+    /// Items in the group
     /// </summary>
-    Iter<V> Group<V>.Values { get; } = Values;
+    Iter<B> Group<B>.Items { get; } = Items;
+
+    public static implicit operator Iter<B>(in Group<A, B> g) =>
+        g.Items;
+
+    public static implicit operator A(in Group<A, B> g) =>
+        g.Label;    
 }

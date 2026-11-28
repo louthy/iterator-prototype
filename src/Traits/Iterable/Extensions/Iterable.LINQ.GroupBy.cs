@@ -16,7 +16,7 @@ public static partial class IterableExtensions
         public Iter<C> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector,
-            Func<Key, Iter<B>, LT.K<T, C>> resultSelector,
+            Func<Key, Iter<B>, C> resultSelector,
             IEqualityComparer<Key> comparer) =>
             T.GroupBy(keySelector, elementSelector, resultSelector, comparer, ta);
 
@@ -27,7 +27,7 @@ public static partial class IterableExtensions
         public Iter<C> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector,
-            Func<Key, Iter<B>, LT.K<T, C>> resultSelector) =>
+            Func<Key, Iter<B>, C> resultSelector) =>
             T.GroupBy(keySelector, elementSelector, resultSelector, ta);
     }
 
@@ -43,7 +43,7 @@ public static partial class IterableExtensions
         public Iter<C> GroupBy(
             Func<A, Key> keySelector,
             Func<A, B> elementSelector,
-            Func<Key, Iter<B>, LT.K<T, C>> resultSelector) =>
+            Func<Key, Iter<B>, C> resultSelector) =>
             T.GroupBy<EqKey, Key, A, B, C>(keySelector, elementSelector, resultSelector, ta);
     }
 
@@ -76,7 +76,7 @@ public static partial class IterableExtensions
         /// </summary>
         public Iter<B> GroupBy(
             Func<A, Key> keySelector,
-            Func<Key, Iter<A>, LT.K<T, B>> resultSelector,
+            Func<Key, Iter<A>, B> resultSelector,
             IEqualityComparer<Key> comparer) =>
             T.GroupBy(keySelector, resultSelector, comparer, ta);
         
@@ -86,7 +86,7 @@ public static partial class IterableExtensions
         /// </summary>
         public Iter<B> GroupBy(
             Func<A, Key> keySelector,
-            Func<Key, Iter<A>, LT.K<T, B>> resultSelector) =>
+            Func<Key, Iter<A>, B> resultSelector) =>
             T.GroupBy(keySelector, resultSelector, ta);
     }
 
@@ -110,7 +110,7 @@ public static partial class IterableExtensions
         /// </summary>
         public Iter<B> GroupBy(
             Func<A, Key> keySelector,
-            Func<Key, Iter<A>, LT.K<T, B>> resultSelector) =>
+            Func<Key, Iter<A>, B> resultSelector) =>
             T.GroupBy<EqKey, Key, A, B>(keySelector, resultSelector, ta);
     }
 
